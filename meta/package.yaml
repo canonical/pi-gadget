@@ -1,8 +1,8 @@
-name: pi2
+name: canonical-pi2
 vendor: Oliver Grawert <ogra@ubuntu.com>
 icon: meta/rpi2.png
-version: 2.0
-type: oem
+version: 2.1
+type: gadget
 
 branding:
     name: Raspberry Pi 2

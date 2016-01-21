@@ -13,7 +13,7 @@ config:
     ubuntu-core:
         autopilot: false
 
-oem:
+gadget:
   hardware:
     platform: bcm2836-rpi-2-b
     architecture: armhf

@@ -1,7 +1,8 @@
 name: canonical-pi2
-vendor: Oliver Grawert <ogra@ubuntu.com>
-icon: meta/rpi2.png
-version: 2.1
+version: 3.0
+summary: Raspberry Pi 2 support package
+description: |
+ Support files for booting Raspberry Pi 2
 type: gadget
 
 branding:

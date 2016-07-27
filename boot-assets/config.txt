@@ -4,10 +4,6 @@
 
 kernel=uboot.bin
 
-# enable i2c
-dtparam=i2c_arm=on
-dtparam=spi=on
-
 # uncomment if you get no picture on HDMI for a default "safe" mode
 #hdmi_safe=1
 
@@ -48,3 +44,12 @@ dtparam=spi=on
 #uncomment to overclock the arm. 700 MHz is the default.
 #arm_freq=800
 
+dtparam=i2c_arm=on
+dtparam=i2c_vc=on
+#i2s=on
+#spi=on
+dtparam=act_led_trigger=heartbeat
+dtparam=pwr_led_trigger=mmc0
+
+device_tree_address=0x02000000
+core_freq=250

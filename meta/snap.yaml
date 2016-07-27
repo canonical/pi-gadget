@@ -12,7 +12,7 @@ store:
 
 gadget:
   hardware:
-    platform: bcm2710-rpi-3-b
+    platform: bcm2709-rpi-2-b
     architecture: armhf
     partition-layout: minimal
     bootloader: u-boot

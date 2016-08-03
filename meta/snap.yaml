@@ -1,42 +1,6 @@
-name: canonical-pi2
-version: 3.2
-summary: Raspberry Pi support package
+name: pi2
+version: 16.04-0.4
+summary: Raspberry Pi 2 support package
 description: |
  Support files for booting Raspberry Pi
 type: gadget
-
-branding:
-    name: Raspberry Pi
-store:
-    oem-key: 123456
-
-gadget:
-  hardware:
-    platform: bcm2709-rpi-2-b
-    architecture: armhf
-    partition-layout: minimal
-    bootloader: u-boot
-    boot-assets:
-      files:
-        - path: boot-assets/config.txt
-        - path: boot-assets/cmdline.txt
-        - path: boot-assets/uboot.bin
-        - path: boot-assets/uboot.env
-        - path: boot-assets/uEnv.txt
-        - path: boot-assets/bcm2708-rpi-b.dtb
-        - path: boot-assets/bcm2708-rpi-b-plus.dtb
-        - path: boot-assets/bcm2708-rpi-cm.dtb
-        - path: boot-assets/bcm2709-rpi-2-b.dtb
-        - path: boot-assets/bcm2710-rpi-3-b.dtb
-        - path: boot-assets/bootcode.bin
-        - path: boot-assets/COPYING.linux
-        - path: boot-assets/fixup_cd.dat
-        - path: boot-assets/fixup_db.dat
-        - path: boot-assets/fixup.dat
-        - path: boot-assets/fixup_x.dat
-        - path: boot-assets/LICENCE.broadcom
-        - path: boot-assets/start_db.elf
-        - path: boot-assets/start_cd.elf
-        - path: boot-assets/start.elf
-        - path: boot-assets/start_x.elf
-        - path: boot-assets/overlays.tgz

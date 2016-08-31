@@ -4,3 +4,5 @@ summary: Raspberry Pi 2 support package
 description: |
  Support files for booting Raspberry Pi
 type: gadget
+architectures:
+  - armhf

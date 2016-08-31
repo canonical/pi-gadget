@@ -1,0 +1,1 @@
+mkenvimage -r -s 131072  -o boot-assets/uboot.env uboot.env.in

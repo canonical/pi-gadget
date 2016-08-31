@@ -1,4 +1,4 @@
-device-tree: bcm2836-rpi-2-b
+device-tree: bcm2709-rpi-2-b
 volumes:
   pi2:
     schema: mbr

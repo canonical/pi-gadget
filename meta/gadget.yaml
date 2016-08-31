@@ -1,6 +1,6 @@
 device-tree: bcm2836-rpi-2-b
 volumes:
-  pc:
+  pi2:
     schema: mbr
     bootloader: u-boot
     structure:

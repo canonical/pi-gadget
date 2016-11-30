@@ -1,6 +1,7 @@
-# Raspberry Pi Gadget Snap
+# Raspberry Pi 2 Gadget Snap
 
-This repository contains the official gadget snap for the Raspberry Pi 2
+This repository contains the official Ubuntu Core gadget snap for the Raspberry
+Pi 2.
 
 ## Gadget Snaps
 

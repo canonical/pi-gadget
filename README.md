@@ -24,8 +24,9 @@ stay tuned!
 
 ## Launchpad Mirror and Automatic Builds.
 
-All commits from the master branch of github.com/snapcore/pi2 are automatically
-mirrored by Launchpad to the https://launchpad.net/snap-pi2 project.
+All commits from the master branch of https://github.com/snapcore/pi2 are
+automatically mirrored by Launchpad to the https://launchpad.net/snap-pi2
+project.
 
 The master branch is automatically built from the launchpad mirror and
 published into the snap store to the edge channel.

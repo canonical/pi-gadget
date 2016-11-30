@@ -19,9 +19,7 @@ projects better than what is available with Github issues.
 
 ## Building
 
-To build the gadget snap locally please use `snapcraft`. This repository will
-be soon updated to support snapcraft natively, via a `snapcraft.yaml` file,
-stay tuned!
+To build the gadget snap locally please use `snapcraft`.
 
 ## Launchpad Mirror and Automatic Builds.
 

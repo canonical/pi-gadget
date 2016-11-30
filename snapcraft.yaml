@@ -6,3 +6,9 @@ description: |
 type: gadget
 architectures:
   - armhf
+confinement: strict
+grade: stable
+parts:
+    prebuilt:
+        plugin: dump
+        source: prebuilt

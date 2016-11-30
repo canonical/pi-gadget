@@ -12,3 +12,9 @@ parts:
     prebuilt:
         plugin: dump
         source: prebuilt
+    licenses:
+        plugin: copy
+        files:
+            COPYING.linux: .
+            LICENCE.broadcom: .
+            LICENSE.oracle: .

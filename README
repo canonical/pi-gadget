@@ -1,1 +1,0 @@
-mkenvimage -r -s 131072  -o uboot.env uboot.env.in

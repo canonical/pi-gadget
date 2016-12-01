@@ -23,7 +23,7 @@ To build the gadget snap locally please use `snapcraft`.
 
 ## Launchpad Mirror and Automatic Builds.
 
-All commits from the master branch of https://github.com/snapcore/pi2 are
+All commits from the master branch of https://github.com/snapcore/pi2-gadget are
 automatically mirrored by Launchpad to the https://launchpad.net/snap-pi2
 project.
 

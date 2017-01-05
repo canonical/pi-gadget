@@ -50,6 +50,7 @@ dtparam=i2c_vc=on
 #spi=on
 dtparam=act_led_trigger=heartbeat
 dtparam=pwr_led_trigger=mmc0
+dtparam=audio=on
 
 device_tree_address=0x02000000
 core_freq=250

@@ -12,7 +12,7 @@ slots:
   bcm-gpio-0:
     interface: gpio
     number: 0
-  bcm-gpio-2:
+  bcm-gpio-1:
     interface: gpio
     number: 1
   bcm-gpio-2:

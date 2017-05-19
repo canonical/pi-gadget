@@ -90,6 +90,15 @@ slots:
   bcm-gpio-26:
     interface: gpio
     number: 26
+  i2c-0:
+    interface: i2c
+    path: /dev/i2c-0
+  i2c-1:
+    interface: i2c
+    path: /dev/i2c-1
+  i2c-2:
+    interface: i2c
+    path: /dev/i2c-2
 
 grade: stable
 parts:

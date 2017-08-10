@@ -1,7 +1,17 @@
 # Raspberry Pi 2 Gadget Snap
 
-This repository contains the official Ubuntu Core gadget snap for the Raspberry
-Pi 2.
+This repository contains the source for an Ubuntu Core gadget snap for the Raspberry Pi 2.
+
+Building it with snapcraft will automatically pull, configure, patch and build
+the git.denx.de/u-boot.git upstream source for rpi_2_defconfig at release v2017.05,
+produce a u-boot.bin binary and put it inside the gadget.
+
+It will then download the latest stable binary boot firmware
+from https://github.com/raspberrypi/firmware/tree/stable/boot and add it to the gadget.
+
+Last it will pull the latest linux-image-raspi2 from the xenial-updates archive, extract the
+devicetree and overlay files from it and add them to the gadget as well.
+
 
 ## Gadget Snaps
 
@@ -19,7 +29,10 @@ projects better than what is available with Github issues.
 
 ## Building
 
-To build the gadget snap locally please use `snapcraft`.
+To build the gadget snap locally on an armhf system please use `snapcraft`.
+
+To cross build this gadget snap on a PC please install the gcc-arm-linux-gnueabihf package
+before running `snapcraft`
 
 ## Launchpad Mirror and Automatic Builds.
 
@@ -32,11 +45,3 @@ published into the snap store to the edge channel.
 
 You can find build history and other controls here:
 https://code.launchpad.net/~canonical-foundations/+snap/pi2
-
-## Old content
-
-This used to be in the old README file, it will be phased out over time
-
-```
-mkenvimage -r -s 131072  -o uboot.env uboot.env.in
-```

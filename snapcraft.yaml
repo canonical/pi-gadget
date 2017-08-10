@@ -1,5 +1,5 @@
 name: pi2
-version: 16.04-0.17
+version: 16.04-0.18
 summary: Raspberry Pi 2 support package
 description: |
  Support files for booting Raspberry Pi
@@ -7,6 +7,76 @@ type: gadget
 architectures:
   - armhf
 confinement: strict
+grade: stable
+parts:
+  uboot:
+    plugin: make
+    source: git://git.denx.de/u-boot.git
+    source-branch: v2017.05
+    prepare: |
+      git apply ../../../uboot.patch
+      make rpi_2_defconfig
+    build: |
+      if [ "$(arch)" = "x86_64" ]; then
+        if [ ! -x /usr/bin/arm-linux-gnueabihf-gcc ]; then
+          echo "ERROR: You are cross building this snap, please install gcc-arm-linux-gnueabihf"
+          exit 1
+        fi
+        CROSS_COMPILE=arm-linux-gnueabihf- make
+      else
+        make
+      fi
+    install: |
+      mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
+      cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/uboot.bin
+      tools/mkenvimage -r -s 131072 -o $SNAPCRAFT_PART_INSTALL/uboot.env ../../../uboot.env.in
+      ln -s uboot.env $SNAPCRAFT_PART_INSTALL/uboot.conf
+    build-packages:
+      - bc
+      - build-essential
+      - device-tree-compiler
+      - libpython2.7-dev
+      - python-minimal
+  boot-firmware:
+    plugin: nil
+    source: .
+    after:
+      - uboot
+    prepare: |
+      git clone --depth=1 https://github.com/raspberrypi/firmware.git -b "1.20170515"
+    install: |
+      mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
+      for file in fixup start bootcode LICENCE COPYING; do
+        cp firmware/boot/${file}* $SNAPCRAFT_PART_INSTALL/boot-assets
+      done
+  configs:
+    plugin: dump
+    source: configs
+    after:
+      - boot-firmware
+    organize:
+      config.txt: boot-assets/config.txt
+      cmdline.txt: boot-assets/cmdline.txt
+  devicetrees:
+    plugin: nil
+    source: .
+    after:
+      - configs
+    prepare: |
+      PACKAGES="http://ports.ubuntu.com/ubuntu-ports/dists/xenial-updates/universe/binary-armhf/Packages.gz"
+      PKGPATH="$(wget -q -O- $PACKAGES|zcat|grep-dctrl linux-raspi2 |\
+        grep linux-image|grep Filename|tail -1| sed 's/^Filename: //')"
+      wget http://ports.ubuntu.com/ubuntu-ports/$PKGPATH
+      dpkg -x $(basename $PKGPATH) unpack/
+    install: |
+      mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
+      cp -a unpack/lib/firmware/*/device-tree/* $SNAPCRAFT_PART_INSTALL/boot-assets
+      rm -rf unpack
+    build-packages:
+      - coreutils
+      - dctrl-tools
+      - sed
+      - wget
 
 slots:
   bcm-gpio-0:
@@ -90,6 +160,9 @@ slots:
   bcm-gpio-26:
     interface: gpio
     number: 26
+  bcm-gpio-27:
+    interface: gpio
+    number: 27
   i2c-0:
     interface: i2c
     path: /dev/i2c-0
@@ -99,15 +172,3 @@ slots:
   i2c-2:
     interface: i2c
     path: /dev/i2c-2
-
-grade: stable
-parts:
-    prebuilt:
-        plugin: dump
-        source: prebuilt
-    licenses:
-        plugin: copy
-        files:
-            COPYING.linux: .
-            LICENCE.broadcom: .
-            LICENSE.oracle: .

@@ -1,0 +1,105 @@
+diff --git a/Makefile.am b/Makefile.am
+index a14152a..3c168c3 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -5,7 +5,7 @@ AM_CFLAGS = $(GCC_FLAGS) -D_GNU_SOURCE
+ psplash_SOURCES = psplash.c psplash.h psplash-fb.c psplash-fb.h \
+                   psplash-console.c psplash-console.h           \
+ 		  psplash-colors.h psplash-config.h		\
+-		  psplash-poky-img.h psplash-bar-img.h radeon-font.h
++		  psplash-core-img.h psplash-bar-img.h font.h
+ 
+ psplash_write_SOURCES = psplash-write.c psplash.h
+ 
+diff --git a/make-image-header.sh b/make-image-header.sh
+index d7cf67c..01750dd 100755
+--- a/make-image-header.sh
++++ b/make-image-header.sh
+@@ -3,8 +3,9 @@
+ set -e
+ 
+ imageh=`basename $1 .png`-img.h
++if [ -n "$3" ]; then
++	imageh="${3}-img.h"
++fi
+ name="${2}_IMG"
+ gdk-pixbuf-csource --macros $1 > $imageh.tmp
+ sed -e "s/MY_PIXBUF/${name}/g" -e "s/guint8/uint8/g" $imageh.tmp > $imageh && rm $imageh.tmp
+-
+-
+diff --git a/psplash-bar-img.h b/psplash-bar-img.h
+index c1c7626..c672894 100644
+--- a/psplash-bar-img.h
++++ b/psplash-bar-img.h
+@@ -1,8 +1,8 @@
+ /* GdkPixbuf RGBA C-Source image dump 1-byte-run-length-encoded */
+ 
+ #define BAR_IMG_ROWSTRIDE (920)
+-#define BAR_IMG_WIDTH (230)
+-#define BAR_IMG_HEIGHT (28)
++#define BAR_IMG_WIDTH (0)
++#define BAR_IMG_HEIGHT (0)
+ #define BAR_IMG_BYTES_PER_PIXEL (4) /* 3:RGB, 4:RGBA */
+ #define BAR_IMG_RLE_PIXEL_DATA ((uint8*) \
+   "\203\354\354\341\377\4\326\326\315\377\236\236\233\377\200\200\201\377" \
+diff --git a/psplash.c b/psplash.c
+index 992e199..f518278 100644
+--- a/psplash.c
++++ b/psplash.c
+@@ -21,9 +21,9 @@
+ #include "psplash.h"
+ #include "psplash-config.h"
+ #include "psplash-colors.h"
+-#include "psplash-poky-img.h"
++#include "psplash-core-img.h"
+ #include "psplash-bar-img.h"
+-#include "radeon-font.h"
++#include "font.h"
+ 
+ #define SPLIT_LINE_POS(fb)                                  \
+ 	(  (fb)->height                                     \
+@@ -45,7 +45,7 @@ psplash_draw_msg (PSplashFB *fb, const char *msg)
+ {
+   int w, h;
+ 
+-  psplash_fb_text_size (&w, &h, &radeon_font, msg);
++  psplash_fb_text_size (&w, &h, &font, msg);
+ 
+   DBG("displaying '%s' %ix%i\n", msg, w, h);
+ 
+@@ -62,7 +62,7 @@ psplash_draw_msg (PSplashFB *fb, const char *msg)
+ 			(fb->width-w)/2, 
+ 			SPLIT_LINE_POS(fb) - h,
+ 			PSPLASH_TEXT_COLOR,
+-			&radeon_font,
++			&font,
+ 			msg);
+ }
+ 
+@@ -280,18 +280,18 @@ main (int argc, char** argv)
+ 
+   /* Draw the Poky logo  */
+   psplash_fb_draw_image (fb, 
+-			 (fb->width  - POKY_IMG_WIDTH)/2, 
++			 (fb->width  - CORE_IMG_WIDTH)/2,
+ #if PSPLASH_IMG_FULLSCREEN
+-			 (fb->height - POKY_IMG_HEIGHT)/2,
++			 (fb->height - CORE_IMG_HEIGHT)/2,
+ #else
+ 			 (fb->height * PSPLASH_IMG_SPLIT_NUMERATOR
+-			  / PSPLASH_IMG_SPLIT_DENOMINATOR - POKY_IMG_HEIGHT)/2,
++			  / PSPLASH_IMG_SPLIT_DENOMINATOR - CORE_IMG_HEIGHT)/2,
+ #endif
+-			 POKY_IMG_WIDTH,
+-			 POKY_IMG_HEIGHT,
+-			 POKY_IMG_BYTES_PER_PIXEL,
+-			 POKY_IMG_ROWSTRIDE,
+-			 POKY_IMG_RLE_PIXEL_DATA);
++			 CORE_IMG_WIDTH,
++			 CORE_IMG_HEIGHT,
++			 CORE_IMG_BYTES_PER_PIXEL,
++			 CORE_IMG_ROWSTRIDE,
++			 CORE_IMG_RLE_PIXEL_DATA);
+ 
+   /* Draw progress bar border */
+   psplash_fb_draw_image (fb, 

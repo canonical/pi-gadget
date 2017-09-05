@@ -77,6 +77,49 @@ parts:
       - dctrl-tools
       - sed
       - wget
+  psplash:
+    source: git://git.yoctoproject.org/psplash
+    plugin: make
+    prepare: |
+      export TREE="../../../psplash"
+      . ${TREE}/config
+      if ! $(echo "$FONT"|grep -q ^/); then \
+         FONT="${TREE}/${FONT}"; \
+      fi
+      if ! $(echo "$SPLASH"|grep -q ^/); then \
+         SPLASH="${TREE}/${SPLASH}"; \
+      fi
+      git apply ${TREE}/psplash.patch
+      ${TREE}/font-gen.sh "$FONT"
+      ./make-image-header.sh "$SPLASH" CORE psplash-core
+      aclocal
+      autoreconf --install
+      if [ "$(arch)" = "x86_64" ]; then \
+        if [ ! -x /usr/bin/arm-linux-gnueabihf-gcc ]; then \
+          echo "ERROR: You are cross building this snap, please install gcc-arm-linux-gnueabihf"
+          exit 1; \
+        fi
+        ./configure --host=arm-linux CC=/usr/bin/arm-linux-gnueabihf-gcc; \
+      else \
+        ./configure; \
+      fi
+    install: |
+      rm -rf $SNAPCRAFT_PART_INSTALL/usr
+      cp -a ../../../psplash/initrd .
+      cp psplash initrd/bin
+      mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
+      cd initrd && find . | cpio --quiet -o -H newc| lzma >>$SNAPCRAFT_PART_INSTALL/boot-assets/psplash.img
+    build-packages:
+      - libgdk-pixbuf2.0-dev
+      - automake
+      - autoconf
+      - gcc
+      - otf2bdf
+      - libbogl-dev
+      - ttf-ubuntu-font-family
+      - cpio
+      - findutils
+      - xz-utils
 
 slots:
   bcm-gpio-0:

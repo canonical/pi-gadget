@@ -27,6 +27,15 @@ https://bugs.launchpad.net/snap-pi2/+filebug
 We use Launchpad to track issues as this allows us to coordinate multiple
 projects better than what is available with Github issues.
 
+## Branding
+
+This gadget snap comes with a boot splash, to change the logo you can add a new png file to
+the psplash subdirectory of this tree, adjust the "SPLASH=" option in psplash/config to
+point to this file and rebuild the gadget.
+
+To turn off the splash screen completely please edit config/cmdline.txt and remove
+the "splash" and the "vt.handoff=2" keywords from the default kernel commandline.
+
 ## Building
 
 To build the gadget snap locally on an armhf system please use `snapcraft`.

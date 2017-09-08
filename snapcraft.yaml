@@ -106,6 +106,7 @@ parts:
     install: |
       rm -rf $SNAPCRAFT_PART_INSTALL/usr
       cp -a ../../../psplash/initrd .
+      mkdir -p initrd/bin
       cp psplash initrd/bin
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
       cd initrd && find . | cpio --quiet -o -H newc| lzma >>$SNAPCRAFT_PART_INSTALL/boot-assets/psplash.img

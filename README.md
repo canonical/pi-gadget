@@ -40,8 +40,7 @@ the "splash" and the "vt.handoff=2" keywords from the default kernel commandline
 
 To build the gadget snap locally on an armhf system please use `snapcraft`.
 
-To cross build this gadget snap on a PC please install the gcc-arm-linux-gnueabihf package
-before running `snapcraft`
+To cross build this gadget snap on a PC please run `snapcraft --target-arch=armhf`
 
 ## Launchpad Mirror and Automatic Builds.
 

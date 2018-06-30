@@ -1,5 +1,5 @@
 name: pi2
-version: 16.04-0.18
+version: 16.04-0.19
 summary: Raspberry Pi 2 support package
 description: |
  Support files for booting Raspberry Pi
@@ -10,7 +10,7 @@ confinement: strict
 grade: stable
 parts:
   uboot:
-    plugin: make
+    plugin: nil
     source: git://git.denx.de/u-boot.git
     source-branch: v2017.05
     prepare: |
@@ -18,10 +18,6 @@ parts:
       make rpi_2_defconfig
     build: |
       if [ "$(arch)" = "x86_64" ]; then
-        if [ ! -x /usr/bin/arm-linux-gnueabihf-gcc ]; then
-          echo "ERROR: You are cross building this snap, please install gcc-arm-linux-gnueabihf"
-          exit 1
-        fi
         CROSS_COMPILE=arm-linux-gnueabihf- make
       else
         make
@@ -37,6 +33,8 @@ parts:
       - device-tree-compiler
       - libpython2.7-dev
       - python-minimal
+      - on amd64 to armhf:
+          - gcc-arm-linux-gnueabihf:amd64
   boot-firmware:
     plugin: nil
     source: .

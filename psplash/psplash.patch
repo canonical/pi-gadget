@@ -42,6 +42,35 @@ index c1c7626..c672894 100644
  #define BAR_IMG_BYTES_PER_PIXEL (4) /* 3:RGB, 4:RGBA */
  #define BAR_IMG_RLE_PIXEL_DATA ((uint8*) \
    "\203\354\354\341\377\4\326\326\315\377\236\236\233\377\200\200\201\377" \
+diff --git a/psplash-colors.h b/psplash-colors.h
+index d701089..24a3a05 100644
+--- a/psplash-colors.h
++++ b/psplash-colors.h
+@@ -20,7 +20,7 @@
+ #define _HAVE_PSPLASH_COLORS_H
+ 
+ /* This is the overall background color */
+-#define PSPLASH_BACKGROUND_COLOR 0xec,0xec,0xe1
++#define PSPLASH_BACKGROUND_COLOR 0x00,0x00,0x00
+ 
+ /* This is the color of any text output */
+ #define PSPLASH_TEXT_COLOR 0x6d,0x6d,0x70
+diff --git a/psplash-config.h b/psplash-config.h
+index 82bb76d..7066311 100644
+--- a/psplash-config.h
++++ b/psplash-config.h
+@@ -26,9 +26,9 @@
+ #define PSPLASH_IMG_FULLSCREEN 0
+ 
+ /* Position of the image split from top edge, numerator of fraction */
+-#define PSPLASH_IMG_SPLIT_NUMERATOR 5
++#define PSPLASH_IMG_SPLIT_NUMERATOR 1
+ 
+ /* Position of the image split from top edge, denominator of fraction */
+-#define PSPLASH_IMG_SPLIT_DENOMINATOR 6
++#define PSPLASH_IMG_SPLIT_DENOMINATOR 1
+ 
+ #endif
 diff --git a/psplash.c b/psplash.c
 index 992e199..f518278 100644
 --- a/psplash.c

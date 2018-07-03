@@ -77,7 +77,7 @@ parts:
       - wget
   psplash:
     source: git://git.yoctoproject.org/psplash
-    plugin: make
+    plugin: nil
     prepare: |
       export TREE="../../../psplash"
       . ${TREE}/config
@@ -101,6 +101,12 @@ parts:
       else \
         ./configure; \
       fi
+    build: |
+      if [ "$(arch)" = "x86_64" ]; then \
+        CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm make; \
+      else \
+        make; \
+      fi \
     install: |
       rm -rf $SNAPCRAFT_PART_INSTALL/usr
       cp -a ../../../psplash/initrd .
@@ -119,6 +125,9 @@ parts:
       - cpio
       - findutils
       - xz-utils
+      - on amd64 to armhf:
+          - gcc-arm-linux-gnueabihf:amd64
+
 
 slots:
   bcm-gpio-0:

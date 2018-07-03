@@ -1,15 +1,15 @@
-name: pi2
-version: 16.04-0.19
-summary: Raspberry Pi 2 support package
+name: pi-kiosk
+version: 16-0.1
+summary: Raspberry Pi Kiosk support package
 description: |
- Support files for booting Raspberry Pi
+ Support files for booting Raspberry Pi in Kiosk mode
 type: gadget
 architectures:
   - armhf
 confinement: strict
 grade: stable
 parts:
-  uboot:
+  uboot-pi2:
     plugin: nil
     source: git://git.denx.de/u-boot.git
     source-branch: v2017.05
@@ -24,9 +24,33 @@ parts:
       fi
     install: |
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
-      cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/uboot.bin
+      cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/uboot2.bin
       tools/mkenvimage -r -s 131072 -o $SNAPCRAFT_PART_INSTALL/uboot.env ../../../uboot.env.in
       ln -s uboot.env $SNAPCRAFT_PART_INSTALL/uboot.conf
+    build-packages:
+      - bc
+      - build-essential
+      - device-tree-compiler
+      - libpython2.7-dev
+      - python-minimal
+      - on amd64 to armhf:
+          - gcc-arm-linux-gnueabihf:amd64
+  uboot-pi3:
+    plugin: nil
+    source: git://git.denx.de/u-boot.git
+    source-branch: v2017.05
+    prepare: |
+      git apply ../../../uboot.patch
+      make rpi_3_32b_defconfig
+    build: |
+      if [ "$(arch)" = "x86_64" ]; then
+        CROSS_COMPILE=arm-linux-gnueabihf- make
+      else
+        make
+      fi
+    install: |
+      mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
+      cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/uboot3.bin
     build-packages:
       - bc
       - build-essential
@@ -39,7 +63,8 @@ parts:
     plugin: nil
     source: .
     after:
-      - uboot
+      - uboot-pi2
+      - uboot-pi3
     prepare: |
       git clone --depth=1 https://github.com/raspberrypi/firmware.git -b "1.20170515"
     install: |

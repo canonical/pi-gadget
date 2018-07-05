@@ -8,6 +8,7 @@ device_tree=bcm2709-rpi-2-b.dtb
 [pi3]
 kernel=uboot3.bin
 device_tree=bcm2710-rpi-3-b.dtb
+enable_uart=1
 
 [all]
 # uncomment if you get no picture on HDMI for a default "safe" mode
@@ -59,6 +60,5 @@ dtparam=pwr_led_trigger=mmc0
 dtparam=audio=on
 
 device_tree_address=0x02000000
-core_freq=250
 
 dtoverlay=vc4-fkms-v3d,cma-256

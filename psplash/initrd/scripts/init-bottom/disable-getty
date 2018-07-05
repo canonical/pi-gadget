@@ -19,3 +19,19 @@ JOBDIR="${SYSTEMDDIR}/system"
 SERVICENAME="getty@tty1.service"
 
 [ -e "${JOBDIR}/${SERVICENAME}" ] || ln -s /dev/null "${JOBDIR}/${SERVICENAME}"
+
+SERVICENAME="end.psplash.service"
+if [ ! -e "${JOBDIR}/${SERVICENAME}" ]; then
+	cp "/scripts/init-bottom/${SERVICENAME}" "${JOBDIR}/${SERVICENAME}"
+	ln -s "/etc/systemd/system/${SERVICENAME}" "${JOBDIR}/multi-user.target.wants/${SERVICENAME}"
+fi
+
+# HACK to work around missing support for "connections:" in gadget.yaml
+# in ubuntu-image currently ... once this is fixed we can drop the hack
+SERVICENAME="kiosk.autoconnect.service"
+if [ ! -e "${JOBDIR}/${SERVICENAME}" ]; then
+	cp "/scripts/init-bottom/${SERVICENAME}" "${JOBDIR}/${SERVICENAME}"
+	ln -s "/etc/systemd/system/${SERVICENAME}" "${JOBDIR}/multi-user.target.wants/${SERVICENAME}"
+fi
+
+

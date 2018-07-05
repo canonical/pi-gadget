@@ -1,0 +1,10 @@
+[Unit]
+Description=Stop Splash Screen
+Before=snap.mir-kiosk.mir-kiosk.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/pkill psplash
+
+[Install]
+WantedBy=multi-user.target

@@ -4,10 +4,10 @@
 
 [pi2]
 kernel=uboot2.bin
-device_tree=bcm2709-rpi-2-b.dtb
+# device_tree=bcm2709-rpi-2-b.dtb
 [pi3]
 kernel=uboot3.bin
-device_tree=bcm2710-rpi-3-b.dtb
+# device_tree=bcm2710-rpi-3-b.dtb
 enable_uart=1
 
 [all]

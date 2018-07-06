@@ -27,8 +27,8 @@ https://github.com/snapcore/snapd/wiki/Gadget-snap
 
 ## Reporting Issues
 
-Please report all issues on the Launchpad project page
-https://bugs.launchpad.net/snap-pi2/+filebug
+Please report all issues here on the github page via:
+https://github.com/ogra1/pi-kiosk-gadget/issues
 
 We use Launchpad to track issues as this allows us to coordinate multiple
 projects better than what is available with Github issues.

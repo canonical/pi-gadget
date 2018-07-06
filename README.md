@@ -1,9 +1,15 @@
-# Raspberry Pi 2 Gadget Snap
+# Universal Raspberry Pi Kiosk Gadget Snap
 
-This repository contains the source for an Ubuntu Core gadget snap for the Raspberry Pi 2.
+This repository contains the source for an Ubuntu Core gadget snap that runs
+on all Raspberry Pi boards.
+
+It comes with a splash screen by default and produces a completely
+silent boot to be used in Kiosk setups (there is no login prompt and it is expected
+that a graphical kiosk app starts on screen after booting. Any low level interaction
+with the system needs to happen through a serial console).
 
 Building it with snapcraft will automatically pull, configure, patch and build
-the git.denx.de/u-boot.git upstream source for rpi_2_defconfig at release v2017.05,
+the git.denx.de/u-boot.git upstream source for the pi2 and 3 at release v2017.05,
 produce a u-boot.bin binary and put it inside the gadget.
 
 It will then download the latest stable binary boot firmware
@@ -41,15 +47,3 @@ the "splash" and the "vt.handoff=2" keywords from the default kernel commandline
 To build the gadget snap locally on an armhf system please use `snapcraft`.
 
 To cross build this gadget snap on a PC please run `snapcraft --target-arch=armhf`
-
-## Launchpad Mirror and Automatic Builds.
-
-All commits from the master branch of https://github.com/snapcore/pi2-gadget are
-automatically mirrored by Launchpad to the https://launchpad.net/snap-pi2
-project.
-
-The master branch is automatically built from the launchpad mirror and
-published into the snap store to the edge channel.
-
-You can find build history and other controls here:
-https://code.launchpad.net/~canonical-foundations/+snap/pi2

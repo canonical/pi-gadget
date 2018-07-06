@@ -22,8 +22,8 @@ devicetree and overlay files from it and add them to the gadget as well.
 ## Gadget Snaps
 
 Gadget snaps are a special type of snaps that contain device specific support
-code and data. You can read more about them in the snapd wiki
-https://github.com/snapcore/snapd/wiki/Gadget-snap
+code and data. You can read more about them in the snapcraft forum:
+https://forum.snapcraft.io/t/the-gadget-snap/
 
 ## Reporting Issues
 

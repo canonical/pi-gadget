@@ -3,9 +3,14 @@ version: 16-0.1
 summary: Raspberry Pi Kiosk support package
 description: |
  Support files for booting Raspberry Pi in Kiosk mode
+ This gadget snap supports the Pi2, Pi3 and the Compute
+ Module 3 devices universally.
+ Due to specific compiler requirements it can only be built
+ on amd64 systems (it will automatically core-build for ARM)
 type: gadget
 architectures:
-  - armhf
+  - build-on: amd64
+    run-on: armhf
 confinement: strict
 grade: stable
 parts:
@@ -13,16 +18,10 @@ parts:
     plugin: nil
     source: git://git.denx.de/u-boot.git
     source-branch: v2017.05
-    prepare: |
+    override-build: |
       git apply ../../../uboot.patch
       make rpi_2_defconfig
-    build: |
-      if [ "$(arch)" = "x86_64" ]; then
-        CROSS_COMPILE=arm-linux-gnueabihf- make
-      else
-        make
-      fi
-    install: |
+      CROSS_COMPILE=arm-linux-gnueabihf- make
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
       cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/uboot2.bin
       tools/mkenvimage -r -s 131072 -o $SNAPCRAFT_PART_INSTALL/uboot.env ../../../uboot.env.in
@@ -34,21 +33,21 @@ parts:
       - libpython2.7-dev
       - python-minimal
       - on amd64 to armhf:
-          - gcc-arm-linux-gnueabihf:amd64
+        - gcc-arm-linux-gnueabihf:amd64
   uboot-pi3:
     plugin: nil
     source: git://git.denx.de/u-boot.git
-    source-branch: v2017.05
-    prepare: |
-      git apply ../../../uboot.patch
+    source-tag: v2018.07-rc3
+    override-build: |
+      git apply ../../../uboot3.patch
       make rpi_3_32b_defconfig
-    build: |
-      if [ "$(arch)" = "x86_64" ]; then
-        CROSS_COMPILE=arm-linux-gnueabihf- make
-      else
-        make
-      fi
-    install: |
+      TCHAINVER="$(wget -q -O - \
+                 https://releases.linaro.org/components/toolchain/binaries/latest/arm-linux-gnueabihf/| \
+                 html2text -width 200|grep 'x86_64_arm-linux-gnueabihf.tar.xz '|cut -d' ' -f2)"
+      wget https://releases.linaro.org/components/toolchain/binaries/latest/arm-linux-gnueabihf/$TCHAINVER
+      tar xf $TCHAINVER
+      mv $(echo $TCHAINVER|sed 's/.tar.xz$//') toolchain
+      CROSS_COMPILE=$(pwd)/toolchain/bin/arm-linux-gnueabihf- make
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
       cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/uboot3.bin
     build-packages:
@@ -58,16 +57,15 @@ parts:
       - libpython2.7-dev
       - python-minimal
       - on amd64 to armhf:
-          - gcc-arm-linux-gnueabihf:amd64
+        - gcc-arm-linux-gnueabihf:amd64
   boot-firmware:
     plugin: nil
     source: .
     after:
       - uboot-pi2
       - uboot-pi3
-    prepare: |
+    override-build: |
       git clone --depth=1 https://github.com/raspberrypi/firmware.git -b "1.20170515"
-    install: |
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
       for file in fixup start bootcode LICENCE COPYING; do
         cp firmware/boot/${file}* $SNAPCRAFT_PART_INSTALL/boot-assets
@@ -85,13 +83,12 @@ parts:
     source: .
     after:
       - configs
-    prepare: |
+    override-build: |
       PACKAGES="http://ports.ubuntu.com/ubuntu-ports/dists/xenial-updates/universe/binary-armhf/Packages.gz"
       PKGPATH="$(wget -q -O- $PACKAGES|zcat|grep-dctrl linux-raspi2 |\
         grep linux-image|grep Filename|tail -1| sed 's/^Filename: //')"
       wget http://ports.ubuntu.com/ubuntu-ports/$PKGPATH
       dpkg -x $(basename $PKGPATH) unpack/
-    install: |
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
       cp -a unpack/lib/firmware/*/device-tree/* $SNAPCRAFT_PART_INSTALL/boot-assets
       rm -rf unpack
@@ -103,36 +100,22 @@ parts:
   psplash:
     source: git://git.yoctoproject.org/psplash
     plugin: nil
-    prepare: |
+    override-build: |
       export TREE="../../../psplash"
       . ${TREE}/config
-      if ! $(echo "$FONT"|grep -q ^/); then \
-         FONT="${TREE}/${FONT}"; \
+      if ! $(echo "$FONT"|grep -q ^/); then
+         FONT="${TREE}/${FONT}"
       fi
-      if ! $(echo "$SPLASH"|grep -q ^/); then \
-         SPLASH="${TREE}/${SPLASH}"; \
+      if ! $(echo "$SPLASH"|grep -q ^/); then
+         SPLASH="${TREE}/${SPLASH}"
       fi
       git apply ${TREE}/psplash.patch
       ${TREE}/font-gen.sh "$FONT"
       ./make-image-header.sh "$SPLASH" CORE psplash-core
       aclocal
       autoreconf --install
-      if [ "$(arch)" = "x86_64" ]; then \
-        if [ ! -x /usr/bin/arm-linux-gnueabihf-gcc ]; then \
-          echo "ERROR: You are cross building this snap, please install gcc-arm-linux-gnueabihf"
-          exit 1; \
-        fi
-        ./configure --host=arm-linux CC=/usr/bin/arm-linux-gnueabihf-gcc; \
-      else \
-        ./configure; \
-      fi
-    build: |
-      if [ "$(arch)" = "x86_64" ]; then \
-        CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm make; \
-      else \
-        make; \
-      fi \
-    install: |
+      ./configure --host=arm-linux CC=/usr/bin/arm-linux-gnueabihf-gcc
+      CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm make
       rm -rf $SNAPCRAFT_PART_INSTALL/usr
       cp -a ../../../psplash/initrd .
       mkdir -p initrd/bin
@@ -151,7 +134,7 @@ parts:
       - findutils
       - xz-utils
       - on amd64 to armhf:
-          - gcc-arm-linux-gnueabihf:amd64
+        - gcc-arm-linux-gnueabihf:amd64
 
 
 slots:

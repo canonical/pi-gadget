@@ -1,5 +1,5 @@
 diff --git a/include/configs/rpi.h b/include/configs/rpi.h
-index 5caf90a..781a665 100644
+index 5caf90a..2dd2c41 100644
 --- a/include/configs/rpi.h
 +++ b/include/configs/rpi.h
 @@ -105,7 +105,7 @@
@@ -11,16 +11,22 @@ index 5caf90a..781a665 100644
  #define CONFIG_ENV_IS_IN_FAT
  #define FAT_ENV_INTERFACE		"mmc"
  #define FAT_ENV_DEVICE_AND_PART		"0:1"
-@@ -113,7 +113,7 @@
+@@ -113,7 +113,13 @@
  #define CONFIG_FAT_WRITE
  #define CONFIG_ENV_VARS_UBOOT_CONFIG
  #define CONFIG_SYS_LOAD_ADDR		0x1000000
 -#define CONFIG_PREBOOT			"usb start"
 +#define CONFIG_SYS_REDUNDAND_ENVIRONMENT
++
++/* Load environment from USB if no SD card */
++#define CONFIG_PREBOOT			"usb start; if test ! \"mmc dev 0\"; then " \
++	"fatload usb 0:1 0x3000000 "FAT_ENV_FILE"; " \
++	"env import -b 0x3000000; " \
++	"fi;"
  
  /* Shell */
  #define CONFIG_SYS_MAXARGS		16
-@@ -123,6 +123,7 @@
+@@ -123,6 +129,7 @@
  #define CONFIG_SETUP_MEMORY_TAGS
  #define CONFIG_CMDLINE_TAG
  #define CONFIG_INITRD_TAG

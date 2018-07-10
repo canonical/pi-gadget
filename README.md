@@ -39,11 +39,11 @@ This gadget snap comes with a boot splash. To change the logo you can add a new 
 the psplash subdirectory of this tree, adjust the "SPLASH=" option in psplash/config to
 point to this file and rebuild the gadget.
 
-To turn off the splash screen completely please edit config/cmdline.txt and remove
+To turn off the splash screen completely please edit configs/cmdline.txt and remove
 the `splash` and the `vt.handoff=2` keywords from the default kernel commandline.
 
 By default all tty's on HDMI are disabled (you can still configure the system via serial console).
-To turn this feature off, remove the keyword `nogetty` from cmdline.txt, this will bring back a
+To turn this feature off, remove the keyword `nogetty` from configs/cmdline.txt, this will bring back a
 text console on the HDMI screen.
 
 ## Building

@@ -1,7 +1,8 @@
 # Universal Raspberry Pi Kiosk Gadget Snap
 
 This repository contains the source for an Ubuntu Core gadget snap that runs
-on all Raspberry Pi boards.
+universally on all Raspberry Pi boards currently supported by Ubuntu Core (Pi2,
+Pi3, Compute Module 3).
 
 It comes with a splash screen by default and produces a completely
 silent boot to be used in Kiosk setups (there is no login prompt and it is expected
@@ -9,8 +10,8 @@ that a graphical kiosk app starts on screen after booting. Any low level interac
 with the system needs to happen through a serial console).
 
 Building it with snapcraft will automatically pull, configure, patch and build
-the git.denx.de/u-boot.git upstream source for the pi2 and 3 at release v2017.05,
-produce a u-boot.bin binary and put it inside the gadget.
+the git.denx.de/u-boot.git upstream source for the pi2 at release tag v2017.05
+(for pi3/cm3 at tag v2018.07), produce a u-boot.bin binary and put it inside the gadget.
 
 It will then download the latest stable binary boot firmware
 from https://github.com/raspberrypi/firmware/tree/stable/boot and add it to the gadget.
@@ -42,8 +43,11 @@ point to this file and rebuild the gadget.
 To turn off the splash screen completely please edit config/cmdline.txt and remove
 the "splash" and the "vt.handoff=2" keywords from the default kernel commandline.
 
+By default all tty's on HDMI are disabled (you can still configure the system via serial console).
+To turn this feature off, remove the keyword `nogetty` from cmdline.txt, this will bring back a
+text console on the HDMI screen.
+
 ## Building
 
-To build the gadget snap locally on an armhf system please use `snapcraft`.
-
-To cross build this gadget snap on a PC please run `snapcraft --target-arch=armhf`
+This gadget snap can only be cross built on an amd64 machine. To do so, just run `snapcraft`
+in the top level of the source tree after cloning it.

@@ -12,13 +12,18 @@ case "$1" in
 esac
 
 #
-# disable getty on tty1 to quiten down the console
+# disable getty on tty1 to quiten down the console if
+# the "nogetty" keyword is set in cmdline.txt
 #
 SYSTEMDDIR="/root/writable/system-data/etc/systemd"
 JOBDIR="${SYSTEMDDIR}/system"
 SERVICENAME="getty@tty1.service"
 
-[ -e "${JOBDIR}/${SERVICENAME}" ] || ln -s /dev/null "${JOBDIR}/${SERVICENAME}"
+if grep -q " nogetty " /proc/cmdline; then
+    [ -e "${JOBDIR}/${SERVICENAME}" ] || ln -s /dev/null "${JOBDIR}/${SERVICENAME}"
+else
+	rm -f "${JOBDIR}/${SERVICENAME}" || true
+fi
 
 SERVICENAME="end.psplash.service"
 if [ ! -e "${JOBDIR}/${SERVICENAME}" ]; then

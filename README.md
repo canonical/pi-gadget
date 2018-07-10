@@ -19,6 +19,8 @@ from https://github.com/raspberrypi/firmware/tree/stable/boot and add it to the 
 Last it will pull the latest linux-image-raspi2 from the xenial-updates archive, extract the
 devicetree and overlay files from it and add them to the gadget as well.
 
+The splash screen included comes from git://git.yoctoproject.org/psplash. Please see the
+psplash/ sub directory for patches and adjustments in use.
 
 ## Gadget Snaps
 
@@ -31,12 +33,9 @@ https://forum.snapcraft.io/t/the-gadget-snap/
 Please report all issues here on the github page via:
 https://github.com/ogra1/pi-kiosk-gadget/issues
 
-We use Launchpad to track issues as this allows us to coordinate multiple
-projects better than what is available with Github issues.
-
 ## Branding
 
-This gadget snap comes with a boot splash, to change the logo you can add a new png file to
+This gadget snap comes with a boot splash. To change the logo you can add a new png file to
 the psplash subdirectory of this tree, adjust the "SPLASH=" option in psplash/config to
 point to this file and rebuild the gadget.
 
@@ -50,4 +49,4 @@ text console on the HDMI screen.
 ## Building
 
 This gadget snap can only be cross built on an amd64 machine. To do so, just run `snapcraft`
-in the top level of the source tree after cloning it.
+in the top level of the source tree after cloning it to a PC.

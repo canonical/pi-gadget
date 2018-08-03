@@ -1,5 +1,7 @@
 #! /bin/sh
 
+set -e
+
 # TTF to font.h generator
 
 if [ "$#" -ne 1 ]; then

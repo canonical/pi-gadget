@@ -11,32 +11,9 @@ case "$1" in
     ;;
 esac
 
-#
-# disable getty on tty1 to quiten down the console if
-# the "nogetty" keyword is set in cmdline.txt
-#
-SYSTEMDDIR="/root/writable/system-data/etc/systemd"
-JOBDIR="${SYSTEMDDIR}/system"
-SERVICENAME="getty@tty1.service"
-
-if ! grep -q " nogetty " /proc/cmdline; then
-    [ -e "${JOBDIR}/${SERVICENAME}" ] || ln -s /dev/null "${JOBDIR}/${SERVICENAME}"
-else
-	rm -f "${JOBDIR}/${SERVICENAME}" || true
-fi
 
 SERVICENAME="end.psplash.service"
 if [ ! -e "${JOBDIR}/${SERVICENAME}" ]; then
-	cp "/scripts/init-bottom/${SERVICENAME}" "${JOBDIR}/${SERVICENAME}"
-	ln -s "/etc/systemd/system/${SERVICENAME}" "${JOBDIR}/multi-user.target.wants/${SERVICENAME}"
+       cp "/scripts/init-bottom/${SERVICENAME}" "${JOBDIR}/${SERVICENAME}"
+       ln -s "/etc/systemd/system/${SERVICENAME}" "${JOBDIR}/multi-user.target.wants/${SERVICENAME}"
 fi
-
-# HACK to work around missing support for "connections:" in gadget.yaml
-# in ubuntu-image currently ... once this is fixed we can drop the hack
-SERVICENAME="kiosk.autoconnect.service"
-if [ ! -e "${JOBDIR}/${SERVICENAME}" ]; then
-	cp "/scripts/init-bottom/${SERVICENAME}" "${JOBDIR}/${SERVICENAME}"
-	ln -s "/etc/systemd/system/${SERVICENAME}" "${JOBDIR}/multi-user.target.wants/${SERVICENAME}"
-fi
-
-

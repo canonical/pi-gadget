@@ -54,6 +54,7 @@ parts:
       - bc
       - build-essential
       - device-tree-compiler
+      - html2text
       - libpython2.7-dev
       - python-minimal
       - on amd64 to armhf:

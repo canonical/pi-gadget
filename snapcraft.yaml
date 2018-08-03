@@ -1,12 +1,12 @@
-name: pi-kiosk
-version: 16-0.1
-summary: Raspberry Pi Kiosk support package
+name: pi
+version: 18-0.1
+summary: Raspberry Pi gadget
 description: |
- Support files for booting Raspberry Pi in Kiosk mode
+ Support files for booting Raspberry Pi.
  This gadget snap supports the Pi2, Pi3 and the Compute
  Module 3 devices universally.
  Due to specific compiler requirements it can only be built
- on amd64 systems (it will automatically core-build for ARM)
+ on amd64 systems (it will automatically build for ARM)
 type: gadget
 architectures:
   - build-on: amd64
@@ -65,7 +65,7 @@ parts:
       - uboot-pi2
       - uboot-pi3
     override-build: |
-      git clone --depth=1 https://github.com/raspberrypi/firmware.git -b "1.20170515"
+      git clone --depth=1 https://github.com/raspberrypi/firmware.git -b "1.20180619"
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
       for file in fixup start bootcode LICENCE COPYING; do
         cp firmware/boot/${file}* $SNAPCRAFT_PART_INSTALL/boot-assets

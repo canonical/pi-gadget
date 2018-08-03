@@ -102,6 +102,7 @@ parts:
     source: git://git.yoctoproject.org/psplash
     plugin: nil
     override-build: |
+      set -x
       export TREE="../../../psplash"
       . ${TREE}/config
       if ! $(echo "$FONT"|grep -q ^/); then

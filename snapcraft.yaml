@@ -85,9 +85,9 @@ parts:
     after:
       - configs
     override-build: |
-      PACKAGES="http://ports.ubuntu.com/ubuntu-ports/dists/xenial-updates/universe/binary-armhf/Packages.gz"
+      PACKAGES="http://ports.ubuntu.com/ubuntu-ports/dists/bionic-updates/universe/binary-armhf/Packages.gz"
       PKGPATH="$(wget -q -O- $PACKAGES|zcat|grep-dctrl linux-raspi2 |\
-        grep linux-image|grep Filename|tail -1| sed 's/^Filename: //')"
+        grep linux-modules|grep Filename|tail -1| sed 's/^Filename: //')"
       wget http://ports.ubuntu.com/ubuntu-ports/$PKGPATH
       dpkg -x $(basename $PKGPATH) unpack/
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets

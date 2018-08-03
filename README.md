@@ -1,22 +1,20 @@
-# Universal Raspberry Pi Kiosk Gadget Snap
+# Universal Raspberry Pi Gadget Snap
 
 This repository contains the source for an Ubuntu Core gadget snap that runs
 universally on all Raspberry Pi boards currently supported by Ubuntu Core (Pi2,
 Pi3, Compute Module 3).
 
 It comes with a splash screen by default and produces a completely
-silent boot to be used in Kiosk setups (there is no login prompt and it is expected
-that a graphical kiosk app starts on screen after booting. Any low level interaction
-with the system needs to happen through a serial console).
 
+silent boot.
 Building it with snapcraft will automatically pull, configure, patch and build
 the git.denx.de/u-boot.git upstream source for the pi2 at release tag v2017.05
 (for pi3/cm3 at tag v2018.07), produce a u-boot.bin binary and put it inside the gadget.
 
-It will then download the latest stable binary boot firmware
+It will then download the stable binary boot firmware with tag 20180619
 from https://github.com/raspberrypi/firmware/tree/stable/boot and add it to the gadget.
 
-Last it will pull the latest linux-image-raspi2 from the xenial-updates archive, extract the
+Last it will pull the latest linux-image-raspi2 from the bionic-updates archive, extract the
 devicetree and overlay files from it and add them to the gadget as well.
 
 The splash screen included comes from git://git.yoctoproject.org/psplash. Please see the

@@ -29,7 +29,7 @@ https://forum.snapcraft.io/t/the-gadget-snap/
 ## Reporting Issues
 
 Please report all issues here on the github page via:
-https://github.com/ogra1/pi-kiosk-gadget/issues
+https://github.com/snapcore/pi-gadget/issues
 
 ## Branding
 
@@ -39,10 +39,6 @@ point to this file and rebuild the gadget.
 
 To turn off the splash screen completely please edit configs/cmdline.txt and remove
 the `splash` and the `vt.handoff=2` keywords from the default kernel commandline.
-
-By default all tty's on HDMI are disabled (you can still configure the system via serial console).
-To turn this feature off, remove the keyword `nogetty` from configs/cmdline.txt, this will bring back a
-text console on the HDMI screen.
 
 ## Building
 

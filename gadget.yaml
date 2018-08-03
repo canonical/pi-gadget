@@ -1,9 +1,6 @@
 device-tree: bcm2709-rpi-2-b
-#connections:
-#  - plug: pKicqh8BMdA6Y6jbtWYBdI2QwhRH4v6T:wayland-socket-dir
-#    slot: rW4inp7UbJb1YBxWr6SVebxa3Yv7K1Vm:wayland-socket-dir
 volumes:
-  pi-kiosk:
+  pi:
     schema: mbr
     bootloader: u-boot
     structure:

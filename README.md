@@ -4,9 +4,8 @@ This repository contains the source for an Ubuntu Core gadget snap that runs
 universally on all Raspberry Pi boards currently supported by Ubuntu Core (Pi2,
 Pi3, Compute Module 3).
 
-It comes with a splash screen by default and produces a completely
+It comes with a splash screen by default and produces a completely silent boot.
 
-silent boot.
 Building it with snapcraft will automatically pull, configure, patch and build
 the git.denx.de/u-boot.git upstream source for the pi2 at release tag v2017.05
 (for pi3/cm3 at tag v2018.07), produce a u-boot.bin binary and put it inside the gadget.

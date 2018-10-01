@@ -1,0 +1,24 @@
+language: python
+python:
+  - "3.5"
+dist: xenial
+
+env:
+  global:
+    - URL=http://cdimage.ubuntu.com/ubuntu-base/bionic/daily/current/bionic-base-amd64.tar.gz
+    - CHROOT=bionic-chroot
+    - LC_ALL=C.UTF-8
+    - LANG=C.UTF-8
+
+install:
+  - mkdir -p $CHROOT/build
+  - wget -q -O - $URL | zcat - | sudo tar x -C $CHROOT
+  - sudo cp /etc/resolv.conf $CHROOT/etc
+  - sudo mount --bind /dev $CHROOT/dev
+  - sudo sed -i '/^deb/s/$/ universe/' $CHROOT/etc/apt/sources.list
+  - sudo chroot $CHROOT apt update
+  - sudo chroot $CHROOT apt install -y snapcraft gcc-arm-linux-gnueabihf
+  - find . -mindepth 1 -maxdepth 1 -not -name "$CHROOT" | sudo xargs cp -a --target-dir="$CHROOT/build"
+
+script:
+  - sudo chroot $CHROOT sh -c 'mount -t proc proc /proc; mount -t sysfs sys /sys; cd build; snapcraft'

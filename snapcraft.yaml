@@ -66,7 +66,7 @@ parts:
       - uboot-pi2
       - uboot-pi3
     override-build: |
-      git clone --depth=1 https://github.com/raspberrypi/firmware.git -b "1.20180619"
+      git clone --depth=1 https://github.com/raspberrypi/firmware.git -b "1.20180919"
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
       for file in fixup start bootcode LICENCE COPYING; do
         cp firmware/boot/${file}* $SNAPCRAFT_PART_INSTALL/boot-assets

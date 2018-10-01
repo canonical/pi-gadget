@@ -27,6 +27,8 @@ parts:
       tools/mkenvimage -r -s 131072 -o $SNAPCRAFT_PART_INSTALL/uboot.env ../../../uboot.env.in
       ln -s uboot.env $SNAPCRAFT_PART_INSTALL/uboot.conf
     build-packages:
+      - bison
+      - flex
       - bc
       - build-essential
       - device-tree-compiler
@@ -51,6 +53,8 @@ parts:
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
       cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/uboot3.bin
     build-packages:
+      - bison
+      - flex
       - bc
       - build-essential
       - device-tree-compiler

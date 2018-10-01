@@ -120,7 +120,7 @@ parts:
       ./make-image-header.sh "$SPLASH" CORE psplash-core
       aclocal
       autoreconf --install
-      ./configure --host=arm-linux CC=/usr/bin/arm-linux-gnueabihf-gcc
+      ./configure --build= x86_64-linux-gnu --host=arm-linux CC=/usr/bin/arm-linux-gnueabihf-gcc || cat config.log
       CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm make
       rm -rf $SNAPCRAFT_PART_INSTALL/usr
       cp -a ../../../psplash/initrd .

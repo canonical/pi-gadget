@@ -34,8 +34,8 @@ parts:
       - device-tree-compiler
       - libpython2.7-dev
       - python-minimal
-      - on amd64 to armhf:
-        - gcc-arm-linux-gnueabihf:amd64
+      - on amd64:
+        - gcc-arm-linux-gnueabihf
   uboot-pi3:
     plugin: nil
     source: git://git.denx.de/u-boot.git
@@ -61,8 +61,8 @@ parts:
       - html2text
       - libpython2.7-dev
       - python-minimal
-      - on amd64 to armhf:
-        - gcc-arm-linux-gnueabihf:amd64
+      - on amd64:
+        - gcc-arm-linux-gnueabihf
   boot-firmware:
     plugin: nil
     source: .

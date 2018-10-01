@@ -102,6 +102,9 @@ parts:
       - dctrl-tools
       - sed
       - wget
+      - on amd64:
+        - gcc-arm-linux-gnueabihf
+        - libc6-dev-armhf-cross
   psplash:
     source: git://git.yoctoproject.org/psplash
     plugin: nil

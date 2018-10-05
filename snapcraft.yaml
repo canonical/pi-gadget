@@ -8,6 +8,7 @@ description: |
  Due to specific compiler requirements it can only be built
  on amd64 systems (it will automatically build for ARM)
 type: gadget
+base: core18
 architectures:
   - build-on: amd64
     run-on: armhf

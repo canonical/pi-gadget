@@ -45,7 +45,7 @@ parts:
       git apply ../../../uboot3.patch
       make rpi_3_32b_defconfig
       TCHAINVER="$(wget -q -O - \
-                 https://releases.linaro.org/components/toolchain/binaries/latest/arm-linux-gnueabihf/| \
+                 https://releases.linaro.org/components/toolchain/binaries/latest-7/arm-linux-gnueabihf/| \
                  html2text -width 200|grep 'x86_64_arm-linux-gnueabihf.tar.xz '|cut -d' ' -f2)"
       wget https://releases.linaro.org/components/toolchain/binaries/latest/arm-linux-gnueabihf/$TCHAINVER
       tar xf $TCHAINVER

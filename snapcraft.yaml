@@ -70,7 +70,8 @@ parts:
       dpkg -x $(basename $PKGPATH) unpack/
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
       cp -a unpack/lib/firmware/*/device-tree/* $SNAPCRAFT_PART_INSTALL/boot-assets
-      cp -a unpack/lib/firmware/*/device-tree/broadcom/*.dtb $SNAPCRAFT_PART_INSTALL
+      # 64bit uboot needs this for some reason
+      cp -a unpack/lib/firmware/*/device-tree/broadcom/*.dtb $SNAPCRAFT_PART_INSTALL/boot-assets
       rm -rf unpack
     build-packages:
       - coreutils

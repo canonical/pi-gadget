@@ -11,48 +11,22 @@ type: gadget
 base: core18
 architectures:
   - build-on: amd64
-    run-on: armhf
+    run-on: [arm64]
 confinement: strict
 grade: stable
 parts:
-  uboot-pi2:
-    plugin: nil
-    source: git://git.denx.de/u-boot.git
-    source-branch: v2017.05
-    override-build: |
-      git apply ../../../uboot.patch
-      make rpi_2_defconfig
-      CROSS_COMPILE=arm-linux-gnueabihf- make
-      mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
-      cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/uboot2.bin
-      tools/mkenvimage -r -s 131072 -o $SNAPCRAFT_PART_INSTALL/uboot.env ../../../uboot.env.in
-      ln -s uboot.env $SNAPCRAFT_PART_INSTALL/uboot.conf
-    build-packages:
-      - bison
-      - flex
-      - bc
-      - build-essential
-      - device-tree-compiler
-      - libpython2.7-dev
-      - python-minimal
-      - on amd64:
-        - gcc-arm-linux-gnueabihf
   uboot-pi3:
     plugin: nil
     source: git://git.denx.de/u-boot.git
     source-tag: v2018.07-rc3
     override-build: |
       git apply ../../../uboot3.patch
-      make rpi_3_32b_defconfig
-      TCHAINVER="$(wget -q -O - \
-                 https://releases.linaro.org/components/toolchain/binaries/latest/arm-linux-gnueabihf/| \
-                 html2text -width 200|grep 'x86_64_arm-linux-gnueabihf.tar.xz '|cut -d' ' -f2)"
-      wget https://releases.linaro.org/components/toolchain/binaries/latest/arm-linux-gnueabihf/$TCHAINVER
-      tar xf $TCHAINVER
-      mv $(echo $TCHAINVER|sed 's/.tar.xz$//') toolchain
-      CROSS_COMPILE=$(pwd)/toolchain/bin/arm-linux-gnueabihf- make
+      make rpi_3_defconfig
+      CROSS_COMPILE=aarch64-linux-gnu- make
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
-      cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/uboot3.bin
+      cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/kernel8.img
+      tools/mkenvimage -r -s 131072 -o $SNAPCRAFT_PART_INSTALL/uboot.env ../../../uboot.env.in
+      ln -s uboot.env $SNAPCRAFT_PART_INSTALL/uboot.conf
     build-packages:
       - bison
       - flex
@@ -68,7 +42,6 @@ parts:
     plugin: nil
     source: .
     after:
-      - uboot-pi2
       - uboot-pi3
     override-build: |
       git clone --depth=1 https://github.com/raspberrypi/firmware.git -b "1.20180919"
@@ -90,13 +63,14 @@ parts:
     after:
       - configs
     override-build: |
-      PACKAGES="http://ports.ubuntu.com/ubuntu-ports/dists/bionic-updates/universe/binary-armhf/Packages.gz"
+      PACKAGES="http://ports.ubuntu.com/ubuntu-ports/dists/bionic-updates/universe/binary-arm64/Packages.gz"
       PKGPATH="$(wget -q -O- $PACKAGES|zcat|grep-dctrl linux-raspi2 |\
         grep linux-modules|grep Filename|tail -1| sed 's/^Filename: //')"
       wget http://ports.ubuntu.com/ubuntu-ports/$PKGPATH
       dpkg -x $(basename $PKGPATH) unpack/
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
       cp -a unpack/lib/firmware/*/device-tree/* $SNAPCRAFT_PART_INSTALL/boot-assets
+      cp -a unpack/lib/firmware/*/device-tree/broadcom/*.dtb $SNAPCRAFT_PART_INSTALL
       rm -rf unpack
     build-packages:
       - coreutils
@@ -125,7 +99,7 @@ parts:
       aclocal
       autoreconf --install
       ./configure --build= x86_64-linux-gnu --host=arm-linux CC=/usr/bin/arm-linux-gnueabihf-gcc || cat config.log
-      CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm make
+      CROSS_COMPILE=aarch-linux-gnu- ARCH=arm64 make
       rm -rf $SNAPCRAFT_PART_INSTALL/usr
       cp -a ../../../psplash/initrd .
       mkdir -p initrd/bin

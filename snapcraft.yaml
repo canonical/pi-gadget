@@ -37,7 +37,7 @@ parts:
       - libpython2.7-dev
       - python-minimal
       - on amd64:
-        - gcc-arm-linux-gnueabihf
+        - gcc-aarch64-linux-gnu:amd64
   boot-firmware:
     plugin: nil
     source: .
@@ -79,8 +79,8 @@ parts:
       - sed
       - wget
       - on amd64:
-        - gcc-arm-linux-gnueabihf
-        - libc6-dev-armhf-cross
+        - gcc-aarch64-linux-gnu:amd64
+        - libc6-dev-arm64-cross:amd64
   psplash:
     source: git://git.yoctoproject.org/psplash
     plugin: nil
@@ -119,7 +119,7 @@ parts:
       - findutils
       - xz-utils
       - on amd64 to armhf:
-        - gcc-arm-linux-gnueabihf:amd64
+        - gcc-aarch64-linux-gnu:amd64
 
 
 slots:

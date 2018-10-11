@@ -44,13 +44,7 @@ parts:
     override-build: |
       git apply ../../../uboot3.patch
       make rpi_3_32b_defconfig
-      TCHAINVER="$(wget -q -O - \
-                 https://releases.linaro.org/components/toolchain/binaries/latest/arm-linux-gnueabihf/| \
-                 html2text -width 200|grep 'x86_64_arm-linux-gnueabihf.tar.xz '|cut -d' ' -f2)"
-      wget https://releases.linaro.org/components/toolchain/binaries/latest/arm-linux-gnueabihf/$TCHAINVER
-      tar xf $TCHAINVER
-      mv $(echo $TCHAINVER|sed 's/.tar.xz$//') toolchain
-      CROSS_COMPILE=$(pwd)/toolchain/bin/arm-linux-gnueabihf- make
+      CROSS_COMPILE=arm-linux-gnueabihf- make
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
       cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/uboot3.bin
     build-packages:

@@ -8,6 +8,7 @@ description: |
  Due to specific compiler requirements it can only be built
  on amd64 systems (it will automatically build for ARM)
 type: gadget
+base: core18
 architectures:
   - build-on: amd64
     run-on: armhf
@@ -34,8 +35,8 @@ parts:
       - device-tree-compiler
       - libpython2.7-dev
       - python-minimal
-      - on amd64 to armhf:
-        - gcc-arm-linux-gnueabihf:amd64
+      - on amd64:
+        - gcc-arm-linux-gnueabihf
   uboot-pi3:
     plugin: nil
     source: git://git.denx.de/u-boot.git
@@ -43,13 +44,7 @@ parts:
     override-build: |
       git apply ../../../uboot3.patch
       make rpi_3_32b_defconfig
-      TCHAINVER="$(wget -q -O - \
-                 https://releases.linaro.org/components/toolchain/binaries/latest/arm-linux-gnueabihf/| \
-                 html2text -width 200|grep 'x86_64_arm-linux-gnueabihf.tar.xz '|cut -d' ' -f2)"
-      wget https://releases.linaro.org/components/toolchain/binaries/latest/arm-linux-gnueabihf/$TCHAINVER
-      tar xf $TCHAINVER
-      mv $(echo $TCHAINVER|sed 's/.tar.xz$//') toolchain
-      CROSS_COMPILE=$(pwd)/toolchain/bin/arm-linux-gnueabihf- make
+      CROSS_COMPILE=arm-linux-gnueabihf- make
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
       cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/uboot3.bin
     build-packages:
@@ -61,8 +56,8 @@ parts:
       - html2text
       - libpython2.7-dev
       - python-minimal
-      - on amd64 to armhf:
-        - gcc-arm-linux-gnueabihf:amd64
+      - on amd64:
+        - gcc-arm-linux-gnueabihf
   boot-firmware:
     plugin: nil
     source: .
@@ -102,6 +97,9 @@ parts:
       - dctrl-tools
       - sed
       - wget
+      - on amd64:
+        - gcc-arm-linux-gnueabihf
+        - libc6-dev-armhf-cross
   psplash:
     source: git://git.yoctoproject.org/psplash
     plugin: nil
@@ -120,7 +118,7 @@ parts:
       ./make-image-header.sh "$SPLASH" CORE psplash-core
       aclocal
       autoreconf --install
-      ./configure --host=arm-linux CC=/usr/bin/arm-linux-gnueabihf-gcc
+      ./configure --build= x86_64-linux-gnu --host=arm-linux CC=/usr/bin/arm-linux-gnueabihf-gcc || cat config.log
       CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm make
       rm -rf $SNAPCRAFT_PART_INSTALL/usr
       cp -a ../../../psplash/initrd .

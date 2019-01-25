@@ -1,14 +1,14 @@
-# Universal Raspberry Pi Gadget Snap
+# Raspberry Pi 3 64-bit Gadget Snap
 
 This repository contains the source for an Ubuntu Core gadget snap that runs
-universally on all Raspberry Pi boards currently supported by Ubuntu Core (Pi2,
-Pi3, Compute Module 3).
+universally on all Raspberry Pi 3 boards currently supported by Ubuntu Core
+(Pi3, Compute Module 3).
 
 It comes with a splash screen by default and produces a completely silent boot.
 
 Building it with snapcraft will automatically pull, configure, patch and build
-the git.denx.de/u-boot.git upstream source for the pi2 at release tag v2017.05
-(for pi3/cm3 at tag v2018.07), produce a u-boot.bin binary and put it inside the gadget.
+the git.denx.de/u-boot.git upstream source for the for pi3/cm3 at tag v2018.07,
+produce a u-boot.bin binary and put it inside the gadget.
 
 It will then download the stable binary boot firmware with tag 20180619
 from https://github.com/raspberrypi/firmware/tree/stable/boot and add it to the gadget.
@@ -28,7 +28,7 @@ https://forum.snapcraft.io/t/the-gadget-snap/
 ## Reporting Issues
 
 Please report all issues here on the github page via:
-https://github.com/snapcore/pi-gadget/issues
+https://github.com/CanonicalLtd/pi-gadget/issues
 
 ## Branding
 

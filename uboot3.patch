@@ -13,7 +13,7 @@ index 9ce41767a9..fbec105a11 100644
 +#define CONFIG_SYS_REDUNDAND_ENVIRONMENT
 +/* Load environment from USB if no SD card */
 +#define CONFIG_PREBOOT			"usb start; if test ! \"mmc dev 0\"; then " \
-+	"fatload usb 0:1 0x3000000 "CONFIG_ENV_FAT_FILE,"; " \
++	"fatload usb 0:1 0x3000000 "CONFIG_ENV_FAT_FILE"; " \
 +	"env import -b 0x3000000; " \
 +	"fi;"
  

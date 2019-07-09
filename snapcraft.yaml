@@ -4,7 +4,9 @@ summary: Raspberry Pi gadget
 description: |
  Support files for booting Raspberry Pi.
  This gadget snap supports the Pi2, Pi3 and the Compute
- Module 3 devices.
+ Module 3 devices universally.
+ Due to specific compiler requirements it can only be built
+ on amd64 systems (it will automatically build for ARM)
 type: gadget
 base: core18
 architectures:

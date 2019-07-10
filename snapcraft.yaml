@@ -16,7 +16,7 @@ parts:
   uboot-pi3:
     plugin: nil
     source: git://git.denx.de/u-boot.git
-    source-tag: v2018.07-rc3
+    source-tag: v2019.04
     override-build: |
       git apply ../../../uboot3.patch
       make rpi_3_defconfig

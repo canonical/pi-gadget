@@ -17,7 +17,8 @@ install:
   - sudo mount --bind /dev $CHROOT/dev
   - sudo sed -i '/^deb/s/$/ universe/' $CHROOT/etc/apt/sources.list
   - sudo chroot $CHROOT apt update
-  - sudo chroot $CHROOT apt install -y snapcraft
+  - sudo chroot $CHROOT apt install -y snapd
+  - sudo chroot $CHROOT snap install snapcraft --classic
   - find . -mindepth 1 -maxdepth 1 -not -name "$CHROOT" | sudo xargs cp -a --target-dir="$CHROOT/build"
 
 script:

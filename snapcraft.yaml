@@ -20,12 +20,12 @@ parts:
     source: git://git.denx.de/u-boot.git
     source-branch: v2017.05
     override-build: |
-      git apply ../../../uboot.patch
+      git apply ../../../project/uboot.patch
       make rpi_2_defconfig
       CROSS_COMPILE=arm-linux-gnueabihf- make
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
       cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/uboot2.bin
-      tools/mkenvimage -r -s 131072 -o $SNAPCRAFT_PART_INSTALL/uboot.env ../../../uboot.env.in
+      tools/mkenvimage -r -s 131072 -o $SNAPCRAFT_PART_INSTALL/uboot.env ../../../project/uboot.env.in
       ln -s uboot.env $SNAPCRAFT_PART_INSTALL/uboot.conf
     build-packages:
       - bison
@@ -42,7 +42,7 @@ parts:
     source: git://git.denx.de/u-boot.git
     source-tag: v2019.04
     override-build: |
-      git apply ../../../uboot3.patch
+      git apply ../../../project/uboot3.patch
       make rpi_3_32b_defconfig
       CROSS_COMPILE=arm-linux-gnueabihf- make
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
@@ -105,7 +105,7 @@ parts:
     plugin: nil
     override-build: |
       set -x
-      export TREE="../../../psplash"
+      export TREE="../../../project/psplash"
       . ${TREE}/config
       if ! $(echo "$FONT"|grep -q ^/); then
          FONT="${TREE}/${FONT}"
@@ -121,7 +121,7 @@ parts:
       ./configure --build= x86_64-linux-gnu --host=arm-linux CC=/usr/bin/arm-linux-gnueabihf-gcc || cat config.log
       CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm make
       rm -rf $SNAPCRAFT_PART_INSTALL/usr
-      cp -a ../../../psplash/initrd .
+      cp -a ../../../project/psplash/initrd .
       mkdir -p initrd/bin
       cp psplash initrd/bin
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets

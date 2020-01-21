@@ -40,7 +40,7 @@ parts:
   uboot-pi3:
     plugin: nil
     source: git://git.denx.de/u-boot.git
-    source-tag: v2019.07
+    source-tag: v2019.10
     override-build: |
       git apply $SNAPCRAFT_PROJECT_DIR/uboot3.patch
       make rpi_3_32b_defconfig

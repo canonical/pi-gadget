@@ -12,5 +12,9 @@ env:
     - LC_ALL=C.UTF-8
     - LANG=C.UTF-8
 
+install:
+  - sudo sed -i '/^deb/s/$/ universe/' /etc/apt/sources.list
+  - sudo apt-get update
+
 script:
   - sudo snapcraft --destructive-mode

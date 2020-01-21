@@ -40,7 +40,7 @@ parts:
   uboot-pi3:
     plugin: nil
     source: git://git.denx.de/u-boot.git
-    source-tag: v2019.04
+    source-tag: v2019.07
     override-build: |
       git apply ../../../project/uboot3.patch
       make rpi_3_32b_defconfig
@@ -65,7 +65,7 @@ parts:
       - uboot-pi2
       - uboot-pi3
     override-build: |
-      git clone --depth=1 https://github.com/raspberrypi/firmware.git -b "1.20190215"
+      git clone --depth=1 https://github.com/raspberrypi/firmware.git -b "1.20190819"
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
       for file in fixup start bootcode LICENCE COPYING; do
         cp firmware/boot/${file}* $SNAPCRAFT_PART_INSTALL/boot-assets

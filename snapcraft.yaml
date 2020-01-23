@@ -86,6 +86,7 @@ parts:
     after:
       - uboot-pi2
       - uboot-pi3
+      - uboot-pi4
     override-build: |
       git clone --depth=1 https://github.com/raspberrypi/firmware.git -b "1.20190819"
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets

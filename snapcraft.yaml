@@ -58,6 +58,28 @@ parts:
       - python-minimal
       - on amd64:
         - gcc-arm-linux-gnueabihf
+  uboot-pi3:
+    plugin: nil
+    source: git://git.denx.de/u-boot.git
+    source-tag: v2019.10
+    override-build: |
+      git apply $SNAPCRAFT_PROJECT_DIR/uboot3.patch
+      make rpi_4_32b_defconfig
+      CROSS_COMPILE=arm-linux-gnueabihf- make
+      mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
+      cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/uboot4.bin
+    build-packages:
+      - bison
+      - flex
+      - bc
+      - build-essential
+      - device-tree-compiler
+      - html2text
+      - libpython2.7-dev
+      - python-minimal
+      - on amd64:
+        - gcc-arm-linux-gnueabihf
+
   boot-firmware:
     plugin: nil
     source: .

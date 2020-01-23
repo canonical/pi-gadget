@@ -2,6 +2,9 @@
 # http://www.raspberrypi.org/documentation/configuration/config-txt.md
 # Some settings may impact device functionality. See link above for details
 
+[pi4]
+kernel=uboot4.bin
+max_framebuffers=2
 [pi2]
 kernel=uboot2.bin
 # device_tree=bcm2709-rpi-2-b.dtb

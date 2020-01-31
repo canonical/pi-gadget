@@ -1,5 +1,5 @@
 name: pi
-version: 18-1
+version: 18-2
 summary: Raspberry Pi gadget
 description: |
  Support files for booting Raspberry Pi.

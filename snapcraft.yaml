@@ -3,110 +3,43 @@ version: 18-1
 summary: Raspberry Pi gadget
 description: |
  Support files for booting Raspberry Pi.
- This gadget snap supports the Pi2, Pi3 and the Compute
- Module 3 devices universally.
- Due to specific compiler requirements it can only be built
- on amd64 systems (it will automatically build for ARM)
+ This gadget snap supports the Raspberry Pi 2B, 3B, 3A+, 3B+, 4B, Compute
+ Module 3, and the Compute Module 3+ universally.
 type: gadget
 base: core18
 architectures:
-  - build-on: amd64
+  - build-on: [amd64, armhf, arm64]
     run-on: armhf
 confinement: strict
 grade: stable
 parts:
-  uboot-pi2:
+  gadget:
     plugin: nil
-    source: git://git.denx.de/u-boot.git
-    source-branch: v2017.05
     override-build: |
-      git apply $SNAPCRAFT_PROJECT_DIR/uboot.patch
-      make rpi_2_defconfig
-      CROSS_COMPILE=arm-linux-gnueabihf- make
-      mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
-      cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/uboot2.bin
-      tools/mkenvimage -r -s 131072 -o $SNAPCRAFT_PART_INSTALL/uboot.env $SNAPCRAFT_PROJECT_DIR/uboot.env.in
-      ln -s uboot.env $SNAPCRAFT_PART_INSTALL/uboot.conf
+      if [ "$(arch)" != "arm64" -a "$(arch)" != "armhf" ]; then
+        echo "Cross compilation detected; using pre-defined sources list"
+        OPTIONAL_ARGS="SOURCES_HOST=\"./helpers/sources.list.cross\""
+        ARCH=armhf
+      else
+        ARCH=$(dpkg-architecture -t$SNAPCRAFT_ARCH_TRIPLET -qDEB_HOST_ARCH)
+      fi
+      make -C ${SNAPCRAFT_PROJECT_DIR:-.} core \
+        DESTDIR=$SNAPCRAFT_PART_INSTALL \
+        ARCH=$ARCH \
+        ${OPTIONAL_ARGS:-}
+    prime:
+      - boot-assets/*
+      - uboot.env
+      - uboot.conf
     build-packages:
-      - bison
-      - flex
-      - bc
-      - build-essential
-      - device-tree-compiler
-      - libpython2.7-dev
-      - python-minimal
-      - on amd64:
-        - gcc-arm-linux-gnueabihf
-  uboot-pi3:
-    plugin: nil
-    source: git://git.denx.de/u-boot.git
-    source-tag: v2019.04
-    override-build: |
-      git apply $SNAPCRAFT_PROJECT_DIR/uboot3.patch
-      make rpi_3_32b_defconfig
-      CROSS_COMPILE=arm-linux-gnueabihf- make
-      mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
-      cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/uboot3.bin
-    build-packages:
-      - bison
-      - flex
-      - bc
-      - build-essential
-      - device-tree-compiler
-      - html2text
-      - libpython2.7-dev
-      - python-minimal
-      - on amd64:
-        - gcc-arm-linux-gnueabihf
-  boot-firmware:
-    plugin: nil
-    source: .
-    after:
-      - uboot-pi2
-      - uboot-pi3
-    override-build: |
-      git clone --depth=1 https://github.com/raspberrypi/firmware.git -b "1.20190215"
-      mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
-      for file in fixup start bootcode LICENCE COPYING; do
-        cp firmware/boot/${file}* $SNAPCRAFT_PART_INSTALL/boot-assets
-      done
-  configs:
-    plugin: dump
-    source: configs
-    after:
-      - boot-firmware
-    organize:
-      config.txt: boot-assets/config.txt
-      cmdline.txt: boot-assets/cmdline.txt
-  devicetrees:
-    plugin: nil
-    source: .
-    after:
-      - configs
-    override-build: |
-      PACKAGES="http://ports.ubuntu.com/ubuntu-ports/dists/bionic-updates/universe/binary-armhf/Packages.gz"
-      PKGPATH="$(wget -q -O- $PACKAGES|zcat|grep-dctrl linux-raspi2 |\
-        grep linux-modules|grep Filename|tail -1| sed 's/^Filename: //')"
-      wget http://ports.ubuntu.com/ubuntu-ports/$PKGPATH
-      dpkg -x $(basename $PKGPATH) unpack/
-      mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
-      cp -a unpack/lib/firmware/*/device-tree/* $SNAPCRAFT_PART_INSTALL/boot-assets
-      rm -rf unpack
-    build-packages:
-      - coreutils
-      - dctrl-tools
-      - sed
-      - wget
-      - on amd64:
-        - gcc-arm-linux-gnueabihf
-        - libc6-dev-armhf-cross
+      - u-boot-tools
   psplash:
     source: git://git.yoctoproject.org/psplash
     source-commit: 2015f7073e98dd9562db0936a254af5ef56356cf
     plugin: nil
     override-build: |
       set -x
-      export TREE="$SNAPCRAFT_PROJECT_DIR/psplash"
+      export TREE="${SNAPCRAFT_PROJECT_DIR:-.}/psplash"
       . ${TREE}/config
       if ! $(echo "$FONT"|grep -q ^/); then
          FONT="${TREE}/${FONT}"
@@ -122,7 +55,7 @@ parts:
       ./configure --build= x86_64-linux-gnu --host=arm-linux CC=/usr/bin/arm-linux-gnueabihf-gcc || cat config.log
       CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm make
       rm -rf $SNAPCRAFT_PART_INSTALL/usr
-      cp -a $SNAPCRAFT_PROJECT_DIR/psplash/initrd .
+      cp -a ${SNAPCRAFT_PROJECT_DIR:-.}/psplash/initrd .
       mkdir -p initrd/bin
       cp psplash initrd/bin
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
@@ -138,8 +71,9 @@ parts:
       - cpio
       - findutils
       - xz-utils
-      - on amd64 to armhf:
-        - gcc-arm-linux-gnueabihf:amd64
+      - libc-dev
+      - on amd64:
+        - gcc-arm-linux-gnueabihf
 
 
 slots:

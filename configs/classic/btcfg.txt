@@ -1,0 +1,4 @@
+# See "nobtcfg.txt" for further information.
+
+enable_uart=0
+cmdline=btcmd.txt

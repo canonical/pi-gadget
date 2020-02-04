@@ -19,15 +19,20 @@ parts:
       if [ "$(arch)" != "arm64" -a "$(arch)" != "armhf" ]; then
         echo "Cross compilation detected; using pre-defined sources list"
         OPTIONAL_ARGS="SOURCES_HOST=\"./helpers/sources.list.cross\""
+        ARCH=armhf
+      else
+        ARCH=$(dpkg-architecture -t$SNAPCRAFT_ARCH_TRIPLET -qDEB_HOST_ARCH)
       fi
       make -C ${SNAPCRAFT_PROJECT_DIR:-.} core \
         DESTDIR=$SNAPCRAFT_PART_INSTALL \
-        ARCH=$(dpkg-architecture -t$SNAPCRAFT_ARCH_TRIPLET -qDEB_HOST_ARCH) \
+        ARCH=$ARCH \
         ${OPTIONAL_ARGS:-}
     prime:
       - boot-assets/*
       - uboot.env
       - uboot.conf
+    build-packages:
+      - u-boot-tools
   psplash:
     source: git://git.yoctoproject.org/psplash
     source-commit: 2015f7073e98dd9562db0936a254af5ef56356cf
@@ -66,8 +71,8 @@ parts:
       - cpio
       - findutils
       - xz-utils
-      - on amd64 to armhf:
-        - gcc-arm-linux-gnueabihf:amd64
+      - on amd64:
+        - gcc-arm-linux-gnueabihf
 
 
 slots:

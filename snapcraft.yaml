@@ -33,6 +33,7 @@ parts:
       - uboot.conf
     build-packages:
       - u-boot-tools
+      - lsb-release
   psplash:
     source: git://git.yoctoproject.org/psplash
     source-commit: 2015f7073e98dd9562db0936a254af5ef56356cf

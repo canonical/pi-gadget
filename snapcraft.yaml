@@ -71,6 +71,7 @@ parts:
       - cpio
       - findutils
       - xz-utils
+      - libc-dev
       - on amd64:
         - gcc-arm-linux-gnueabihf
 

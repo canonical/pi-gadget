@@ -18,12 +18,13 @@ parts:
     override-build: |
       if [ "$(arch)" != "aarch64" -a "$(arch)" != "arm7l" ]; then
         echo "Cross compilation detected; using pre-defined sources list"
-        OPTIONAL_ARGS="SOURCES_HOST=\"./helpers/sources.list.cross\""
+        SOURCES_HOST="./helpers/sources.list.cross"
+      else
+        SOURCES_HOST="/etc/apt/sources.list"
       fi
-      make -C ${SNAPCRAFT_PROJECT_DIR:-.} core \
-        DESTDIR=${SNAPCRAFT_PART_INSTALL} \
+      DESTDIR=${SNAPCRAFT_PART_INSTALL} \
         ARCH=$(dpkg-architecture -t "${SNAPCRAFT_ARCH_TRIPLET}" -q DEB_HOST_ARCH) \
-        ${OPTIONAL_ARGS:-}
+        SOURCES_HOST=${SOURCES_HOST} make -C ${SNAPCRAFT_PROJECT_DIR:-.} core
     prime:
       - boot-assets/*
       - uboot.env

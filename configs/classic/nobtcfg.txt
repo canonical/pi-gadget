@@ -1,0 +1,11 @@
+# This configuration file sets the system up to support the serial console on
+# GPIOs 14 & 15. This is the default for Ubuntu on the Pi, but disables the use
+# of the Bluetooth module.
+#
+# If you wish to disable the serial console and use Bluetooth instead, install
+# the "pi-bluetooth" package then edit "syscfg.txt" to include "btcfg.txt"
+# instead of "nobtcfg.txt"
+
+enable_uart=1
+cmdline=nobtcmd.txt
+#dtoverlay=pi3-disable-bt

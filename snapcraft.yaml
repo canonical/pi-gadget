@@ -3,89 +3,44 @@ version: 18-1
 summary: Raspberry Pi gadget
 description: |
  Support files for booting Raspberry Pi.
- This gadget snap supports the Pi2, Pi3 and the Compute
- Module 3 devices universally.
+ This gadget snap supports the Raspberry Pi 2B, 3B, 3A+, 3B+, 4B, Compute
+ Module 3, and the Compute Module 3+ universally.
 type: gadget
 base: core18
 architectures:
-  - build-on: amd64
-    run-on: [arm64]
+  - build-on: [amd64, armhf, arm64]
+    run-on: armhf
 confinement: strict
 grade: stable
 parts:
-  uboot-pi3:
+  gadget:
     plugin: nil
-    source: git://git.denx.de/u-boot.git
-    source-tag: v2019.04
     override-build: |
-      git apply $SNAPCRAFT_PROJECT_DIR/uboot3.patch
-      make rpi_3_defconfig
-      CROSS_COMPILE=aarch64-linux-gnu- make
-      mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
-      cp u-boot.bin $SNAPCRAFT_PART_INSTALL/boot-assets/kernel8.img
-      tools/mkenvimage -r -s 131072 -o $SNAPCRAFT_PART_INSTALL/uboot.env $SNAPCRAFT_PROJECT_DIR/uboot.env.in
-      ln -s uboot.env $SNAPCRAFT_PART_INSTALL/uboot.conf
+      if [ "$(arch)" != "arm64" -a "$(arch)" != "armhf" ]; then
+        echo "Cross compilation detected; using pre-defined sources list"
+        OPTIONAL_ARGS="SOURCES_HOST=\"./helpers/sources.list.cross\""
+        ARCH=armhf
+      else
+        ARCH=$(dpkg-architecture -t$SNAPCRAFT_ARCH_TRIPLET -qDEB_HOST_ARCH)
+      fi
+      make -C ${SNAPCRAFT_PROJECT_DIR:-.} core \
+        DESTDIR=$SNAPCRAFT_PART_INSTALL \
+        ARCH=$ARCH \
+        ${OPTIONAL_ARGS:-}
+    prime:
+      - boot-assets/*
+      - uboot.env
+      - uboot.conf
     build-packages:
-      - bison
-      - flex
-      - bc
-      - build-essential
-      - device-tree-compiler
-      - html2text
-      - libpython2.7-dev
-      - python-minimal
-      - on amd64:
-        - gcc-aarch64-linux-gnu:amd64
-  boot-firmware:
-    plugin: nil
-    source: .
-    after:
-      - uboot-pi3
-    override-build: |
-      git clone --depth=1 https://github.com/raspberrypi/firmware.git -b "1.20190215"
-      mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
-      for file in fixup start bootcode LICENCE COPYING; do
-        cp firmware/boot/${file}* $SNAPCRAFT_PART_INSTALL/boot-assets
-      done
-  configs:
-    plugin: dump
-    source: configs
-    after:
-      - boot-firmware
-    organize:
-      config.txt: boot-assets/config.txt
-      cmdline.txt: boot-assets/cmdline.txt
-  devicetrees:
-    plugin: nil
-    source: .
-    after:
-      - configs
-    override-build: |
-      PACKAGES="http://ports.ubuntu.com/ubuntu-ports/dists/bionic-updates/universe/binary-arm64/Packages.gz"
-      PKGPATH="$(wget -q -O- $PACKAGES|zcat|grep-dctrl linux-raspi2 |\
-        grep linux-modules|grep Filename|tail -1| sed 's/^Filename: //')"
-      wget http://ports.ubuntu.com/ubuntu-ports/$PKGPATH
-      dpkg -x $(basename $PKGPATH) unpack/
-      mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
-      cp -a unpack/lib/firmware/*/device-tree/* $SNAPCRAFT_PART_INSTALL/boot-assets
-      # 64bit uboot needs this for some reason
-      cp -a unpack/lib/firmware/*/device-tree/broadcom/*.dtb $SNAPCRAFT_PART_INSTALL/boot-assets
-      rm -rf unpack
-    build-packages:
-      - coreutils
-      - dctrl-tools
-      - sed
-      - wget
-      - on amd64:
-        - gcc-aarch64-linux-gnu:amd64
-        - libc6-dev-arm64-cross:amd64
+      - u-boot-tools
+      - lsb-release
   psplash:
     source: git://git.yoctoproject.org/psplash
     source-commit: 2015f7073e98dd9562db0936a254af5ef56356cf
     plugin: nil
     override-build: |
       set -x
-      export TREE="$SNAPCRAFT_PROJECT_DIR/psplash"
+      export TREE="${SNAPCRAFT_PROJECT_DIR:-.}/psplash"
       . ${TREE}/config
       if ! $(echo "$FONT"|grep -q ^/); then
          FONT="${TREE}/${FONT}"
@@ -101,11 +56,11 @@ parts:
       ./configure --build=x86_64-linux-gnu --host=aarch64-linux-gnu CC=/usr/bin/aarch64-linux-gnu-gcc || cat config.log
       CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 make
       rm -rf $SNAPCRAFT_PART_INSTALL/usr
-      cp -a $SNAPCRAFT_PROJECT_DIR/psplash/initrd .
+      cp -a ${SNAPCRAFT_PROJECT_DIR:-.}/psplash/initrd .
       mkdir -p initrd/bin
       cp psplash initrd/bin
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
-      cd initrd && find . | cpio --quiet -o -H newc| lzma >>$SNAPCRAFT_PART_INSTALL/boot-assets/psplash.img
+      cd initrd && find . | cpio --quiet -o -H newc | lzma >>$SNAPCRAFT_PART_INSTALL/boot-assets/psplash.img
     build-packages:
       - libgdk-pixbuf2.0-dev
       - automake
@@ -117,8 +72,13 @@ parts:
       - cpio
       - findutils
       - xz-utils
+      - libc-dev
+      - on amd64 to arm64:
+        - gcc-aarch64-linux-gnu
+        - libc6-dev-arm64-cross
       - on amd64 to armhf:
-        - gcc-aarch64-linux-gnu:amd64
+        - gcc-arm-linux-gnueabihf
+        - libc6-dev-armhf-cross
 
 
 slots:

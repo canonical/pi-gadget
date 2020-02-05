@@ -16,7 +16,7 @@ parts:
   gadget:
     plugin: nil
     override-build: |
-      if [ "$(arch)" != "aarch64" -a "$(arch)" != "arm7l" ]; then
+      if [ "$(arch)" != "aarch64" -a "$(arch)" != "armv7l" ]; then
         echo "Cross compilation detected; using pre-defined sources list"
         SOURCES_HOST="./helpers/sources.list.cross"
       else

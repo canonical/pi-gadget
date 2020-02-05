@@ -1,19 +1,19 @@
-STAGEDIR ?= "$(CURDIR)/stage"
-DESTDIR ?= "$(CURDIR)/install"
+STAGEDIR ?= $(CURDIR)/stage
+DESTDIR ?= $(CURDIR)/install
 ARCH ?= $(shell dpkg --print-architecture)
-SERIES ?= "bionic"
+SERIES ?= bionic
 
 ifeq ($(ARCH),arm64)
-	MKIMAGE_ARCH := "arm64"
+	MKIMAGE_ARCH := arm64
 else ifeq ($(ARCH),armhf)
-	MKIMAGE_ARCH := "arm"
+	MKIMAGE_ARCH := arm
 else
 	$(error Build architecture is not supported)
 endif
 
 SERIES_HOST ?= $(shell lsb_release --codename --short)
-SOURCES_HOST ?= "/etc/apt/sources.list"
-SOURCES_MULTIVERSE := "$(STAGEDIR)/apt/multiverse.sources.list"
+SOURCES_HOST ?= /etc/apt/sources.list
+SOURCES_MULTIVERSE := $(STAGEDIR)/apt/multiverse.sources.list
 
 # Download the latest version of package $1 for architecture $(ARCH), unpacking
 # it into $(STAGEDIR). For example, the following invocation will download the

@@ -16,16 +16,18 @@ parts:
   gadget:
     plugin: nil
     override-build: |
+      which snapcraft
+      echo "${SNAPCRAFT_ARCH_TRIPLET}"
       if [ "$(arch)" != "aarch64" -a "$(arch)" != "armv7l" ]; then
         echo "Cross compilation detected; using pre-defined sources list"
-        SOURCES_HOST="./helpers/sources.list.cross"
+        export SOURCES_HOST="./helpers/sources.list.cross"
         dpkg-architecture -t "${SNAPCRAFT_ARCH_TRIPLET}"
       else
-        SOURCES_HOST="/etc/apt/sources.list"
+        export SOURCES_HOST="/etc/apt/sources.list"
       fi
-      DESTDIR=${SNAPCRAFT_PART_INSTALL} \
-        ARCH=$(dpkg-architecture -t "${SNAPCRAFT_ARCH_TRIPLET}" -q DEB_HOST_ARCH) \
-        SOURCES_HOST=${SOURCES_HOST} make -C ${SNAPCRAFT_PROJECT_DIR:-.} core
+      export DESTDIR=${SNAPCRAFT_PART_INSTALL}
+      export ARCH=$(dpkg-architecture -t "${SNAPCRAFT_ARCH_TRIPLET}" -q DEB_HOST_ARCH)
+      make -C ${SNAPCRAFT_PROJECT_DIR:-.} core
     prime:
       - boot-assets/*
       - uboot.env

@@ -9,7 +9,7 @@ MKIMAGE_ARCH := arm64
 else ifeq ($(ARCH),armhf)
 MKIMAGE_ARCH := arm
 else
-$(error Build architecture "$(ARCH)" is not supported (OLD_ARCH=$(OLDARCH))
+$(error Build architecture "$(ARCH)" is not supported; OLD_ARCH=$(OLDARCH))
 endif
 
 SERIES_HOST ?= $(shell lsb_release --codename --short)

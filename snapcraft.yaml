@@ -8,7 +8,7 @@ description: |
 type: gadget
 base: core18
 architectures:
-  - build-on: [amd64, armhf, arm64]
+  - build-on: amd64
     run-on: armhf
 confinement: strict
 grade: stable
@@ -16,16 +16,13 @@ parts:
   gadget:
     plugin: nil
     override-build: |
-      if [ "$(arch)" != "arm64" -a "$(arch)" != "armhf" ]; then
+      if [ "$(arch)" != "aarch64" -a "$(arch)" != "arm7l" ]; then
         echo "Cross compilation detected; using pre-defined sources list"
         OPTIONAL_ARGS="SOURCES_HOST=\"./helpers/sources.list.cross\""
-        ARCH=armhf
-      else
-        ARCH=$(dpkg-architecture -t$SNAPCRAFT_ARCH_TRIPLET -qDEB_HOST_ARCH)
       fi
       make -C ${SNAPCRAFT_PROJECT_DIR:-.} core \
-        DESTDIR=$SNAPCRAFT_PART_INSTALL \
-        ARCH=$ARCH \
+        DESTDIR=${SNAPCRAFT_PART_INSTALL} \
+        ARCH=$(dpkg-architecture -t "${SNAPCRAFT_ARCH_TRIPLET}" -q DEB_HOST_ARCH) \
         ${OPTIONAL_ARGS:-}
     prime:
       - boot-assets/*
@@ -42,25 +39,35 @@ parts:
       set -x
       export TREE="${SNAPCRAFT_PROJECT_DIR:-.}/psplash"
       . ${TREE}/config
-      if ! $(echo "$FONT"|grep -q ^/); then
-         FONT="${TREE}/${FONT}"
+      if ! $(echo "$FONT" | grep -q ^/); then
+        FONT="${TREE}/${FONT}"
       fi
-      if ! $(echo "$SPLASH"|grep -q ^/); then
-         SPLASH="${TREE}/${SPLASH}"
+      if ! $(echo "$SPLASH" | grep -q ^/); then
+        SPLASH="${TREE}/${SPLASH}"
       fi
       git apply ${TREE}/psplash.patch
       ${TREE}/font-gen.sh "$FONT"
       ./make-image-header.sh "$SPLASH" CORE psplash-core
       aclocal
       autoreconf --install
-      ./configure --build= x86_64-linux-gnu --host=arm-linux CC=/usr/bin/arm-linux-gnueabihf-gcc || cat config.log
-      CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm make
+      if ! dpkg-architecture -t "${SNAPCRAFT_ARCH_TRIPLET}" -e \
+          $(dpkg-architecture -q DEB_BUILD_ARCH)
+      then
+        export CROSS_COMPILE=$(dpkg-architecture \
+          -t "${SNAPCRAFT_ARCH_TRIPLET}" -q DEB_HOST_GNU_TYPE)-
+      else
+        export CROSS_COMPILE=
+      fi
+      ./configure --build=$(dpkg-architecture -q DEB_BUILD_GNU_TYPE) \
+        --host=${SNAPCRAFT_ARCH_TRIPLET} CC=${CROSS_COMPILE}gcc || cat config.log
+      ARCH=$(dpkg-architecture -t "${SNAPCRAFT_ARCH_TRIPLET}" -q DEB_HOST_ARCH) make
       rm -rf $SNAPCRAFT_PART_INSTALL/usr
       cp -a ${SNAPCRAFT_PROJECT_DIR:-.}/psplash/initrd .
       mkdir -p initrd/bin
       cp psplash initrd/bin
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
-      cd initrd && find . | cpio --quiet -o -H newc| lzma >>$SNAPCRAFT_PART_INSTALL/boot-assets/psplash.img
+      cd initrd && find . | cpio --quiet -o -H newc | lzma >> \
+        "${SNAPCRAFT_PART_INSTALL}/boot-assets/psplash.img"
     build-packages:
       - libgdk-pixbuf2.0-dev
       - automake
@@ -73,9 +80,12 @@ parts:
       - findutils
       - xz-utils
       - libc-dev
-      - on amd64:
-        - gcc-arm-linux-gnueabihf
-        - libc6-dev-armhf-cross
+      - on amd64 to arm64:
+        - gcc-aarch64-linux-gnu:amd64
+        - libc6-dev-arm64-cross:amd64
+      - on amd64 to armhf:
+        - gcc-arm-linux-gnueabihf:amd64
+        - libc6-dev-armhf-cross:amd64
 
 
 slots:

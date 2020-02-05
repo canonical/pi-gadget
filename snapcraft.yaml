@@ -19,6 +19,7 @@ parts:
       if [ "$(arch)" != "aarch64" -a "$(arch)" != "armv7l" ]; then
         echo "Cross compilation detected; using pre-defined sources list"
         SOURCES_HOST="./helpers/sources.list.cross"
+        dpkg-architecture -t "${SNAPCRAFT_ARCH_TRIPLET}"
       else
         SOURCES_HOST="/etc/apt/sources.list"
       fi

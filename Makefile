@@ -1,6 +1,8 @@
+OLD_ARCH := $(ARCH)
 STAGEDIR ?= $(CURDIR)/stage
 DESTDIR ?= $(CURDIR)/install
 ARCH ?= $(shell dpkg --print-architecture)
+NEW_ARCH := $(ARCH)
 SERIES ?= bionic
 
 ifeq ($(ARCH),arm64)
@@ -56,6 +58,11 @@ firmware: multiverse $(DESTDIR)/boot-assets
 # work-around that by actually enabling multiverse just for this one build here
 # as we need it for linux-firmware-raspi2.
 multiverse:
+	arch
+	dpkg --print-architecture
+	echo SNAPCRAFT_ARCH_TRIPLET=$(SNAPCRAFT_ARCH_TRIPLET)
+	echo OLD_ARCH=$(OLD_ARCH)
+	echo NEW_ARCH=$(NEW_ARCH)
 	mkdir -p $(STAGEDIR)/apt
 	cp $(SOURCES_HOST) $(SOURCES_MULTIVERSE)
 	sed -i "/^deb/ s/\b$(SERIES_HOST)/$(SERIES)/" $(SOURCES_MULTIVERSE)

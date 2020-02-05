@@ -9,7 +9,7 @@ type: gadget
 base: core18
 architectures:
   - build-on: amd64
-    run-on: arm64
+    run-on: armhf
 confinement: strict
 grade: stable
 parts:

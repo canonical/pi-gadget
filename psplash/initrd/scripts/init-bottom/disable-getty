@@ -22,16 +22,18 @@ if grep -q nosubiquity /proc/cmdline; then
         fi
 fi
 
-SERVICENAME="getty@tty1.service"
-if ! grep -q " nogetty " /proc/cmdline; then
+if grep -q nogetty /proc/cmdline; then
     [ -d "${JOBDIR}/getty.target.wants" ] || mkdir -p "${JOBDIR}/getty.target.wants"
-    [ -e "${JOBDIR}/getty.target.wants/${SERVICENAME}" ] || ln -s /dev/null "${JOBDIR}/getty.target.wants/${SERVICENAME}"
+    for i in 1 2 3 4 5 6; do
+        ln -sf /dev/null ${JOBDIR}/getty.target.wants/getty\@tty${i}.service || true
+    done
 else
-    rm -f "${JOBDIR}/getty.target.wants/${SERVICENAME}" || true
+    ln -sf /lib/systemd/system/getty@.service ${JOBDIR}/getty.target.wants/getty\@tty1.service || true
 fi
 
 SERVICENAME="end.psplash.service"
 if [ ! -e "${JOBDIR}/${SERVICENAME}" ]; then
+       [ -d "${JOBDIR}/multi-user.target.wants" ] || mkdir -p "${JOBDIR}/multi-user.target.wants"
        cp "/scripts/init-bottom/${SERVICENAME}" "${JOBDIR}/${SERVICENAME}" || true
-       ln -s "/etc/systemd/system/${SERVICENAME}" "${JOBDIR}/multi-user.target.wants/${SERVICENAME}" || true
+       ln -sif "/etc/systemd/system/${SERVICENAME}" "${JOBDIR}/multi-user.target.wants/${SERVICENAME}" || true
 fi

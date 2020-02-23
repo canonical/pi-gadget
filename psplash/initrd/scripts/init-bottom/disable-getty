@@ -24,16 +24,17 @@ fi
 
 if grep -q nogetty /proc/cmdline; then
     [ -d "${JOBDIR}/getty.target.wants" ] || mkdir -p "${JOBDIR}/getty.target.wants"
-    for i in 1 2 3 4 5 6; do
-        ln -sf /dev/null ${JOBDIR}/getty.target.wants/getty\@tty${i}.service || true
-    done
+    ln -sf /dev/null ${JOBDIR}/getty.target.wants/getty\@tty1.service || true
+    echo "[Login]" >${SYSTEMDDIR}/logind.conf.d/nottys.conf || true
+    echo "NAutoVTs=0" >>${SYSTEMDDIR}/logind.conf.d/nottys.conf || true
 else
     ln -sf /lib/systemd/system/getty@.service ${JOBDIR}/getty.target.wants/getty\@tty1.service || true
+    rm -f ${SYSTEMDDIR}/logind.conf.d/nottys.conf || true
 fi
 
 SERVICENAME="end.psplash.service"
 if [ ! -e "${JOBDIR}/${SERVICENAME}" ]; then
        [ -d "${JOBDIR}/multi-user.target.wants" ] || mkdir -p "${JOBDIR}/multi-user.target.wants"
        cp "/scripts/init-bottom/${SERVICENAME}" "${JOBDIR}/${SERVICENAME}" || true
-       ln -sif "/etc/systemd/system/${SERVICENAME}" "${JOBDIR}/multi-user.target.wants/${SERVICENAME}" || true
+       ln -sf "/etc/systemd/system/${SERVICENAME}" "${JOBDIR}/multi-user.target.wants/${SERVICENAME}" || true
 fi

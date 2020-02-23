@@ -11,9 +11,19 @@ case "$1" in
     ;;
 esac
 
+FSROOT="/root/writable/system-data"
+SYSTEMDDIR="${FSROOT}/etc/systemd"
+JOBDIR="${SYSTEMDDIR}/system"
+
+if grep -q nosubiquity /proc/cmdline; then
+        if [ ! -e "${FSROOT}/var/lib/console-conf/complete" ]; then
+                mkdir -p "${FSROOT}/var/lib/console-conf" || true
+                touch "${FSROOT}/var/lib/console-conf/complete" || true
+        fi
+fi
 
 SERVICENAME="end.psplash.service"
 if [ ! -e "${JOBDIR}/${SERVICENAME}" ]; then
-       cp "/scripts/init-bottom/${SERVICENAME}" "${JOBDIR}/${SERVICENAME}"
-       ln -s "/etc/systemd/system/${SERVICENAME}" "${JOBDIR}/multi-user.target.wants/${SERVICENAME}"
+       cp "/scripts/init-bottom/${SERVICENAME}" "${JOBDIR}/${SERVICENAME}" || true
+       ln -s "/etc/systemd/system/${SERVICENAME}" "${JOBDIR}/multi-user.target.wants/${SERVICENAME}" || true
 fi

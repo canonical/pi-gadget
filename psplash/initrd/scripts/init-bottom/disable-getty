@@ -27,6 +27,7 @@ if grep -q nogetty /proc/cmdline; then
     ln -sf /dev/null ${JOBDIR}/getty.target.wants/getty\@tty1.service || true
     echo "[Login]" >${SYSTEMDDIR}/logind.conf.d/nottys.conf || true
     echo "NAutoVTs=0" >>${SYSTEMDDIR}/logind.conf.d/nottys.conf || true
+    echo "ReserveVT=0" >>${SYSTEMDDIR}/logind.conf.d/nottys.conf || true
 else
     ln -sf /lib/systemd/system/getty@.service ${JOBDIR}/getty.target.wants/getty\@tty1.service || true
     rm -f ${SYSTEMDDIR}/logind.conf.d/nottys.conf || true

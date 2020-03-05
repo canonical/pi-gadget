@@ -11,11 +11,3 @@ volumes:
         content:
           - source: boot-assets/
             target: /
-
-defaults:
-  # mir-kiosk
-  rW4inp7UbJb1YBxWr6SVebxa3Yv7K1Vm:
-    cursor: none
-  # wpe-webkit-mir-kiosk
-  01sV9tv4UTUQTU3jYsAF1gJ5qv7ZqGls:
-    url: http://127.0.0.1

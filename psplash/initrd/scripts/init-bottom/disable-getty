@@ -15,13 +15,6 @@ FSROOT="/root/writable/system-data"
 SYSTEMDDIR="${FSROOT}/etc/systemd"
 JOBDIR="${SYSTEMDDIR}/system"
 
-if grep -q nosubiquity /proc/cmdline; then
-        if [ ! -e "${FSROOT}/var/lib/console-conf/complete" ]; then
-                mkdir -p "${FSROOT}/var/lib/console-conf" || true
-                touch "${FSROOT}/var/lib/console-conf/complete" || true
-        fi
-fi
-
 if grep -q nogetty /proc/cmdline; then
     [ -d "${JOBDIR}/getty.target.wants" ] || mkdir -p "${JOBDIR}/getty.target.wants"
     ln -sf /dev/null ${JOBDIR}/getty.target.wants/getty\@tty1.service || true

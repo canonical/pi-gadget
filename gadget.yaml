@@ -14,8 +14,8 @@ volumes:
             target: /
       - name: ubuntu-boot
         role: system-boot
-        filesystem: ext4
-        type: 83,0FC63DAF-8483-4772-8E79-3D69D8477DE4
+        filesystem: vfat
+        type: 0C
         # whats the appropriate size?
         size: 750M
         content:

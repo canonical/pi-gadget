@@ -214,3 +214,12 @@ slots:
   i2c-2:
     interface: i2c
     path: /dev/i2c-2
+  bt-serial:
+    interface: serial-port
+    path: /dev/ttyAMA0
+  spidev0:
+     interface: spi
+     path: /dev/spidev0.0
+  spidev1:
+     interface: spi
+     path: /dev/spidev0.1

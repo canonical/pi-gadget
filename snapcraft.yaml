@@ -26,7 +26,6 @@ parts:
         ${OPTIONAL_ARGS:-}
     prime:
       - boot-assets/*
-      - uboot.env
       - uboot.conf
     build-packages:
       - u-boot-tools

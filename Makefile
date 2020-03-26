@@ -72,9 +72,7 @@ uboot: $(DESTDIR)/boot-assets
 	done
 
 boot-core: $(DESTDIR)/boot-assets
-	mkenvimage -r -s 131072 -o $(DESTDIR)/uboot.env uboot.env.in
-	# XXX: What's this for? Insertion of the snap_kernel and snap_mode?
-	ln -s uboot.env $(DESTDIR)/uboot.conf
+	mkenvimage -r -s 131072 -o $(DESTDIR)/uboot.conf - < /dev/null
 	cp -a configs/core/config.txt.$(ARCH) $(DESTDIR)/boot-assets/config.txt
 	cp -a configs/core/cmdline.txt $(DESTDIR)/boot-assets/cmdline.txt
 

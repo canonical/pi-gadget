@@ -40,9 +40,9 @@ define stage_package
 endef
 
 
-classic: firmware uboot boot-classic device-trees gadget
+classic: firmware uboot boot-script config-classic device-trees gadget
 
-core: firmware uboot boot-core device-trees gadget
+core: firmware uboot boot-script config-core device-trees gadget
 
 firmware: multiverse $(DESTDIR)/boot-assets
 	$(call stage_package,linux-firmware-raspi2)
@@ -71,12 +71,7 @@ uboot: $(DESTDIR)/boot-assets
 			$(DESTDIR)/boot-assets/uboot_$${platform_path##*/}.bin; \
 	done
 
-boot-core: $(DESTDIR)/boot-assets
-	mkenvimage -r -s 131072 -o $(DESTDIR)/uboot.conf - < /dev/null
-	cp -a configs/core/config.txt.$(ARCH) $(DESTDIR)/boot-assets/config.txt
-	cp -a configs/core/cmdline.txt $(DESTDIR)/boot-assets/cmdline.txt
-
-boot-classic: device-trees $(DESTDIR)/boot-assets
+boot-script: $(DESTDIR)/boot-assets
 	$(call stage_package,flash-kernel)
 	# NOTE: the bootscr.rpi* below is deliberate; older flash-kernels have
 	# separate bootscr.rpi? files for different pis, while newer have a
@@ -93,6 +88,13 @@ boot-classic: device-trees $(DESTDIR)/boot-assets
 	done
 	mkimage -A $(MKIMAGE_ARCH) -O linux -T script -C none -n "boot script" \
 		-d $(STAGEDIR)/bootscr.rpi $(DESTDIR)/boot-assets/boot.scr
+
+config-core: $(DESTDIR)/boot-assets
+	mkenvimage -r -s 131072 -o $(DESTDIR)/uboot.conf - < /dev/null
+	cp -a configs/core/config.txt.$(ARCH) $(DESTDIR)/boot-assets/config.txt
+	cp -a configs/core/cmdline.txt $(DESTDIR)/boot-assets/cmdline.txt
+
+config-classic: device-trees $(DESTDIR)/boot-assets
 	cp -a configs/classic/*.txt $(DESTDIR)/boot-assets/
 	cp -a configs/classic/config.txt.$(ARCH) $(DESTDIR)/boot-assets/config.txt
 	cp -a configs/classic/user-data $(DESTDIR)/boot-assets/

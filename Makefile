@@ -1,7 +1,7 @@
 STAGEDIR ?= "$(CURDIR)/stage"
 DESTDIR ?= "$(CURDIR)/install"
 ARCH ?= $(shell dpkg --print-architecture)
-SERIES ?= "bionic"
+SERIES ?= "focal"
 
 ifeq ($(ARCH),arm64)
 	MKIMAGE_ARCH := "arm64"

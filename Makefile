@@ -71,7 +71,7 @@ uboot: $(DESTDIR)/boot-assets
 			$(DESTDIR)/boot-assets/uboot_$${platform_path##*/}.bin; \
 	done
 
-boot-script: $(DESTDIR)/boot-assets
+boot-script: device-trees $(DESTDIR)/boot-assets
 	$(call stage_package,flash-kernel)
 	# NOTE: the bootscr.rpi* below is deliberate; older flash-kernels have
 	# separate bootscr.rpi? files for different pis, while newer have a
@@ -94,7 +94,7 @@ config-core: $(DESTDIR)/boot-assets
 	cp -a configs/core/config.txt.$(ARCH) $(DESTDIR)/boot-assets/config.txt
 	cp -a configs/core/cmdline.txt $(DESTDIR)/boot-assets/cmdline.txt
 
-config-classic: device-trees $(DESTDIR)/boot-assets
+config-classic: $(DESTDIR)/boot-assets
 	cp -a configs/classic/*.txt $(DESTDIR)/boot-assets/
 	cp -a configs/classic/config.txt.$(ARCH) $(DESTDIR)/boot-assets/config.txt
 	cp -a configs/classic/user-data $(DESTDIR)/boot-assets/

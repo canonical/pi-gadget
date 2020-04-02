@@ -17,9 +17,9 @@ ethernets:
 #    dhcp4: true
 #    optional: true
 #    access-points:
-#      homessid:
+#      myhomewifi:
 #        password: "S3kr1t"
-#      myotherlan:
+#      myworkwifi:
 #        password: "correct battery horse staple"
 #      workssid:
 #        auth:

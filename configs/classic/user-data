@@ -10,15 +10,21 @@
 # Some additional examples are provided in comments below the default
 # configuration.
 
-# Enable password authentication with the SSH daemon
-ssh_pwauth: true
-
 # On first boot, set the (default) ubuntu user's password to "ubuntu" and
 # expire user passwords
 chpasswd:
   expire: true
   list:
   - ubuntu:ubuntu
+
+# Enable password authentication with the SSH daemon
+ssh_pwauth: true
+
+## On first boot, use ssh-import-id to give the specific users SSH access to
+## the default user
+#ssh_import_id:
+#- lp:my_launchpad_username
+#- gh:my_github_username
 
 ## Add users and groups to the system, and import keys with the ssh-import-id
 ## utility

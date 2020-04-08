@@ -21,6 +21,11 @@ volumes:
         content:
           - source: boot-assets/
             target: /
+      - name: boot-select
+        role: bootselect
+        filesystem: vfat
+        type: 0C
+        size: 5M
       - name: ubuntu-data
         role: system-data
         filesystem: ext4

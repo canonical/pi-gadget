@@ -8,8 +8,8 @@ description: |
 type: gadget
 base: core20
 architectures:
-  - build-on: [amd64, arm64]
-    run-on: arm64
+  - build-on: [amd64, arm64, armhf]
+    run-on: [arm64, armhf]
 confinement: strict
 grade: stable
 parts:

@@ -17,4 +17,4 @@ install:
   - sudo apt-get update
 
 script:
-  - sudo snapcraft --destructive-mode
+  - sudo snapcraft --destructive-mode --target-arch=arm64

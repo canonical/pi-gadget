@@ -19,8 +19,8 @@ volumes:
         # whats the appropriate size?
         size: 750M
         content:
-          - source: boot-assets/
-            target: /
+          - source: uboot.conf
+            target: boot/uboot/uboot.env
       - name: ubuntu-data
         role: system-data
         filesystem: ext4

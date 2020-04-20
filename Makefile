@@ -1,14 +1,19 @@
 STAGEDIR ?= "$(CURDIR)/stage"
 DESTDIR ?= "$(CURDIR)/install"
 ARCH ?= $(shell dpkg --print-architecture)
-SERIES ?= "bionic"
+SERIES ?= bionic
 
 ifeq ($(ARCH),arm64)
-	MKIMAGE_ARCH := "arm64"
+	MKIMAGE_ARCH := arm64
 else ifeq ($(ARCH),armhf)
-	MKIMAGE_ARCH := "arm"
+	MKIMAGE_ARCH := arm
 else
 	$(error Build architecture is not supported)
+endif
+ifeq ($(SERIES),bionic)
+	KERNEL_FLAVOR := raspi2
+else
+	KERNEL_FLAVOR := raspi
 endif
 
 SERIES_HOST ?= $(shell lsb_release --codename --short)
@@ -45,6 +50,8 @@ classic: firmware uboot boot-classic device-trees gadget
 core: firmware uboot boot-core device-trees gadget
 
 firmware: multiverse $(DESTDIR)/boot-assets
+	# XXX: This deliberately does NOT use $(KERNEL_FLAVOR); not until we've
+	# renamed linux-firmware-raspi2 anyway!
 	$(call stage_package,linux-firmware-raspi2)
 	for file in fixup start bootcode; do \
 		cp -a $(STAGEDIR)/usr/lib/linux-firmware-raspi2/$${file}* \
@@ -103,7 +110,7 @@ boot-classic: device-trees $(DESTDIR)/boot-assets
 	cp -a configs/classic/README $(DESTDIR)/boot-assets/
 
 device-trees: $(DESTDIR)/boot-assets
-	$(call stage_package,linux-modules-*-raspi2)
+	$(call stage_package,linux-modules-*-$(KERNEL_FLAVOR))
 	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree -name "*.dtb") \
 		$(DESTDIR)/boot-assets/
 	mkdir -p $(DESTDIR)/boot-assets/overlays

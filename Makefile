@@ -97,7 +97,11 @@ boot-script: device-trees $(DESTDIR)/boot-assets
 		-d $(STAGEDIR)/bootscr.rpi $(DESTDIR)/boot-assets/boot.scr
 
 config-core: $(DESTDIR)/boot-assets
-	mkenvimage -r -s 131072 -o $(DESTDIR)/uboot.conf - < /dev/null
+	# TODO:UC20: currently we use an empty uboot.conf as a landmark for the new
+	#            uboot style where there is no uboot.env installed onto the root
+	#            of the partition and instead the boot.scr is used. this may 
+	#            change for the final release
+	touch $(DESTDIR)/uboot.conf
 	cp -a configs/core/config.txt.$(ARCH) $(DESTDIR)/boot-assets/config.txt
 	cp -a configs/core/cmdline.txt $(DESTDIR)/boot-assets/cmdline.txt
 

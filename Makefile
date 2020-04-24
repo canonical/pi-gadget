@@ -102,6 +102,10 @@ config-core: $(DESTDIR)/boot-assets
 	#            of the partition and instead the boot.scr is used. this may 
 	#            change for the final release
 	touch $(DESTDIR)/uboot.conf
+	# the boot.sel file is currently installed onto ubuntu-boot from the gadget
+	# but that will probably change soon so that snapd installs it instead
+	# it is empty now, but snapd will write vars to it
+	mkenvimage -r -s 4096 -o $(DESTDIR)/boot.sel - < /dev/null
 	cp -a configs/core/config.txt.$(ARCH) $(DESTDIR)/boot-assets/config.txt
 	cp -a configs/core/cmdline.txt $(DESTDIR)/boot-assets/cmdline.txt
 

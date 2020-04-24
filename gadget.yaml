@@ -20,8 +20,7 @@ volumes:
         size: 750M
         content:
           # TODO:UC20: install the boot.sel via snapd instead of via the gadget
-          # also note that this relies on uboot.conf being empty
-          - source: uboot.conf
+          - source: boot.sel
             target: uboot/ubuntu/boot.sel
       - name: ubuntu-data
         role: system-data

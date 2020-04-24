@@ -27,6 +27,7 @@ parts:
     prime:
       - boot-assets/*
       - uboot.conf
+      - boot.sel
     build-packages:
       - u-boot-tools
       - lsb-release

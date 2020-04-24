@@ -97,7 +97,15 @@ boot-script: device-trees $(DESTDIR)/boot-assets
 		-d $(STAGEDIR)/bootscr.rpi $(DESTDIR)/boot-assets/boot.scr
 
 config-core: $(DESTDIR)/boot-assets
-	mkenvimage -r -s 131072 -o $(DESTDIR)/uboot.conf - < /dev/null
+	# TODO:UC20: currently we use an empty uboot.conf as a landmark for the new
+	#            uboot style where there is no uboot.env installed onto the root
+	#            of the partition and instead the boot.scr is used. this may 
+	#            change for the final release
+	touch $(DESTDIR)/uboot.conf
+	# the boot.sel file is currently installed onto ubuntu-boot from the gadget
+	# but that will probably change soon so that snapd installs it instead
+	# it is empty now, but snapd will write vars to it
+	mkenvimage -r -s 4096 -o $(DESTDIR)/boot.sel - < /dev/null
 	cp -a configs/core/config.txt.$(ARCH) $(DESTDIR)/boot-assets/config.txt
 	cp -a configs/core/cmdline.txt $(DESTDIR)/boot-assets/cmdline.txt
 

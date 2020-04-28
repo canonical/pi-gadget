@@ -22,4 +22,5 @@ install:
   - sudo usermod --append --groups lxd $USER
 
 script:
-  - sg lxd -c snapcraft
+  # TODO: when package-repositories is not experimental drop this flag
+  - sg lxd 'snapcraft --enable-experimental-package-repositories'

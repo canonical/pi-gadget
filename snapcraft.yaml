@@ -10,6 +10,11 @@ base: core20
 architectures:
   - build-on: [amd64, arm64]
     run-on: arm64
+
+package-repositories:
+  - type: apt
+    ppa: snappy-dev/image
+
 confinement: strict
 grade: stable
 parts:

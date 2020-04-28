@@ -15,6 +15,7 @@ grade: stable
 parts:
   gadget:
     plugin: nil
+    source: .
     override-build: |
       set -x
       if [ "$SNAPCRAFT_ARCH_TRIPLET" = "x86_64-linux-gnu" ] || [ -z "$SNAPCRAFT_ARCH_TRIPLET" ]; then
@@ -28,7 +29,7 @@ parts:
         echo "Cross compilation detected; using pre-defined sources list"
         OPTIONAL_ARGS="SOURCES_HOST=\"./helpers/sources.list.cross\" SOURCES_D_HOST=\"./helpers\""
       fi
-      make -C ${SNAPCRAFT_PROJECT_DIR:-.} core \
+      make -C $SNAPCRAFT_PART_SRC core \
         DESTDIR=${SNAPCRAFT_PART_INSTALL} \
         ARCH="$(dpkg-architecture -t $BUILD_ARCH_TRIPLET -q DEB_HOST_ARCH)" \
         ${OPTIONAL_ARGS:-}

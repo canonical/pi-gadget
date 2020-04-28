@@ -26,7 +26,7 @@ parts:
       fi
       if [ "$(arch)" != "aarch64" -a "$(arch)" != "armv7l" ]; then
         echo "Cross compilation detected; using pre-defined sources list"
-        OPTIONAL_ARGS="SOURCES_HOST=\"./helpers/sources.list.cross\""
+        OPTIONAL_ARGS="SOURCES_HOST=\"./helpers/sources.list.cross\" SOURCES_D_HOST=\"./helpers\""
       fi
       make -C ${SNAPCRAFT_PROJECT_DIR:-.} core \
         DESTDIR=${SNAPCRAFT_PART_INSTALL} \

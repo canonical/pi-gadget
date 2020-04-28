@@ -31,13 +31,19 @@ parts:
     build-packages:
       - u-boot-tools
       - lsb-release
+  psplash-local:
+    plugin: dump
+    prime: [-*]
+    source: .
+    stage: [psplash]
   psplash:
+    after: [psplash-local]
     source: git://git.yoctoproject.org/psplash
     source-commit: 2015f7073e98dd9562db0936a254af5ef56356cf
     plugin: nil
     override-build: |
       set -x
-      export TREE="${SNAPCRAFT_PROJECT_DIR:-.}/psplash"
+      export TREE="${SNAPCRAFT_STAGE:-.}/psplash"
       . ${TREE}/config
       if ! $(echo "$FONT" | grep -q ^/); then
         FONT="${TREE}/${FONT}"
@@ -62,7 +68,7 @@ parts:
         --host=${SNAPCRAFT_ARCH_TRIPLET} CC=${CROSS_COMPILE}gcc || cat config.log
       ARCH=$(dpkg-architecture -t "${SNAPCRAFT_ARCH_TRIPLET}" -q DEB_HOST_ARCH) make
       rm -rf $SNAPCRAFT_PART_INSTALL/usr
-      cp -a ${SNAPCRAFT_PROJECT_DIR:-.}/psplash/initrd .
+      cp -a $TREE/initrd .
       mkdir -p initrd/bin
       cp psplash initrd/bin
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets

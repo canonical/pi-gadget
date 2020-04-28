@@ -31,6 +31,8 @@ parts:
     build-packages:
       - u-boot-tools
       - lsb-release
+      - dpkg-dev
+      - make
   psplash-local:
     plugin: dump
     prime: [-*]

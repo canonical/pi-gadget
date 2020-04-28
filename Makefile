@@ -18,7 +18,9 @@ endif
 
 SERIES_HOST ?= $(shell lsb_release --codename --short)
 SOURCES_HOST ?= "/etc/apt/sources.list"
+SOURCES_D_HOST ?= "/etc/apt/sources.list.d"
 SOURCES_MULTIVERSE := "$(STAGEDIR)/apt/multiverse.sources.list"
+SOURCES_D_MULTIVERSE := "$(STAGEDIR)/apt/multiverse.sources.list.d"
 
 # Download the latest version of package $1 for architecture $(ARCH), unpacking
 # it into $(STAGEDIR). For example, the following invocation will download the
@@ -32,10 +34,12 @@ define stage_package
 		cd $(STAGEDIR)/tmp && \
 		apt-get download \
 			-o APT::Architecture=$(ARCH) \
-			-o Dir::Etc::sourcelist=$(SOURCES_MULTIVERSE) $$( \
+			-o Dir::Etc::sourcelist=$(SOURCES_MULTIVERSE) \
+			-o Dir::Etc::sourceparts=$(SOURCES_D_MULTIVERSE) $$( \
 				apt-cache \
 					-o APT::Architecture=$(ARCH) \
 					-o Dir::Etc::sourcelist=$(SOURCES_MULTIVERSE) \
+					-o Dir::Etc::sourceparts=$(SOURCES_D_MULTIVERSE) \
 					showpkg $(1) | \
 					sed -n -e 's/^Package: *//p' | \
 					sort -V | tail -1 \
@@ -65,10 +69,16 @@ firmware: multiverse $(DESTDIR)/boot-assets
 multiverse:
 	mkdir -p $(STAGEDIR)/apt
 	cp $(SOURCES_HOST) $(SOURCES_MULTIVERSE)
+	# we only copy the sources.list.d, we don't replace it to enable multiverse
+	# because atm, we reallly only want to copy these files to pick up the 
+	# snappy-dev image PPA if the host has it installed and we are building a
+	# native build, and the snappy-dev image 
+	cp -r $(SOURCES_D_HOST) $(SOURCES_D_MULTIVERSE)
 	sed -i "/^deb/ s/\b$(SERIES_HOST)/$(SERIES)/" $(SOURCES_MULTIVERSE)
 	sed -i "/^deb/ s/$$/ multiverse/" $(SOURCES_MULTIVERSE)
 	apt-get update \
 		-o Dir::Etc::sourcelist=$(SOURCES_MULTIVERSE) \
+		-o Dir::Etc::sourceparts=$(SOURCES_D_MULTIVERSE) \
 		-o APT::Architecture=$(ARCH) 2>/dev/null
 
 uboot: $(DESTDIR)/boot-assets

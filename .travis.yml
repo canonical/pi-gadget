@@ -6,7 +6,6 @@ addons:
   snaps:
     - name: snapcraft
       confinement: classic
-      channel: candidate
     - name: lxd
 env:
   global:
@@ -21,4 +20,5 @@ install:
 script:
   # build with lxd because travis doesn't support focal yet, so we can't build
   # natively
-  - sudo snapcraft --use-lxd
+  # TODO: when package-repositories is not experimental drop this flag
+  - sudo snapcraft --use-lxd --enable-experimental-package-repositories

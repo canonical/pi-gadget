@@ -16,13 +16,21 @@ parts:
   gadget:
     plugin: nil
     override-build: |
+      set -x
+      if [ "$SNAPCRAFT_ARCH_TRIPLET" = "x86_64-linux-gnu" ] || [ -z "$SNAPCRAFT_ARCH_TRIPLET" ]; then
+        # manually set since new snapcraft doesn't like --target-arch when 
+        # building with lxd/multipass
+        BUILD_ARCH_TRIPLET=aarch64-linux-gnu
+      else
+        BUILD_ARCH_TRIPLET=$SNAPCRAFT_ARCH_TRIPLET
+      fi
       if [ "$(arch)" != "aarch64" -a "$(arch)" != "armv7l" ]; then
         echo "Cross compilation detected; using pre-defined sources list"
         OPTIONAL_ARGS="SOURCES_HOST=\"./helpers/sources.list.cross\""
       fi
       make -C ${SNAPCRAFT_PROJECT_DIR:-.} core \
         DESTDIR=${SNAPCRAFT_PART_INSTALL} \
-        ARCH=$(dpkg-architecture -t "${SNAPCRAFT_ARCH_TRIPLET}" -q DEB_HOST_ARCH) \
+        ARCH="$(dpkg-architecture -t $BUILD_ARCH_TRIPLET -q DEB_HOST_ARCH)" \
         ${OPTIONAL_ARGS:-}
     prime:
       - boot-assets/*
@@ -45,6 +53,13 @@ parts:
     plugin: nil
     override-build: |
       set -x
+      if [ "$SNAPCRAFT_ARCH_TRIPLET" = "x86_64-linux-gnu" ] || [ -z "$SNAPCRAFT_ARCH_TRIPLET" ]; then
+        # manually set since new snapcraft doesn't like --target-arch when 
+        # building with lxd/multipass
+        BUILD_ARCH_TRIPLET=aarch64-linux-gnu
+      else
+        BUILD_ARCH_TRIPLET=$SNAPCRAFT_ARCH_TRIPLET
+      fi
       export TREE="${SNAPCRAFT_STAGE:-.}/psplash"
       . ${TREE}/config
       if ! $(echo "$FONT" | grep -q ^/); then
@@ -62,13 +77,13 @@ parts:
           $(dpkg-architecture -q DEB_BUILD_ARCH)
       then
         export CROSS_COMPILE=$(dpkg-architecture \
-          -t "${SNAPCRAFT_ARCH_TRIPLET}" -q DEB_HOST_GNU_TYPE)-
+          -t "${BUILD_ARCH_TRIPLET}" -q DEB_HOST_GNU_TYPE)-
       else
         export CROSS_COMPILE=
       fi
       ./configure --build=$(dpkg-architecture -q DEB_BUILD_GNU_TYPE) \
-        --host=${SNAPCRAFT_ARCH_TRIPLET} CC=${CROSS_COMPILE}gcc || cat config.log
-      ARCH=$(dpkg-architecture -t "${SNAPCRAFT_ARCH_TRIPLET}" -q DEB_HOST_ARCH) make
+        --host=${BUILD_ARCH_TRIPLET} CC=${CROSS_COMPILE}gcc || cat config.log
+      ARCH=$(dpkg-architecture -t "${BUILD_ARCH_TRIPLET}" -q DEB_HOST_ARCH) make
       rm -rf $SNAPCRAFT_PART_INSTALL/usr
       cp -a $TREE/initrd .
       mkdir -p initrd/bin
@@ -88,13 +103,9 @@ parts:
       - findutils
       - liblz4-tool
       - libc-dev
-      - on amd64 to arm64:
-        - gcc-aarch64-linux-gnu:amd64
-        - libc6-dev-arm64-cross:amd64
-      - on amd64 to armhf:
-        - gcc-arm-linux-gnueabihf:amd64
-        - libc6-dev-armhf-cross:amd64
-
+      - try:
+          - gcc-aarch64-linux-gnu:amd64
+          - libc6-dev-arm64-cross:amd64
 
 slots:
   bcm-gpio-0:

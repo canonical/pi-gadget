@@ -29,7 +29,7 @@ device_tree_address=0x03000000
 # support old firmwares which don't understand the "include" command.
 
 enable_uart=1
-cmdline=nobtcmd.txt
+cmdline=cmdline.txt
 
 include syscfg.txt
 include usercfg.txt

@@ -71,6 +71,10 @@ multiverse:
 		-o Dir::Etc::sourcelist=$(SOURCES_MULTIVERSE) \
 		-o APT::Architecture=$(ARCH) 2>/dev/null
 
+# XXX: This should be removed (along with the dependencies in classic/core)
+# when uboot is removed entirely from the boot partition. At present, it is
+# included on the boot partition but not in the configuration just in case
+# anyone requires an easy path to switch back to it
 uboot: $(DESTDIR)/boot-assets
 	$(call stage_package,u-boot-rpi)
 	for platform_path in $(STAGEDIR)/usr/lib/u-boot/*; do \

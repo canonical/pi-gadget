@@ -11,6 +11,9 @@ dtparam=audio=on
 dtparam=i2c_arm=on
 dtparam=spi=on
 
+# Enable the serial pins
+enable_uart=1
+
 # Comment out the following line if the edges of the desktop appear outside
 # the edges of your display
 disable_overscan=1

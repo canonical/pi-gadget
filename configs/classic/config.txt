@@ -11,9 +11,6 @@ dtparam=audio=on
 dtparam=i2c_arm=on
 dtparam=spi=on
 
-# Enable the serial pins
-enable_uart=1
-
 # Enable the FKMS ("Fake" KMS) graphics overlay, enable the camera firmware
 # and allocate 128Mb to the GPU memory
 dtoverlay=vc4-fkms-v3d

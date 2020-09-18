@@ -1,79 +1,154 @@
 #cloud-config
-
-# This is the user-data configuration file for cloud-init. By default this sets
-# up an initial user called "ubuntu" with password "ubuntu", which must be
-# changed at first login. However, many additional actions can be initiated on
-# first boot from this file. The cloud-init documentation has more details:
 #
-# https://cloudinit.readthedocs.io/
-#
-# Some additional examples are provided in comments below the default
-# configuration.
+# The top level settings are used as module
+# and system configuration.
 
-# On first boot, set the (default) ubuntu user's password to "ubuntu" and
-# expire user passwords
-chpasswd:
-  expire: true
-  list:
-  - ubuntu:ubuntu
+# Groups are created before users
+groups:
+  - oem
 
-# Enable password authentication with the SSH daemon
-ssh_pwauth: true
+# A set of users which may be applied and/or used by various modules
+# when a 'default' entry is found it will reference the 'default_user'
+# from the distro configuration specified below
+users:
+  - name: oem
+    gecos: OEM Configuration (temporary user)
+    primary_group: oem
+    groups: [adm, audio, cdrom, dialout, dip, floppy, netdev, plugdev, sudo, video]
+    lock_passwd: False
+    plain_text_passwd: 'oem'
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    uid: 29999
 
-## On first boot, use ssh-import-id to give the specific users SSH access to
-## the default user
-#ssh_import_id:
-#- lp:my_launchpad_username
-#- gh:my_github_username
+# If this is set, 'root' will not be able to ssh in and they
+# will get a message to login instead as the default $user
+disable_root: true
 
-## Add users and groups to the system, and import keys with the ssh-import-id
-## utility
-#groups:
-#- robot: [robot]
-#- robotics: [robot]
-#- pi
-#
-#users:
-#- default
-#- name: robot
-#  gecos: Mr. Robot
-#  primary_group: robot
-#  groups: users
-#  ssh_import_id: foobar
-#  lock_passwd: false
-#  passwd: $5$hkui88$nvZgIle31cNpryjRfO9uArF7DYiBcWEnjqq7L1AQNN3
+# This will cause the set+update hostname module to not operate (if true)
+preserve_hostname: false
 
-## Update apt database and upgrade packages on first boot
-#package_update: true
-#package_upgrade: true
+# Example datasource config
+# datasource:
+#    Ec2:
+#      metadata_urls: [ 'blah.com' ]
+#      timeout: 5 # (defaults to 50 seconds)
+#      max_wait: 10 # (defaults to 120 seconds)
 
-## Install additional packages on first boot
-#packages:
-#- pwgen
-#- pastebinit
-#- [libpython2.7, 2.7.3-0ubuntu3.1]
 
-## Write arbitrary files to the file-system (including binaries!)
-#write_files:
-#- path: /etc/default/keyboard
-#  content: |
-#    # KEYBOARD configuration file
-#    # Consult the keyboard(5) manual page.
-#    XKBMODEL="pc105"
-#    XKBLAYOUT="gb"
-#    XKBVARIANT=""
-#    XKBOPTIONS="ctrl: nocaps"
-#  permissions: '0644'
-#  owner: root:root
-#- encoding: gzip
-#  path: /usr/bin/hello
-#  content: !!binary |
-#    H4sIAIDb/U8C/1NW1E/KzNMvzuBKTc7IV8hIzcnJVyjPL8pJ4QIA6N+MVxsAAAA=
-#  owner: root:root
-#  permissions: '0755'
 
-## Run arbitrary commands at rc.local like time
-#runcmd:
-#- [ ls, -l, / ]
-#- [ sh, -xc, "echo $(date) ': hello world!'" ]
-#- [ wget, "http://ubuntu.com", -O, /run/mydir/index.html ]
+# The modules that run in the 'init' stage
+cloud_init_modules:
+ - migrator
+ - seed_random
+ - bootcmd
+ - write-files
+ - growpart
+ - resizefs
+ - disk_setup
+ - mounts
+ - set_hostname
+ - update_hostname
+ - update_etc_hosts
+ - ca-certs
+ - rsyslog
+ - users-groups
+ - ssh
+
+# The modules that run in the 'config' stage
+cloud_config_modules:
+# Emit the cloud config ready event
+# this can be used by upstart jobs for 'start on cloud-config'.
+ - emit_upstart
+ - snap
+ - ssh-import-id
+ - locale
+ - set-passwords
+ - grub-dpkg
+ - apt-pipelining
+ - apt-configure
+ - ubuntu-advantage
+ - ntp
+ - timezone
+ - disable-ec2-metadata
+ - runcmd
+ - byobu
+
+# The modules that run in the 'final' stage
+cloud_final_modules:
+ - package-update-upgrade-install
+ - fan
+ - landscape
+ - lxd
+ - ubuntu-drivers
+ - puppet
+ - chef
+ - mcollective
+ - salt-minion
+ - rightscale_userdata
+ - scripts-vendor
+ - scripts-per-once
+ - scripts-per-boot
+ - scripts-per-instance
+ - scripts-user
+ - ssh-authkey-fingerprints
+ - keys-to-console
+ - phone-home
+ - final-message
+ - power-state-change
+
+# System and/or distro specific settings
+# (not accessible to handlers/transforms)
+system_info:
+   # This will affect which distro class gets used
+   distro: ubuntu
+   network:
+     renderers: ['netplan', 'eni', 'sysconfig']
+   # Automatically discover the best ntp_client
+   ntp_client: auto
+   # Other config here will be given to the distro class and/or path classes
+   paths:
+      cloud_dir: /var/lib/cloud/
+      templates_dir: /etc/cloud/templates/
+      upstart_dir: /etc/init/
+   package_mirrors:
+     - arches: [i386, amd64]
+       failsafe:
+         primary: http://archive.ubuntu.com/ubuntu
+         security: http://security.ubuntu.com/ubuntu
+       search:
+         primary:
+           - http://%(ec2_region)s.ec2.archive.ubuntu.com/ubuntu/
+           - http://%(availability_zone)s.clouds.archive.ubuntu.com/ubuntu/
+           - http://%(region)s.clouds.archive.ubuntu.com/ubuntu/
+         security: []
+     - arches: [arm64, armel, armhf]
+       failsafe:
+         primary: http://ports.ubuntu.com/ubuntu-ports
+         security: http://ports.ubuntu.com/ubuntu-ports
+       search:
+         primary:
+           - http://%(ec2_region)s.ec2.ports.ubuntu.com/ubuntu-ports/
+           - http://%(availability_zone)s.clouds.ports.ubuntu.com/ubuntu-ports/
+           - http://%(region)s.clouds.ports.ubuntu.com/ubuntu-ports/
+         security: []
+     - arches: [default]
+       failsafe:
+         primary: http://ports.ubuntu.com/ubuntu-ports
+         security: http://ports.ubuntu.com/ubuntu-ports
+
+write-files:
+  - path: /etc/NetworkManager/conf.d/ZZraspi-wifi-powersave-off.conf
+    content: |
+      [connection]
+      wifi.powersave = 2
+    owner: root:root
+    permissions: '0644'
+
+# Enable oem-config
+bootcmd:
+  - cloud-init-per once ocp /usr/sbin/oem-config-prepare --quiet
+
+# Modify oem gid to be 29999; requirement of oem-setup
+runcmd:
+  - groupmod -g 29999 oem

@@ -17,6 +17,7 @@
 # Some additional examples are commented out below
 
 version: 2
+renderer: NetworkManager
 ethernets:
   eth0:
     # Rename the built-in ethernet device to "eth0"

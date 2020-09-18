@@ -14,6 +14,12 @@ dtparam=spi=on
 # Enable the serial pins
 enable_uart=1
 
+# Enable the FKMS ("Fake" KMS) graphics overlay, enable the camera firmware
+# and allocate 128Mb to the GPU memory
+dtoverlay=vc4-fkms-v3d
+gpu_mem=128
+start_x=1
+
 # Comment out the following line if the edges of the desktop appear outside
 # the edges of your display
 disable_overscan=1

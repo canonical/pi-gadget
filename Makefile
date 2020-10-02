@@ -119,9 +119,6 @@ config-classic: $(DESTDIR)/boot-assets
 	if [ "$(ARCH)" = "arm64" ]; then \
 		sed -i -e '/^kernel=/ i arm_64bit=1' $(DESTDIR)/boot-assets/config.txt; \
 	fi
-	cp -a configs/classic/user-data $(DESTDIR)/boot-assets/
-	cp -a configs/classic/meta-data $(DESTDIR)/boot-assets/
-	cp -a configs/classic/network-config $(DESTDIR)/boot-assets/
 	cp -a configs/classic/README $(DESTDIR)/boot-assets/
 
 device-trees: $(DESTDIR)/boot-assets

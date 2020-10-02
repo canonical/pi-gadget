@@ -115,7 +115,6 @@ config-core: $(DESTDIR)/boot-assets
 
 config-classic: $(DESTDIR)/boot-assets
 	cp -a configs/classic/*.txt $(DESTDIR)/boot-assets/
-	cp -a configs/classic/config.txt $(DESTDIR)/boot-assets/config.txt
 	if [ "$(ARCH)" = "arm64" ]; then \
 		sed -i -e '/^kernel=/ i arm_64bit=1' $(DESTDIR)/boot-assets/config.txt; \
 	fi

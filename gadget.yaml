@@ -4,27 +4,10 @@ volumes:
     schema: mbr
     bootloader: u-boot
     structure:
-      - name: ubuntu-seed
-        role: system-seed
+      - type: 0C
         filesystem: vfat
-        type: 0C
-        size: 1200M
+        filesystem-label: system-boot
+        size: 256M
         content:
           - source: boot-assets/
             target: /
-      - name: ubuntu-boot
-        role: system-boot
-        filesystem: vfat
-        type: 0C
-        # whats the appropriate size?
-        size: 750M
-        content:
-          # TODO:UC20: install the boot.sel via snapd instead of via the gadget
-          - source: boot.sel
-            target: uboot/ubuntu/boot.sel
-      - name: ubuntu-data
-        role: system-data
-        filesystem: ext4
-        type: 83,0FC63DAF-8483-4772-8E79-3D69D8477DE4
-        # XXX: make auto-grow to partition
-        size: 1500M

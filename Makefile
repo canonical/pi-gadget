@@ -18,7 +18,7 @@ endif
 
 SERIES_HOST ?= $(shell lsb_release --codename --short)
 SOURCES_HOST ?= "/etc/apt/sources.list"
-SOURCES_MULTIVERSE := "$(STAGEDIR)/apt/multiverse.sources.list"
+SOURCES_RESTRICTED := "$(STAGEDIR)/apt/restricted.sources.list"
 
 # Download the latest version of package $1 for architecture $(ARCH), unpacking
 # it into $(STAGEDIR). For example, the following invocation will download the
@@ -32,10 +32,10 @@ define stage_package
 		cd $(STAGEDIR)/tmp && \
 		apt-get download \
 			-o APT::Architecture=$(ARCH) \
-			-o Dir::Etc::sourcelist=$(SOURCES_MULTIVERSE) $$( \
+			-o Dir::Etc::sourcelist=$(SOURCES_RESTRICTED) $$( \
 				apt-cache \
 					-o APT::Architecture=$(ARCH) \
-					-o Dir::Etc::sourcelist=$(SOURCES_MULTIVERSE) \
+					-o Dir::Etc::sourcelist=$(SOURCES_RESTRICTED) \
 					showpkg $(1) | \
 					sed -n -e 's/^Package: *//p' | \
 					sort -V | tail -1 \
@@ -49,7 +49,7 @@ classic: firmware uboot boot-script config-classic device-trees gadget
 
 core: firmware uboot boot-script config-core device-trees gadget
 
-firmware: multiverse $(DESTDIR)/boot-assets
+firmware: restricted $(DESTDIR)/boot-assets
 	# XXX: This deliberately does NOT use $(KERNEL_FLAVOR); not until we've
 	# renamed linux-firmware-raspi2 anyway!
 	$(call stage_package,linux-firmware-raspi2)
@@ -58,17 +58,16 @@ firmware: multiverse $(DESTDIR)/boot-assets
 			$(DESTDIR)/boot-assets/; \
 	done
 
-# XXX: This is a hack that we can hopefully get rid of eventually. Currently,
-# the livefs Launchpad builders don't have multiverse enabled. We want to
-# work-around that by actually enabling multiverse just for this one build here
-# as we need it for linux-firmware-raspi2.
-multiverse:
+# XXX: This is a hack that we can hopefully get rid of eventually. At this
+# moment livecd-rootfs doesn't enable restricted at this stage, so we need to
+# hack around it to pull in linux-firmware-raspi2 properly.
+restricted:
 	mkdir -p $(STAGEDIR)/apt
-	cp $(SOURCES_HOST) $(SOURCES_MULTIVERSE)
-	sed -i "/^deb/ s/\b$(SERIES_HOST)/$(SERIES)/" $(SOURCES_MULTIVERSE)
-	sed -i "/^deb/ s/$$/ multiverse/" $(SOURCES_MULTIVERSE)
+	cp $(SOURCES_HOST) $(SOURCES_RESTRICTED)
+	sed -i "/^deb/ s/\b$(SERIES_HOST)/$(SERIES)/" $(SOURCES_RESTRICTED)
+	sed -i "/^deb/ s/$$/ restricted/" $(SOURCES_RESTRICTED)
 	apt-get update \
-		-o Dir::Etc::sourcelist=$(SOURCES_MULTIVERSE) \
+		-o Dir::Etc::sourcelist=$(SOURCES_RESTRICTED) \
 		-o APT::Architecture=$(ARCH) 2>/dev/null
 
 # XXX: This should be removed (along with the dependencies in classic/core)

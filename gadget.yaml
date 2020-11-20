@@ -22,6 +22,11 @@ volumes:
           # TODO:UC20: install the boot.sel via snapd instead of via the gadget
           - source: boot.sel
             target: uboot/ubuntu/boot.sel
+      - name: ubuntu-save
+        role: system-save
+        filesystem: ext4
+        type: 83,0FC63DAF-8483-4772-8E79-3D69D8477DE4
+        size: 16M
       - name: ubuntu-data
         role: system-data
         filesystem: ext4

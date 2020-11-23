@@ -22,6 +22,17 @@ volumes:
           # TODO:UC20: install the boot.sel via snapd instead of via the gadget
           - source: boot.sel
             target: uboot/ubuntu/boot.sel
+      # NOTE: ubuntu-save is optional for unencrypted devices like the pi, so
+      # this structure can be dropped in favor of a different partition for
+      # users who wish to instead use a different partition, since with MBR we
+      # are limited to only 4 primary partitions.
+      # TODO: look into switching over to GPT, the pi bootloader firmware now
+      #       has support for this
+      - name: ubuntu-save
+        role: system-save
+        filesystem: ext4
+        type: 83,0FC63DAF-8483-4772-8E79-3D69D8477DE4
+        size: 16M
       - name: ubuntu-data
         role: system-data
         filesystem: ext4

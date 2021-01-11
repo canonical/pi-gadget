@@ -111,7 +111,7 @@ parts:
       - libc-dev
       - try:
           - gcc-aarch64-linux-gnu:amd64
-          - libc6-dev-arm64-cross:amd64
+          - libc6-dev-armhf-cross:amd64
 
 slots:
   bcm-gpio-0:

@@ -2,27 +2,35 @@ name: pi
 version: 20-1
 summary: Raspberry Pi gadget
 description: |
- Support files for booting Raspberry Pi.
- This gadget snap supports the Raspberry Pi 2B, 3B, 3A+, 3B+, 4B, Compute
- Module 3, and the Compute Module 3+ universally.
+  Support files for booting Raspberry Pi.
+  This gadget snap supports the Raspberry Pi 2B, 3B, 3A+, 3B+, 4B, Compute
+  Module 3, and the Compute Module 3+ universally.
 type: gadget
 base: core20
 architectures:
   - build-on: [amd64, armhf]
     run-on: armhf
+
+package-repositories:
+  - type: apt
+    ppa: snappy-dev/image
+
 confinement: strict
 grade: stable
 parts:
   gadget:
     plugin: nil
+    source: .
     override-build: |
-      if [ "$(arch)" != "aarch64" -a "$(arch)" != "armv7l" ]; then
-        echo "Cross compilation detected; using pre-defined sources list"
-        OPTIONAL_ARGS="SOURCES_HOST=\"./helpers/sources.list.cross\""
-      fi
-      make -C ${SNAPCRAFT_PROJECT_DIR:-.} core \
+      set -x
+      # unconditionally set the arch-triplet since this snapcraft.yaml will 
+      # always be used to produce an armhf snap
+      BUILD_ARCH_TRIPLET=arm-linux-gnueabihf
+
+      OPTIONAL_ARGS="SOURCES_HOST=\"./helpers/cross-sources.list\" SOURCES_D_HOST=\"./helpers\""
+      make -C $SNAPCRAFT_PART_SRC core \
         DESTDIR=${SNAPCRAFT_PART_INSTALL} \
-        ARCH=$(dpkg-architecture -t "${SNAPCRAFT_ARCH_TRIPLET}" -q DEB_HOST_ARCH) \
+        ARCH="$(dpkg-architecture -t $BUILD_ARCH_TRIPLET -q DEB_HOST_ARCH)" \
         ${OPTIONAL_ARGS:-}
     prime:
       - boot-assets/*
@@ -31,13 +39,28 @@ parts:
     build-packages:
       - u-boot-tools
       - lsb-release
+      - dpkg-dev
+      - make
+  psplash-local:
+    plugin: dump
+    prime: [-*]
+    source: .
+    stage: [psplash]
   psplash:
+    after: [psplash-local]
     source: git://git.yoctoproject.org/psplash
     source-commit: 2015f7073e98dd9562db0936a254af5ef56356cf
     plugin: nil
     override-build: |
       set -x
-      export TREE="${SNAPCRAFT_PROJECT_DIR:-.}/psplash"
+      if [ "$SNAPCRAFT_ARCH_TRIPLET" = "x86_64-linux-gnu" ] || [ -z "$SNAPCRAFT_ARCH_TRIPLET" ]; then
+        # manually set since new snapcraft doesn't like --target-arch when 
+        # building with lxd/multipass
+        BUILD_ARCH_TRIPLET=arm-linux-gnueabihf
+      else
+        BUILD_ARCH_TRIPLET=$SNAPCRAFT_ARCH_TRIPLET
+      fi
+      export TREE="${SNAPCRAFT_STAGE:-.}/psplash"
       . ${TREE}/config
       if ! $(echo "$FONT" | grep -q ^/); then
         FONT="${TREE}/${FONT}"
@@ -54,15 +77,15 @@ parts:
           $(dpkg-architecture -q DEB_BUILD_ARCH)
       then
         export CROSS_COMPILE=$(dpkg-architecture \
-          -t "${SNAPCRAFT_ARCH_TRIPLET}" -q DEB_HOST_GNU_TYPE)-
+          -t "${BUILD_ARCH_TRIPLET}" -q DEB_HOST_GNU_TYPE)-
       else
         export CROSS_COMPILE=
       fi
       ./configure --build=$(dpkg-architecture -q DEB_BUILD_GNU_TYPE) \
-        --host=${SNAPCRAFT_ARCH_TRIPLET} CC=${CROSS_COMPILE}gcc || cat config.log
-      ARCH=$(dpkg-architecture -t "${SNAPCRAFT_ARCH_TRIPLET}" -q DEB_HOST_ARCH) make
+        --host=${BUILD_ARCH_TRIPLET} CC=${CROSS_COMPILE}gcc || cat config.log
+      ARCH=$(dpkg-architecture -t "${BUILD_ARCH_TRIPLET}" -q DEB_HOST_ARCH) make
       rm -rf $SNAPCRAFT_PART_INSTALL/usr
-      cp -a ${SNAPCRAFT_PROJECT_DIR:-.}/psplash/initrd .
+      cp -a $TREE/initrd .
       mkdir -p initrd/bin
       cp psplash initrd/bin
       mkdir -p $SNAPCRAFT_PART_INSTALL/boot-assets
@@ -80,13 +103,9 @@ parts:
       - findutils
       - liblz4-tool
       - libc-dev
-      - on amd64 to arm64:
-        - gcc-aarch64-linux-gnu:amd64
-        - libc6-dev-arm64-cross:amd64
-      - on amd64 to armhf:
-        - gcc-arm-linux-gnueabihf:amd64
-        - libc6-dev-armhf-cross:amd64
-
+      - try:
+          - gcc-aarch64-linux-gnu:amd64
+          - libc6-dev-armhf-cross:amd64
 
 slots:
   bcm-gpio-0:
@@ -186,8 +205,8 @@ slots:
     interface: serial-port
     path: /dev/ttyAMA0
   spidev0:
-     interface: spi
-     path: /dev/spidev0.0
+    interface: spi
+    path: /dev/spidev0.0
   spidev1:
-     interface: spi
-     path: /dev/spidev0.1
+    interface: spi
+    path: /dev/spidev0.1

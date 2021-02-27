@@ -4,17 +4,23 @@ python:
 dist: bionic
 addons:
   snaps:
-  - name: snapcraft
-    confinement: classic
-
+    - name: snapcraft
+      confinement: classic
+    - name: lxd
 env:
   global:
     - LC_ALL=C.UTF-8
     - LANG=C.UTF-8
+      # build with lxd because travis doesn't support focal yet, so we can't build
+      # natively
+    - SNAPCRAFT_BUILD_ENVIRONMENT=lxd
 
 install:
-  - sudo sed -i '/^deb/s/$/ universe/' /etc/apt/sources.list
-  - sudo apt-get update
+  - sudo apt-get remove lxd-client lxc -y
+  - sudo apt-get autoremove
+  - sudo /snap/bin/lxd init --auto
+  - sudo usermod --append --groups lxd $USER
 
 script:
-  - sudo snapcraft --destructive-mode --target-arch=arm64
+  # TODO: when package-repositories is not experimental drop this flag
+  - sg lxd 'snapcraft --enable-experimental-package-repositories'

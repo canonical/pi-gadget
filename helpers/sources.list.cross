@@ -1,0 +1,8 @@
+deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ bionic main universe multiverse restricted
+deb-src [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ bionic main universe multiverse restricted
+deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ bionic-updates main universe multiverse restricted
+deb-src [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ bionic-updates main universe multiverse restricted
+deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ bionic-security main universe multiverse restricted
+deb-src [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ bionic-security main universe multiverse restricted
+deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ bionic-proposed main universe multiverse restricted
+deb-src [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ bionic-proposed main universe multiverse restricted

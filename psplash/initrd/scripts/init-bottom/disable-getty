@@ -11,9 +11,24 @@ case "$1" in
     ;;
 esac
 
+FSROOT="/root/writable/system-data"
+SYSTEMDDIR="${FSROOT}/etc/systemd"
+JOBDIR="${SYSTEMDDIR}/system"
+
+if grep -q nogetty /proc/cmdline; then
+    [ -d "${JOBDIR}/getty.target.wants" ] || mkdir -p "${JOBDIR}/getty.target.wants"
+    ln -sf /dev/null ${JOBDIR}/getty.target.wants/getty\@tty1.service || true
+    echo "[Login]" >${SYSTEMDDIR}/logind.conf.d/nottys.conf || true
+    echo "NAutoVTs=0" >>${SYSTEMDDIR}/logind.conf.d/nottys.conf || true
+    echo "ReserveVT=0" >>${SYSTEMDDIR}/logind.conf.d/nottys.conf || true
+else
+    ln -sf /lib/systemd/system/getty@.service ${JOBDIR}/getty.target.wants/getty\@tty1.service || true
+    rm -f ${SYSTEMDDIR}/logind.conf.d/nottys.conf || true
+fi
 
 SERVICENAME="end.psplash.service"
 if [ ! -e "${JOBDIR}/${SERVICENAME}" ]; then
-       cp "/scripts/init-bottom/${SERVICENAME}" "${JOBDIR}/${SERVICENAME}"
-       ln -s "/etc/systemd/system/${SERVICENAME}" "${JOBDIR}/multi-user.target.wants/${SERVICENAME}"
+       [ -d "${JOBDIR}/multi-user.target.wants" ] || mkdir -p "${JOBDIR}/multi-user.target.wants"
+       cp "/scripts/init-bottom/${SERVICENAME}" "${JOBDIR}/${SERVICENAME}" || true
+       ln -sf "/etc/systemd/system/${SERVICENAME}" "${JOBDIR}/multi-user.target.wants/${SERVICENAME}" || true
 fi

@@ -7,6 +7,7 @@ description: |
   Module 3, and the Compute Module 3+ universally.
 type: gadget
 base: core20
+assumes: [kernel-assets]
 architectures:
   - build-on: [amd64, arm64]
     run-on: arm64

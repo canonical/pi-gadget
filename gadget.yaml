@@ -1,4 +1,3 @@
-device-tree: bcm2709-rpi-3-b-plus
 volumes:
   pi:
     schema: mbr
@@ -10,6 +9,10 @@ volumes:
         type: 0C
         size: 1200M
         content:
+          - source: $kernel:pidtbs/dtbs/broadcom/
+            target: /
+          - source: $kernel:pidtbs/dtbs/overlays/
+            target: /overlays
           - source: boot-assets/
             target: /
       - name: ubuntu-boot

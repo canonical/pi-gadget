@@ -140,7 +140,7 @@ device-trees: $(DESTDIR)/boot-assets
 # the old syntax for now
 no-kernel-refs-gadget: gadget.yaml
 	mkdir -p $(DESTDIR)/meta
-	sed -e '/source: $kernel:/,+1d' gadget.yaml > $(DESTDIR)/meta/gadget.yaml
+	sed -e '/source: $$kernel:/,+1d' gadget.yaml > $(DESTDIR)/meta/gadget.yaml
 
 gadget:
 	mkdir -p $(DESTDIR)/meta

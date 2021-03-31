@@ -19,10 +19,6 @@
 version: 2
 ethernets:
   eth0:
-    # Rename the built-in ethernet device to "eth0"
-    match:
-      driver: bcmgenet smsc95xx lan78xx
-    set-name: eth0
     dhcp4: true
     optional: true
 #wifis:

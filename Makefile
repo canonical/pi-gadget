@@ -48,10 +48,10 @@ define stage_package
 	dpkg-deb --extract $$(ls $(STAGEDIR)/tmp/$(1)*.deb | tail -1) $(STAGEDIR)
 endef
 
+# XXX: move classic to use new "$kernel:ref" syntax too and remove the "device-trees" rule
+classic: firmware uboot device-trees boot-script config-classic no-kernel-refs-gadget
 
-classic: firmware uboot boot-script config-classic device-trees gadget
-
-core: firmware uboot boot-script config-core device-trees gadget
+core: firmware uboot boot-script config-core gadget
 
 firmware: multiverse $(DESTDIR)/boot-assets
 	# XXX: This deliberately does NOT use $(KERNEL_FLAVOR); not until we've
@@ -88,7 +88,7 @@ uboot: $(DESTDIR)/boot-assets
 			$(DESTDIR)/boot-assets/uboot_$${platform_path##*/}.bin; \
 	done
 
-boot-script: device-trees $(DESTDIR)/boot-assets
+boot-script: $(DESTDIR)/boot-assets
 	$(call stage_package,flash-kernel)
 	# NOTE: the bootscr.rpi* below is deliberate; older flash-kernels have
 	# separate bootscr.rpi? files for different pis, while newer have a
@@ -134,6 +134,13 @@ device-trees: $(DESTDIR)/boot-assets
 	mkdir -p $(DESTDIR)/boot-assets/overlays
 	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree -name "*.dtbo") \
 		$(DESTDIR)/boot-assets/overlays/
+
+# ubuntu-image on classic does not understand the "$kernel:ref" syntax
+# yet and will most likely only do so once it is ported to golang. Use
+# the old syntax for now
+no-kernel-refs-gadget: gadget.yaml
+	mkdir -p $(DESTDIR)/meta
+	sed -e '/source: $$kernel:/,+1d' gadget.yaml > $(DESTDIR)/meta/gadget.yaml
 
 gadget:
 	mkdir -p $(DESTDIR)/meta

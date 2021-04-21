@@ -12,14 +12,18 @@ architectures:
   - build-on: [amd64, armhf]
     run-on: armhf
 
-package-repositories:
-  - type: apt
-    ppa: snappy-dev/image
-
 confinement: strict
 grade: stable
 parts:
+  add-ppa:
+    plugin: nil
+    build-packages:
+      - software-properties-common
+    override-pull: |
+      sudo add-apt-repository --yes ppa:snappy-dev/image
+      sudo apt update
   gadget:
+    after: [add-ppa]
     plugin: nil
     source: .
     override-build: |
@@ -43,6 +47,7 @@ parts:
       - dpkg-dev
       - make
   psplash-local:
+    after: [add-ppa]
     plugin: dump
     prime: [-*]
     source: .

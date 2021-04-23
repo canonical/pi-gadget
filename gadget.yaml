@@ -9,9 +9,9 @@ volumes:
         type: 0C
         size: 1200M
         content:
-          - source: $kernel:pidtbs/dtbs/broadcom/
+          - source: $kernel:dtbs/dtbs/broadcom/
             target: /
-          - source: $kernel:pidtbs/dtbs/overlays/
+          - source: $kernel:dtbs/dtbs/overlays/
             target: /overlays
           - source: boot-assets/
             target: /

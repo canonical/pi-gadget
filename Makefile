@@ -119,10 +119,12 @@ config-classic: $(DESTDIR)/boot-assets
 
 device-trees: $(DESTDIR)/boot-assets
 	$(call stage_package,linux-modules-*-$(KERNEL_FLAVOR))
-	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree -name "*.dtb") \
+	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
+		-name "*.dtb" -a \! -name "overlay_map.dtb") \
 		$(DESTDIR)/boot-assets/
 	mkdir -p $(DESTDIR)/boot-assets/overlays
-	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree -name "*.dtbo") \
+	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
+		-name "*.dtbo" -o -name "overlay_map.dtb") \
 		$(DESTDIR)/boot-assets/overlays/
 
 gadget:

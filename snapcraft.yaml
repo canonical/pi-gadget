@@ -7,6 +7,7 @@ description: |
  Module 3, and the Compute Module 3+ universally.
 type: gadget
 base: core18
+assumes: [kernel-assets]
 architectures:
   - build-on: [amd64, armhf]
     run-on: armhf

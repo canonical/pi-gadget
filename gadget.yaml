@@ -9,9 +9,7 @@ volumes:
         filesystem-label: system-boot
         size: 256M
         content:
-          - source: $kernel:dtbs/dtbs/broadcom/
+          - source: $kernel:dtbs/dtbs/
             target: /
-          - source: $kernel:dtbs/dtbs/overlays/
-            target: /overlays
           - source: boot-assets/
             target: /

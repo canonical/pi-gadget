@@ -9,10 +9,8 @@ volumes:
         type: 0C
         size: 1200M
         content:
-          - source: $kernel:dtbs/dtbs/broadcom/
+          - source: $kernel:dtbs/dtbs/
             target: /
-          - source: $kernel:dtbs/dtbs/overlays/
-            target: /overlays
           - source: boot-assets/
             target: /
       - name: ubuntu-boot

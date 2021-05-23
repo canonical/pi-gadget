@@ -44,6 +44,28 @@ commandline.
 
 ## Building
 
+### Modern (recommended) way to build this snap
+Best way to "reproducibly" build this snap is to use a container.
+And even better, snapcraft can handle it for you !
+
+For details, please visit [this page](https://snapcraft.io/docs/build-on-lxd)
+
+```
+$  SNAPCRAFT_BUILD_ENVIRONMENT=lxd snapcraft --enable-experimental-package-repositories
+*EXPERIMENTAL* package-repositories enabled.
+Launching a container.
+...
+Snapped pi_20-1_arm64.snap
+$
+
+```
+
+After this, you can use **ubuntu-image** tool to create bootable system image for your raspberry-pi.
+
+For details, see: https://ubuntu.com/core/docs/board-enablement#heading--image-building
+
+### Old (not-recommended) way to build
+
 This gadget snap can optionally be cross built on an amd64 machine. To do so,
 just run `snapcraft` with an appropriate `--target-arch` switch, and
 `--destructive-mode` in the top level of the source tree after cloning it and
@@ -56,8 +78,12 @@ selecting the appropriate branch:
     $ sudo snapcraft clean --destructive-mode
     $ sudo snapcraft snap --target-arch=arm64 --destructive-mode
 
-The branches included are:
+## Branches
 
+The branches included in this repository are:
+
+* 20-arm64 - the branch for Core 20 on arm64
+* 20-armhf - the branch for Core 20 on armhf
 * 18-arm64 - the branch for Core 18 on arm64
 * 18-armhf - the branch for Core 18 on armhf
 * classic - the branch for Ubuntu (universal gadget)

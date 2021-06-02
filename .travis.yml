@@ -6,8 +6,6 @@ addons:
   snaps:
     - name: snapcraft
       confinement: classic
-      # TODO: switch to stable when 4.8 hits stable
-      channel: candidate
     - name: lxd
 env:
   global:

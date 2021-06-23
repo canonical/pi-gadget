@@ -76,8 +76,8 @@ snap:
 
 ```yaml
 architecture
-  - build-on: [amd64, arm64]
-    run-on: arm64
+  - build-on: [amd64, armhf]
+    run-on: armhf
 ```
 
 See [Architectures](https://snapcraft.io/docs/architectures) for more details

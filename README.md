@@ -69,7 +69,7 @@ Snapped pi_20-1_armhf.snap
 By default, _snapcraft_ attempts to build the gadget snap in a
 [Multipass](https://multipass.run/) container, isolating the host system from
 the build system. [Building on LXD](https://snapcraft.io/docs/build-on-lxd) is
-another option that can be faster, especially when iterating on builds. Both
+another option that can be faster, especially when iterating over builds. Both
 allow for the build architecture to differ from the _run-on_ architecture, as
 defined by the `architecture` stanza in the _snapcraft.yaml_ for the gadget
 snap:

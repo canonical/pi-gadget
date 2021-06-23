@@ -82,5 +82,5 @@ architecture
 
 See [Architectures](https://snapcraft.io/docs/architectures) for more details
 on defining architectures and [Image
-building](https://ubuntu.com/core/docs/board-enablement#heading--image-building).
+building](https://ubuntu.com/core/docs/board-enablement#heading--image-building) 
 for instructions on how to build a bootable image that includes the gadget snap.

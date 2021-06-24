@@ -85,7 +85,7 @@ another option that can be faster, especially when iterating over builds.
 
 If Multipass or LXD is not already installed, _Snapcraft_ will install the
 appropriate packages and run through their setup before building the gadget.
-a
+
 Both Multipass and LXD allow for the build architecture to differ from the
 _run-on_ architecture, as defined by the `architecture` stanza in the
 _snapcraft.yaml_ for the gadget snap:
@@ -102,6 +102,9 @@ building](https://ubuntu.com/core/docs/board-enablement#heading--image-building)
 for instructions on how to build a bootable image that includes the gadget snap.
 
 ### Native building
+
+This method allows for the gadget snap to be built in the same hardware the
+gadget is intended for.
 
 #### Prerequisites
 

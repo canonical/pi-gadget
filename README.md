@@ -103,7 +103,7 @@ for instructions on how to build a bootable image that includes the gadget snap.
 
 ### Native building
 
-This method allows for the gadget snap to be built in the same hardware the
+This method allows for the gadget snap to be built on the same hardware the
 gadget is intended for.
 
 #### Prerequisites

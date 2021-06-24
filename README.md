@@ -23,6 +23,7 @@ Please see the `psplash/` sub directory for patches and adjustments in use.
 
 Gadget snaps are a special type of snaps that contain device specific support
 code and data. You can read more about them in the snapcraft forum:
+
 https://forum.snapcraft.io/t/the-gadget-snap/
 
 ## Reporting Issues
@@ -40,7 +41,7 @@ To turn off the splash screen completely please edit `configs/core/cmdline.txt`
 and remove the `splash` and the `vt.handoff=2` keywords from the default kernel
 command line.
 
-## Building
+## Branches
 
 This repository contains the following branches for Ubuntu Core versions and
 the two Raspberry Pi architectures:
@@ -50,18 +51,29 @@ the two Raspberry Pi architectures:
 * 18-arm64 - the branch for Core 18 on arm64
 * 18-armhf - the branch for Core 18 on armhf
 
-To build the gadget snap, switch to the appropriate branch and
-run the [snapcraft](https://snapcraft.io/docs/snapcraft-overview) command:
+## Building
+
+There two options for building the gadget snap: cross building and native
+building.
+
+### Cross building
+
+This is likely the most convenient and performant build method as the gadget is
+built within a container on the host machine.
+
+#### Prerequisites
+
+- An Ubuntu host (20.04 or newer is recommended)
+- [Snapcraft](https://snapcraft.io/docs/snapcraft-overview)
+
+To build the gadget snap, switch to the appropriate branch and simply
+run the `snapcraft` command:
 
 ```bash
 $ git clone https://github.com/snapcore/pi-gadget
 $ cd pi-gadget
 $ git checkout 20-armhf
-Branch '20-armhf' set up to track remote branch '20-armhf' from 'origin'.
-Switched to a new branch '20-armhf'
 $ snapcraft
-Launching a VM.
-Launched: snapcraft-pi
 [...]
 Snapped pi_20-1_armhf.snap
 ```
@@ -69,10 +81,14 @@ Snapped pi_20-1_armhf.snap
 By default, _snapcraft_ attempts to build the gadget snap in a
 [Multipass](https://multipass.run/) container, isolating the host system from
 the build system. [Building on LXD](https://snapcraft.io/docs/build-on-lxd) is
-another option that can be faster, especially when iterating over builds. Both
-allow for the build architecture to differ from the _run-on_ architecture, as
-defined by the `architecture` stanza in the _snapcraft.yaml_ for the gadget
-snap:
+another option that can be faster, especially when iterating over builds.
+
+If Multipass or LXD is not already installed, _Snapcraft_ will install the
+appropriate packages and run through their setup before building the gadget.
+a
+Both Multipass and LXD allow for the build architecture to differ from the
+_run-on_ architecture, as defined by the `architecture` stanza in the
+_snapcraft.yaml_ for the gadget snap:
 
 ```yaml
 architecture
@@ -84,3 +100,39 @@ See [Architectures](https://snapcraft.io/docs/architectures) for more details
 on defining architectures and [Image
 building](https://ubuntu.com/core/docs/board-enablement#heading--image-building) 
 for instructions on how to build a bootable image that includes the gadget snap.
+
+### Native building
+
+#### Prerequisites
+
+- A [supported Raspberry
+  Pi](https://ubuntu.com/core/docs/supported-platforms#heading--supported) with
+[UC20+ installed](https://ubuntu.com/core/docs/uc20/install)
+- An SSH connection to the Raspberry Pi
+- Raspberry Pi internet access
+
+To build the gadget snap:
+1. Install and set up [LXD](https://linuxcontainers.org/lxd/introduction/) 
+1. Launch a fresh instance of Ubuntu 20.04
+1. Within the instance:
+   - Install snapcraft
+   - Clone the repo, switch to the appropriate build and arch branch
+   - Build the gadget with snapcraft
+
+Running the following commands on the Raspberry Pi will perform the above process:
+
+```no-highlight
+$ sudo snap install lxd
+$ sudo lxd init --auto
+$ sudo lxc launch ubuntu:20.04 focal
+$ sudo lxc shell focal
+# snap install snapcraft --classic
+# git clone https://github.com/snapcore/pi-gadget/
+# cd pi-gadget
+# snapcraft --destructive-mode
+```
+
+See [Image
+building](https://ubuntu.com/core/docs/board-enablement#heading--image-building)
+for instructions on how to build a bootable image that includes the gadget
+snap.

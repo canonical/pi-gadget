@@ -121,6 +121,7 @@ To build the gadget snap:
    - Install snapcraft
    - Clone the repo, switch to the appropriate build and arch branch
    - Build the gadget with snapcraft
+1. Exit the instance and obtain the snap from within the container
 
 Running the following commands on the Raspberry Pi will perform the above process:
 
@@ -133,6 +134,10 @@ $ sudo lxc shell focal
 # git clone https://github.com/snapcore/pi-gadget/
 # cd pi-gadget
 # snapcraft --destructive-mode
+[...]
+Snapped pi_20-1_arm64.snap
+# exit
+$ lxc file pull focal/root/pi-gadget/pi_20-1_arm64.snap .
 ```
 
 See [Image

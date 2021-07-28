@@ -2,7 +2,7 @@ STAGEDIR ?= "$(CURDIR)/stage"
 DESTDIR ?= "$(CURDIR)/install"
 ARCH ?= $(shell dpkg --print-architecture)
 # TODO: Change to JJ once it's open
-SERIES ?= impish
+SERIES ?= hirsute
 
 ifeq ($(ARCH),arm64)
 	MKIMAGE_ARCH := arm64

@@ -17,7 +17,7 @@ package-repositories:
     ppa: snappy-dev/image
 
 confinement: strict
-grade: stable
+grade: devel
 parts:
   gadget:
     plugin: nil

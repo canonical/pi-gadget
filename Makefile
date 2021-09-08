@@ -121,7 +121,7 @@ config-classic: $(DESTDIR)/boot-assets
 	cp -a configs/classic/README $(DESTDIR)/boot-assets/
 
 device-trees: $(DESTDIR)/boot-assets
-	$(call stage_package,linux-modules-*-$(KERNEL_FLAVOR))
+	$(call stage_package,linux-modules-[0-9]*-$(KERNEL_FLAVOR))
 	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
 		-name "*.dtb" -a \! -name "overlay_map.dtb") \
 		$(DESTDIR)/boot-assets/

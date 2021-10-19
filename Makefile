@@ -8,7 +8,7 @@ ifeq ($(ARCH),arm64)
 else ifeq ($(ARCH),armhf)
 	MKIMAGE_ARCH := arm
 else
-	$(error Build architecture is not supported)
+$(error Build architecture is not supported)
 endif
 ifeq ($(SERIES),bionic)
 	KERNEL_FLAVOR := raspi2

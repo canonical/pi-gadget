@@ -2,6 +2,7 @@ STAGEDIR ?= "$(CURDIR)/stage"
 DESTDIR ?= "$(CURDIR)/install"
 ARCH ?= $(shell dpkg --print-architecture)
 SERIES ?= focal
+SERIES_RELEASE := $(firstword $(shell distro-info --release --series=$(SERIES)))
 
 ifeq ($(ARCH),arm64)
 	MKIMAGE_ARCH := arm64
@@ -10,10 +11,19 @@ else ifeq ($(ARCH),armhf)
 else
 $(error Build architecture is not supported)
 endif
-ifeq ($(SERIES),bionic)
-	KERNEL_FLAVOR := raspi2
-else
+
+# Effectively, if SERIES_RELEASE >= 18.10
+ifeq ($(firstword $(sort $(SERIES_RELEASE) 18.10)),18.10)
 	KERNEL_FLAVOR := raspi
+else
+	KERNEL_FLAVOR := raspi2
+endif
+
+# Effectively, if SERIES_RELEASE >= 22.04
+ifeq ($(firstword $(sort $(SERIES_RELEASE) 22.04)),22.04)
+	FIRMWARE_FLAVOR := raspi
+else
+	FIRMWARE_FLAVOR := raspi2
 endif
 
 SERIES_HOST ?= $(shell lsb_release --codename --short)
@@ -52,17 +62,15 @@ classic: firmware uboot boot-script config-classic device-trees gadget
 core: firmware uboot boot-script config-core device-trees gadget
 
 firmware: restricted $(DESTDIR)/boot-assets
-	# XXX: This deliberately does NOT use $(KERNEL_FLAVOR); not until we've
-	# renamed linux-firmware-raspi2 anyway!
-	$(call stage_package,linux-firmware-raspi2)
+	$(call stage_package,linux-firmware-$(FIRMWARE_FLAVOR))
 	for file in fixup start bootcode; do \
-		cp -a $(STAGEDIR)/usr/lib/linux-firmware-raspi2/$${file}* \
+		cp -a $(STAGEDIR)/usr/lib/linux-firmware-$(FIRMWARE_FLAVOR)/$${file}* \
 			$(DESTDIR)/boot-assets/; \
 	done
 
 # XXX: This is a hack that we can hopefully get rid of eventually. At this
 # moment livecd-rootfs doesn't enable restricted at this stage, so we need to
-# hack around it to pull in linux-firmware-raspi2 properly.
+# hack around it to pull in linux-firmware-raspi properly.
 restricted:
 	mkdir -p $(STAGEDIR)/apt
 	cp $(SOURCES_HOST) $(SOURCES_RESTRICTED)

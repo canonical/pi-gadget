@@ -28,6 +28,7 @@ SOURCES_RESTRICTED := "$(STAGEDIR)/apt/restricted.sources.list"
 #
 define stage_package
 	mkdir -p $(STAGEDIR)/tmp
+	touch $(STAGEDIR)/tmp/status
 	( \
 		cd $(STAGEDIR)/tmp && \
 		apt-get download \
@@ -36,6 +37,7 @@ define stage_package
 				apt-cache \
 					-o APT::Architecture=$(ARCH) \
 					-o Dir::Etc::sourcelist=$(SOURCES_RESTRICTED) \
+					-o Dir::State::status=$(STAGEDIR)/tmp/status \
 					showpkg $(1) | \
 					sed -n -e 's/^Package: *//p' | \
 					sort -V | tail -1 \

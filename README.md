@@ -70,9 +70,9 @@ produce the gadget snap automatically.
 
 Another managed option is to run `snapcraft remote-build`. This command
 offloads the snap build process to the [Launchpad build
-farm](https://launchpad.net/builders), pushing the potentially
-multi-architecture snap back to your machine when the build completes. See
-[Remote build](https://snapcraft.io/docs/remote-build) for further details.
+farm](https://launchpad.net/builders), pushing the potentially foreign
+architecture snap back to your machine when the build completes. See [Remote
+build](https://snapcraft.io/docs/remote-build) for further details.
 
 Managed build environments will mirror the distro series declared in the `base`
 setting of the gadget's snapcraft.yaml, such as _core20_ or _core18_.
@@ -88,7 +88,7 @@ below.
 
 ### Example managed build
 
-This is likely the most convenient and performant build method as the gadget is
+This is likely the most convenient build method as the gadget is automatically
 built within a container on the host machine.
 
 #### Prerequisites

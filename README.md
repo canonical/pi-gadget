@@ -3,7 +3,8 @@
 This repository contains the source for an [Ubuntu
 Core](https://ubuntu.com/core) gadget snap that runs universally on all the
 Raspberry Pi boards currently supported by Ubuntu Core (Raspberry Pi 2B, 3B,
-3A+, 3B+, 4B, Compute Module 3, and Compute Module 3+).
+3A+, 3B+, 4B, Pi Zero 2 W, Compute Module 3, Compute Module 3+ and Compute
+Module 4).
 
 Building with [snapcraft](https://snapcraft.io/docs/snapcraft-overview)(see
 below) will obtain various components from the bionic-updates archive,
@@ -44,7 +45,7 @@ command line.
 ## Branches
 
 This repository contains the following branches for Ubuntu Core versions and
-the two Raspberry Pi architectures:
+the two Raspberry Pi architectures(_armhf_ and _arm64_):
 
 * 18-arm64 - the branch for Core 18 on arm64
 * 18-armhf - the branch for Core 18 on armhf
@@ -57,10 +58,35 @@ the two Raspberry Pi architectures:
 
 ## Building
 
-There two options for building the gadget snap: cross building and native
-building.
+There are two general approaches to building the pi-gadget snap: _managed_ and
+_manual managed_.
 
-### Cross building
+The easiest managed approach is to simply run `snapcraft` within the root of
+this repository on a classic Ubuntu installation, such as an amd64-based Ubuntu
+server or desktop, or even an arm64-based Ubuntu running on a Raspberry Pi.
+Snapcraft will create either a [Multipass](https://multipass.run/) or
+[LXD](https://linuxcontainers.org/lxd/introduction/) build environment and
+produce the gadget snap automatically.
+
+Another managed option is to run `snapcraft remote-build`. This command
+offloads the snap build process to the [Launchpad build
+farm](https://launchpad.net/builders), pushing the potentially
+multi-architecture snap back to your machine when the build completes. See
+[Remote build](https://snapcraft.io/docs/remote-build) for further details.
+
+Managed build environments will mirror the distro series declared in the `base`
+setting of the gadget's snapcraft.yaml, such as _core20_ or _core18_.
+
+Manually managed builds include building the gadget snap on Ubuntu Core running
+on a Raspberry Pi, for example, and systems where you want to first manually
+isolate a build from the host system. In both cases, you first manually
+create an LXD instance from which you can run `snapcraft --destructive-mode` to
+use the instance as the build environment.
+
+Examples of both a _managed_ build and a _manually managed_ build are outlined
+below.
+
+### Example managed build
 
 This is likely the most convenient and performant build method as the gadget is
 built within a container on the host machine.
@@ -105,7 +131,7 @@ on defining architectures and [Image
 building](https://ubuntu.com/core/docs/board-enablement#heading--image-building) 
 for instructions on how to build a bootable image that includes the gadget snap.
 
-### Native building
+### Example manually managed build
 
 This method allows for the gadget snap to be built on the same hardware the
 gadget is intended for.

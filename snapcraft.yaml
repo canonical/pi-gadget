@@ -209,6 +209,9 @@ slots:
   bt-serial:
     interface: serial-port
     path: /dev/ttyAMA0
+  serial0:
+    interface: serial-port
+    path: /dev/ttyS0
   spidev0:
     interface: spi
     path: /dev/spidev0.0

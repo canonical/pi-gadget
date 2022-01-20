@@ -212,9 +212,44 @@ slots:
   serial0:
     interface: serial-port
     path: /dev/ttyS0
+  serial1:
+    interface: serial-port
+    path: /dev/ttyS1
+  serial2:
+    interface: serial-port
+    path: /dev/ttyS2
+  serial3:
+    interface: serial-port
+    path: /dev/ttyS3
+  serial4:
+    interface: serial-port
+    path: /dev/ttyS4
+  serial5:
+    interface: serial-port
+    path: /dev/ttyS5
+  serial6:
+    interface: serial-port
+    path: /dev/ttyS6
+  serial7:
+    interface: serial-port
+    path: /dev/ttyS7
+  serial8:
+    interface: serial-port
+    path: /dev/ttyS8
+  serial9:
+    interface: serial-port
+    path: /dev/ttyS9
   spidev0:
     interface: spi
     path: /dev/spidev0.0
   spidev1:
     interface: spi
     path: /dev/spidev0.1
+  pwm0:
+    interface: pwm
+    chip-number: 0
+    channel: 0
+  pwm1:
+    interface: pwm
+    chip-number: 0
+    channel: 1

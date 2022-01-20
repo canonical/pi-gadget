@@ -8,6 +8,9 @@ kernel=uboot_rpi_2.bin
 [pi3]
 kernel=uboot_rpi_3.bin
 
+[pi0]
+kernel=uboot_rpi_3.bin
+
 [all]
 arm_64bit=1
 device_tree_address=0x02000000

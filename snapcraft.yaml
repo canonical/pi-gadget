@@ -206,6 +206,18 @@ slots:
   i2c-2:
     interface: i2c
     path: /dev/i2c-2
+  i2c-3:
+    interface: i2c
+    path: /dev/i2c-3
+  i2c-4:
+    interface: i2c
+    path: /dev/i2c-4
+  i2c-5:
+    interface: i2c
+    path: /dev/i2c-5
+  i2c-6:
+    interface: i2c
+    path: /dev/i2c-6
   bt-serial:
     interface: serial-port
     path: /dev/ttyAMA0

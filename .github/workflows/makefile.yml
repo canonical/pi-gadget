@@ -1,0 +1,16 @@
+name: Snapcore Build
+
+on:
+  push:
+    branches: [ 20-arm64 ]
+  pull_request:
+    branches: [ 20-arm64 ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: snapcore/action-build@v1

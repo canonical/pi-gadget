@@ -1,5 +1,6 @@
 [pi4]
 kernel=uboot_rpi_4_32b.bin
+arm_boost=1
 max_framebuffers=2
 
 [cm4]

@@ -96,6 +96,8 @@ built within a container on the host machine.
 - An Ubuntu host (20.04 or newer is recommended)
 - [Snapcraft](https://snapcraft.io/docs/snapcraft-overview)
 
+#### Method
+
 To build the gadget snap, switch to the appropriate branch and simply
 run the `snapcraft` command:
 
@@ -128,7 +130,7 @@ architecture
 
 See [Architectures](https://snapcraft.io/docs/architectures) for more details
 on defining architectures and [Image
-building](https://ubuntu.com/core/docs/board-enablement#heading--image-building) 
+building](https://ubuntu.com/core/docs/board-enablement#heading--image-building)
 for instructions on how to build a bootable image that includes the gadget snap.
 
 ### Example manually managed build
@@ -138,14 +140,15 @@ gadget is intended for.
 
 #### Prerequisites
 
-- A [supported Raspberry
-  Pi](https://ubuntu.com/core/docs/supported-platforms#heading--supported) with
-[UC20+ installed](https://ubuntu.com/core/docs/uc20/install)
+- A [supported Raspberry Pi](https://ubuntu.com/core/docs/supported-platforms)
+  with [UC20+ installed](https://ubuntu.com/core/docs/uc20/install)
 - An SSH connection to the Raspberry Pi
 - Raspberry Pi internet access
 
+#### Method
+
 To build the gadget snap:
-1. Install and set up [LXD](https://linuxcontainers.org/lxd/introduction/) 
+1. Install and set up [LXD](https://linuxcontainers.org/lxd/introduction/)
 1. Launch a fresh instance of Ubuntu 20.04
 1. Within the instance:
    - Install snapcraft

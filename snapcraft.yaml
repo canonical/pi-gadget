@@ -257,6 +257,42 @@ slots:
   spidev1:
     interface: spi
     path: /dev/spidev0.1
+  spidev1-0:
+    interface: spi
+    path: /dev/spidev1.0
+  spidev1-1:
+    interface: spi
+    path: /dev/spidev1.1
+  spidev2-0:
+    interface: spi
+    path: /dev/spidev2.0
+  spidev2-1:
+    interface: spi
+    path: /dev/spidev2.1
+  spidev3-0:
+    interface: spi
+    path: /dev/spidev3.0
+  spidev3-1:
+    interface: spi
+    path: /dev/spidev3.1
+  spidev4-0:
+    interface: spi
+    path: /dev/spidev4.0
+  spidev4-1:
+    interface: spi
+    path: /dev/spidev4.1
+  spidev5-0:
+    interface: spi
+    path: /dev/spidev5.0
+  spidev5-1:
+    interface: spi
+    path: /dev/spidev5.1
+  spidev6-0:
+    interface: spi
+    path: /dev/spidev6.0
+  spidev6-1:
+    interface: spi
+    path: /dev/spidev6.1
   pwm0:
     interface: pwm
     chip-number: 0

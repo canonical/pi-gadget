@@ -9,7 +9,7 @@ kernel=uboot_rpi_2.bin
 kernel=uboot_rpi_3_32b.bin
 
 [pi0]
-kernel=uboot_rpi_3.bin
+kernel=uboot_rpi_3_32b.bin
 
 [all]
 device_tree_address=0x02000000

@@ -60,4 +60,9 @@ The branches included are:
 
 * 18-arm64 - the branch for Core 18 on arm64
 * 18-armhf - the branch for Core 18 on armhf
-* classic - the branch for Ubuntu (universal gadget)
+* 20-arm64 - the branch for Core 20 on arm64
+* 20-armhf - the branch for Core 20 on armhf
+* 22-arm64 - the branch for Core 22 on arm64
+* 22-armhf - the branch for Core 22 on armhf
+* classic - the branch for Ubuntu Server images (universal gadget)
+* desktop - the branch for Ubuntu Desktop images (universal gadget)

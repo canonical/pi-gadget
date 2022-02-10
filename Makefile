@@ -1,7 +1,7 @@
 STAGEDIR ?= "$(CURDIR)/stage"
 DESTDIR ?= "$(CURDIR)/install"
 ARCH ?= $(shell dpkg --print-architecture)
-SERIES ?= focal
+SERIES ?= jammy
 SERIES_RELEASE := $(firstword $(shell distro-info --release --series=$(SERIES)))
 
 ifeq ($(ARCH),arm64)

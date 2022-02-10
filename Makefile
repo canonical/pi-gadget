@@ -2,28 +2,28 @@ STAGEDIR ?= "$(CURDIR)/stage"
 DESTDIR ?= "$(CURDIR)/install"
 ARCH ?= $(shell dpkg --print-architecture)
 SERIES ?= jammy
-SERIES_RELEASE := $(firstword $(shell distro-info --release --series=$(SERIES)))
+SERIES_RELEASE := $(firstword $(shell ubuntu-distro-info --release --series=$(SERIES)))
 
 ifeq ($(ARCH),arm64)
-	MKIMAGE_ARCH := arm64
+MKIMAGE_ARCH := arm64
 else ifeq ($(ARCH),armhf)
-	MKIMAGE_ARCH := arm
+MKIMAGE_ARCH := arm
 else
 $(error Build architecture is not supported)
 endif
 
-# Effectively, if SERIES_RELEASE >= 18.10
+# if SERIES_RELEASE >= 18.10
 ifeq ($(firstword $(sort $(SERIES_RELEASE) 18.10)),18.10)
-	KERNEL_FLAVOR := raspi
+KERNEL_FLAVOR := raspi
 else
-	KERNEL_FLAVOR := raspi2
+KERNEL_FLAVOR := raspi2
 endif
 
-# Effectively, if SERIES_RELEASE >= 22.04
+# if SERIES_RELEASE >= 22.04
 ifeq ($(firstword $(sort $(SERIES_RELEASE) 22.04)),22.04)
-	FIRMWARE_FLAVOR := raspi
+FIRMWARE_FLAVOR := raspi
 else
-	FIRMWARE_FLAVOR := raspi2
+FIRMWARE_FLAVOR := raspi2
 endif
 
 SERIES_HOST ?= $(shell lsb_release --codename --short)

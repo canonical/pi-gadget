@@ -1,0 +1,9 @@
+# The following settings are "defaults" expected to be overridden by the
+# included configuration. The only reason they are included is, again, to
+# support old firmwares which don't understand the "include" command.
+
+enable_uart=1
+cmdline=cmdline.txt
+
+include syscfg.txt
+include usercfg.txt

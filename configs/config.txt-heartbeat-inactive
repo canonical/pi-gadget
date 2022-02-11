@@ -1,0 +1,5 @@
+# Prior versions of Ubuntu Core customized the on-board LEDs so that the green
+# ACT LED was a heartbeat, and the red PWR LED represented SD card activity.
+# Uncomment the following lines if you wish to restore these customizations
+#dtparam=act_led_trigger=heartbeat
+#dtparam=pwr_led_trigger=mmc0

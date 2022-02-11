@@ -28,9 +28,14 @@ https://github.com/snapcore/pi-gadget/issues
 
 ## Building
 
-Building natively on an armhf or arm64 system is as simple as running
-`sudo SERIES=<series> make`. For example, `sudo SERIES=jammy make`.
+Building natively on an armhf or arm64 system is as simple as installing the
+dependencies and running "make":
 
-This gadget snap can optionally be cross built on an amd64 machine.
-Just add the environment variable `ARCH` to the make command. For
-example, `sudo SERIES=jammy ARCH=arm64 make`.
+```console
+$ sudo apt install make u-boot-tools
+$ sudo SERIES=jammy make
+```
+
+You can set `SERIES` to the required distro-series (e.g. focal, jammy), and
+`ARCH` to the target architecture (only armhf and arm64 are accepted) if you
+wish to cross-build the gadget.

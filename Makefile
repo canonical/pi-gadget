@@ -5,6 +5,10 @@ SERIES ?= jammy
 
 SOURCES_RESTRICTED := "$(STAGEDIR)/apt/restricted.sources.list"
 SERIES_RELEASE := $(firstword $(shell ubuntu-distro-info --release --series=$(SERIES)))
+APT_OPTIONS := \
+	-o APT::Architecture=$(ARCH) \
+	-o Dir::Etc::sourcelist=$(SOURCES_RESTRICTED) \
+	-o Dir::State::status=$(STAGEDIR)/tmp/status
 
 ifeq ($(ARCH),arm64)
 MKIMAGE_ARCH := arm64
@@ -36,23 +40,18 @@ KERNEL_FLAVOR := $(if $(call gt,$(SERIES_RELEASE),18.04),raspi,raspi2)
 FIRMWARE_FLAVOR := $(if $(call ge,$(SERIES_RELEASE),22.04),raspi,raspi2)
 
 # Download the latest version of package $1 for architecture $(ARCH), unpacking
-# it into $(STAGEDIR). For example, the following invocation will download the
-# latest version of u-boot-rpi for armhf, and unpack it under STAGEDIR:
+# it into $(STAGEDIR). If you rely on this macro, your recipe must also rely on
+# the $(SOURCES_RESTRICTED) target. For example, the following invocation will
+# download the latest version of u-boot-rpi for armhf, and unpack it under
+# STAGEDIR:
 #
 #  $(call stage_package,u-boot-rpi)
 #
 define stage_package
-	mkdir -p $(STAGEDIR)/tmp
-	touch $(STAGEDIR)/tmp/status
 	( \
 		cd $(STAGEDIR)/tmp && \
-		apt-get download \
-			-o APT::Architecture=$(ARCH) \
-			-o Dir::Etc::sourcelist=$(SOURCES_RESTRICTED) $$( \
-				apt-cache \
-					-o APT::Architecture=$(ARCH) \
-					-o Dir::Etc::sourcelist=$(SOURCES_RESTRICTED) \
-					-o Dir::State::status=$(STAGEDIR)/tmp/status \
+		apt-get download $(APT_OPTIONS) $$( \
+				apt-cache $(APT_OPTIONS) \
 					showpkg $(1) | \
 					sed -n -e 's/^Package: *//p' | \
 					sort -V | tail -1 \
@@ -90,39 +89,38 @@ desktop: firmware uboot boot-script config-desktop device-trees gadget
 
 core: firmware uboot boot-script config-core device-trees gadget
 
-firmware: restricted $(DESTDIR)/boot-assets
+firmware: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 	$(call stage_package,linux-firmware-$(FIRMWARE_FLAVOR))
 	for file in fixup start bootcode; do \
 		cp -a $(STAGEDIR)/usr/lib/linux-firmware-$(FIRMWARE_FLAVOR)/$${file}* \
 			$(DESTDIR)/boot-assets/; \
 	done
 
-# XXX: This is a hack that we can hopefully get rid of eventually. At this
-# moment livecd-rootfs doesn't enable restricted at this stage, so we need to
-# hack around it to pull in linux-firmware-raspi properly.
-RESTRICTED_COMPONENT := $(if $(call le,$(SERIES_RELEASE),20.04),multiverse,restricted)
-restricted:
+# All the default components got moved to main or restricted in groovy. Prior
+# to this (focal and before) certain bits were (are) in universe or multiverse
+RESTRICTED_COMPONENT := $(if $(call le,$(SERIES_RELEASE),20.04),universe multiverse,restricted)
+$(SOURCES_RESTRICTED):
 	mkdir -p $(STAGEDIR)/apt
+	mkdir -p $(STAGEDIR)/tmp
+	touch $(STAGEDIR)/tmp/status
 	sed -e "/^deb/ s/\bSERIES/$(SERIES)/" \
 		-e "/^deb/ s/\bARCH\b/$(ARCH)/" \
 		-e "/^deb/ s/\brestricted\b/$(RESTRICTED_COMPONENT)/" \
 		sources.list > $(SOURCES_RESTRICTED)
-	apt-get update \
-		-o Dir::Etc::sourcelist=$(SOURCES_RESTRICTED) \
-		-o APT::Architecture=$(ARCH) 2>/dev/null
+	apt-get update $(APT_OPTIONS)
 
 # XXX: This should be removed (along with the dependencies in classic/core)
 # when uboot is removed entirely from the boot partition. At present, it is
 # included on the boot partition but not in the configuration just in case
 # anyone requires an easy path to switch back to it
-uboot: $(DESTDIR)/boot-assets
+uboot: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 	$(call stage_package,u-boot-rpi)
 	for platform_path in $(STAGEDIR)/usr/lib/u-boot/*; do \
 		cp -a $$platform_path/u-boot.bin \
 			$(DESTDIR)/boot-assets/uboot_$${platform_path##*/}.bin; \
 	done
 
-boot-script: device-trees $(DESTDIR)/boot-assets
+boot-script: $(SOURCES_RESTRICTED) device-trees $(DESTDIR)/boot-assets
 	$(call stage_package,flash-kernel)
 	# NOTE: the bootscr.rpi* below is deliberate; older flash-kernels have
 	# separate bootscr.rpi? files for different pis, while newer have a
@@ -206,7 +204,7 @@ config-desktop: $(DESTDIR)/boot-assets
 	$(call make_boot_cmdline,$(DESKTOP_CMD))
 	cp -a configs/README $(DESTDIR)/boot-assets/
 
-device-trees: $(DESTDIR)/boot-assets
+device-trees: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 	$(call stage_package,linux-modules-[0-9]*-$(KERNEL_FLAVOR))
 	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
 		-name "*.dtb" -a \! -name "overlay_map.dtb") \

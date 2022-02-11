@@ -1,4 +1,4 @@
-deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES main universe multiverse restricted
-deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES-updates main universe multiverse restricted
-deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES-security main universe multiverse restricted
-#deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES-proposed main universe multiverse restricted
+deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES main restricted
+deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES-updates main restricted
+deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES-security main restricted
+#deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES-proposed main restricted

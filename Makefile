@@ -104,9 +104,9 @@ RESTRICTED_COMPONENT := $(if $(call le,$(SERIES_RELEASE),20.04),multiverse,restr
 restricted:
 	mkdir -p $(STAGEDIR)/apt
 	sed -e "/^deb/ s/\bSERIES/$(SERIES)/" \
-		-e "/^deb/ s/\bARCH\b/$(ARCH)/" sources.list \
+		-e "/^deb/ s/\bARCH\b/$(ARCH)/" \
 		-e "/^deb/ s/\brestricted\b/$(RESTRICTED_COMPONENT)/" \
-		> $(SOURCES_RESTRICTED)
+		sources.list > $(SOURCES_RESTRICTED)
 	apt-get update \
 		-o Dir::Etc::sourcelist=$(SOURCES_RESTRICTED) \
 		-o APT::Architecture=$(ARCH) 2>/dev/null

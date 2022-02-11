@@ -34,7 +34,6 @@ KERNEL_FLAVOR := $(if $(call gt,$(SERIES_RELEASE),18.04),raspi,raspi2)
 FIRMWARE_FLAVOR := $(if $(call ge,$(SERIES_RELEASE),22.04),raspi,raspi2)
 
 SERIES_HOST ?= $(shell lsb_release --codename --short)
-SOURCES_HOST ?= "/etc/apt/sources.list"
 SOURCES_RESTRICTED := "$(STAGEDIR)/apt/restricted.sources.list"
 
 # Download the latest version of package $1 for architecture $(ARCH), unpacking
@@ -104,9 +103,8 @@ firmware: restricted $(DESTDIR)/boot-assets
 # hack around it to pull in linux-firmware-raspi properly.
 restricted:
 	mkdir -p $(STAGEDIR)/apt
-	cp $(SOURCES_HOST) $(SOURCES_RESTRICTED)
-	sed -i "/^deb/ s/\b$(SERIES_HOST)/$(SERIES)/" $(SOURCES_RESTRICTED)
-	sed -i "/^deb/ s/$$/ restricted/" $(SOURCES_RESTRICTED)
+	sed -e "/^deb/ s/\bSERIES/$(SERIES)/" \
+		-e "/^deb/ s/\bARCH\b/$(ARCH)/" sources.list > $(SOURCES_RESTRICTED)
 	apt-get update \
 		-o Dir::Etc::sourcelist=$(SOURCES_RESTRICTED) \
 		-o APT::Architecture=$(ARCH) 2>/dev/null

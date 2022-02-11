@@ -229,20 +229,20 @@ $(DESTDIR)/boot-assets:
 
 # Some rudimentary tests for the various comparator macros above
 test:
-	[ $(if $(call gt,1,2),fail,pass) = "pass" ]
-	[ $(if $(call gt,2,1),pass,fail) = "pass" ]
-	[ $(if $(call gt,2,2),fail,pass) = "pass" ]
-	[ $(if $(call ge,1,2),fail,pass) = "pass" ]
-	[ $(if $(call ge,2,1),pass,fail) = "pass" ]
-	[ $(if $(call ge,2,2),pass,fail) = "pass" ]
-	[ $(if $(call lt,1,2),pass,fail) = "pass" ]
-	[ $(if $(call lt,2,1),fail,pass) = "pass" ]
-	[ $(if $(call lt,2,2),fail,pass) = "pass" ]
-	[ $(if $(call le,1,2),pass,fail) = "pass" ]
-	[ $(if $(call le,2,1),fail,pass) = "pass" ]
-	[ $(if $(call le,2,2),pass,fail) = "pass" ]
-	[ $(if $(call ne,1,2),pass,fail) = "pass" ]
-	[ $(if $(call ne,1,1),fail,pass) = "pass" ]
-	[ $(if $(call eq,1,2),fail,pass) = "pass" ]
-	[ $(if $(call eq,1,1),pass,fail) = "pass" ]
-	[ $(if $(call gt,10,02),pass,fail) = "pass" ]
+	[ $(if $(call gt,1,2),fail,pass) = "pass" ] # 1 > 2
+	[ $(if $(call gt,2,1),pass,fail) = "pass" ] # 2 > 1
+	[ $(if $(call gt,2,2),fail,pass) = "pass" ] # 2 > 2
+	[ $(if $(call ge,1,2),fail,pass) = "pass" ] # 1 >= 2
+	[ $(if $(call ge,2,1),pass,fail) = "pass" ] # 2 >= 1
+	[ $(if $(call ge,2,2),pass,fail) = "pass" ] # 2 >= 2
+	[ $(if $(call lt,1,2),pass,fail) = "pass" ] # 1 < 2
+	[ $(if $(call lt,2,1),fail,pass) = "pass" ] # 2 < 1
+	[ $(if $(call lt,2,2),fail,pass) = "pass" ] # 2 < 2
+	[ $(if $(call le,1,2),pass,fail) = "pass" ] # 1 <= 2
+	[ $(if $(call le,2,1),fail,pass) = "pass" ] # 2 <= 1
+	[ $(if $(call le,2,2),pass,fail) = "pass" ] # 2 <= 2
+	[ $(if $(call ne,1,2),pass,fail) = "pass" ] # 1 != 2
+	[ $(if $(call ne,1,1),fail,pass) = "pass" ] # 1 != 1
+	[ $(if $(call eq,1,2),fail,pass) = "pass" ] # 1 == 2
+	[ $(if $(call eq,1,1),pass,fail) = "pass" ] # 1 == 1
+	[ $(if $(call gt,10,02),pass,fail) = "pass" ] # 10 > 02

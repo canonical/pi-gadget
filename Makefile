@@ -12,19 +12,26 @@ else
 $(error Build architecture is not supported)
 endif
 
-# if SERIES_RELEASE >= 18.10
-ifeq ($(firstword $(sort $(SERIES_RELEASE) 18.10)),18.10)
-KERNEL_FLAVOR := raspi
-else
-KERNEL_FLAVOR := raspi2
-endif
+# Some trivial comparator macros; please note that these are very simplistic
+# and have some limitations. Specifically, the two parameters are compared as
+# *strings*, not numerals. For example, 10 will compare less than 2, but
+# greater than 02.
+#
+# These are primarily intended for comparing $(SERIES_RELEASE) to specific
+# values (which works as strings like 18.04 and 21.04 sort correctly for such
+# operations). For example, to include a string in focal or later releases:
+#
+#  $(if $(call ge,$(SERIES_RELEASE),20.04),focal-or-later,before-focal)
+#
+le = $(findstring $(1),$(firstword $(sort $(1) $(2))))
+ge = $(findstring $(2),$(firstword $(sort $(1) $(2))))
+eq = $(and $(call le,$(1),$(2)),$(call ge,$(1),$(2)))
+ne = $(if $(call eq,$(1),$(2)),,foo)
+lt = $(and $(call le,$(1),$(2)),$(call ne,$(1),$(2)))
+gt = $(and $(call ge,$(1),$(2)),$(call ne,$(1),$(2)))
 
-# if SERIES_RELEASE >= 22.04
-ifeq ($(firstword $(sort $(SERIES_RELEASE) 22.04)),22.04)
-FIRMWARE_FLAVOR := raspi
-else
-FIRMWARE_FLAVOR := raspi2
-endif
+KERNEL_FLAVOR := $(if $(call gt,$(SERIES_RELEASE),18.04),raspi,raspi2)
+FIRMWARE_FLAVOR := $(if $(call ge,$(SERIES_RELEASE),22.04),raspi,raspi2)
 
 SERIES_HOST ?= $(shell lsb_release --codename --short)
 SOURCES_HOST ?= "/etc/apt/sources.list"
@@ -150,3 +157,23 @@ clean:
 
 $(DESTDIR)/boot-assets:
 	mkdir -p $(DESTDIR)/boot-assets
+
+# Some rudimentary tests for the various comparator macros above
+test:
+	[ $(if $(call gt,1,2),fail,pass) = "pass" ]
+	[ $(if $(call gt,2,1),pass,fail) = "pass" ]
+	[ $(if $(call gt,2,2),fail,pass) = "pass" ]
+	[ $(if $(call ge,1,2),fail,pass) = "pass" ]
+	[ $(if $(call ge,2,1),pass,fail) = "pass" ]
+	[ $(if $(call ge,2,2),pass,fail) = "pass" ]
+	[ $(if $(call lt,1,2),pass,fail) = "pass" ]
+	[ $(if $(call lt,2,1),fail,pass) = "pass" ]
+	[ $(if $(call lt,2,2),fail,pass) = "pass" ]
+	[ $(if $(call le,1,2),pass,fail) = "pass" ]
+	[ $(if $(call le,2,1),fail,pass) = "pass" ]
+	[ $(if $(call le,2,2),pass,fail) = "pass" ]
+	[ $(if $(call ne,1,2),pass,fail) = "pass" ]
+	[ $(if $(call ne,1,1),fail,pass) = "pass" ]
+	[ $(if $(call eq,1,2),fail,pass) = "pass" ]
+	[ $(if $(call eq,1,1),pass,fail) = "pass" ]
+	[ $(if $(call gt,10,02),pass,fail) = "pass" ]

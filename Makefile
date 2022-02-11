@@ -63,6 +63,28 @@ define stage_package
 	dpkg-deb --extract $$(ls $(STAGEDIR)/tmp/$(1)*.deb | tail -1) $(STAGEDIR)
 endef
 
+# Given a space-separated list of parts in $(1), concatenate them together to
+# form the boot config.txt, making sure there's a blank line between each
+# concatenated part:
+#
+#  $(call make_boot_config,piboot common $(ARCH))
+#
+define make_boot_config
+	mkdir -p $(STAGEDIR)/tmp
+	echo > $(STAGEDIR)/tmp/newline
+	cat $(foreach part,$(1),$(STAGEDIR)/tmp/newline configs/config.txt-$(part)) | \
+		tail +2 > $(DESTDIR)/boot-assets/config.txt
+endef
+
+# Given a space-separated list of parts in $(1), concatenate them together on
+# a single line to form the kernel cmdline.txt:
+#
+#  $(call make_boot_cmdline,elevator classic)
+#
+define make_boot_cmdline
+	echo $(foreach part,$(1),$$(cat configs/cmdline.txt-$(part))) > \
+		$(DESTDIR)/boot-assets/cmdline.txt
+endef
 
 server: firmware uboot boot-script config-server device-trees gadget
 

@@ -64,7 +64,9 @@ define stage_package
 endef
 
 
-classic: firmware uboot boot-script config-classic device-trees gadget
+server: firmware uboot boot-script config-server device-trees gadget
+
+desktop: firmware uboot boot-script config-desktop device-trees gadget
 
 core: firmware uboot boot-script config-core device-trees gadget
 
@@ -116,26 +118,69 @@ boot-script: device-trees $(DESTDIR)/boot-assets
 	mkimage -A $(MKIMAGE_ARCH) -O linux -T script -C none -n "boot script" \
 		-d $(STAGEDIR)/bootscr.rpi $(DESTDIR)/boot-assets/boot.scr
 
+CORE_CFG := \
+	uboot-$(ARCH) \
+	uboot \
+	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
+	common \
+	fkms \
+	$(if $(call lt,$(SERIES_RELEASE),20.04),heartbeat-active,heartbeat-inactive) \
+	$(ARCH)
+CORE_CMD := \
+	$(if $(call lt,$(SERIES_RELEASE),22.04),elevator,) \
+	serial \
+	core
 config-core: $(DESTDIR)/boot-assets
+	$(call make_boot_config,$(CORE_CFG))
+	$(call make_boot_cmdline,$(CORE_CMD))
 	# TODO:UC20: currently we use an empty uboot.conf as a landmark for the new
 	#            uboot style where there is no uboot.env installed onto the root
-	#            of the partition and instead the boot.scr is used. this may 
+	#            of the partition and instead the boot.scr is used. this may
 	#            change for the final release
 	touch $(DESTDIR)/uboot.conf
 	# the boot.sel file is currently installed onto ubuntu-boot from the gadget
 	# but that will probably change soon so that snapd installs it instead
 	# it is empty now, but snapd will write vars to it
 	mkenvimage -r -s 4096 -o $(DESTDIR)/boot.sel - < /dev/null
-	cp -a configs/core/config.txt.$(ARCH) $(DESTDIR)/boot-assets/config.txt
-	cp -a configs/core/cmdline.txt $(DESTDIR)/boot-assets/cmdline.txt
 
-config-classic: $(DESTDIR)/boot-assets
-	cp -a configs/classic/*.txt $(DESTDIR)/boot-assets/
-	cat configs/classic/config.txt-$(ARCH) >> $(DESTDIR)/boot-assets/config.txt
-	cp -a configs/classic/user-data $(DESTDIR)/boot-assets/
-	cp -a configs/classic/meta-data $(DESTDIR)/boot-assets/
-	cp -a configs/classic/network-config $(DESTDIR)/boot-assets/
-	cp -a configs/classic/README $(DESTDIR)/boot-assets/
+SERVER_CFG := \
+	$(if $(call eq,$(SERIES_RELEASE),20.04),legacy-header,) \
+	$(if $(call le,$(SERIES_RELEASE),20.04),uboot-$(ARCH) uboot,piboot) \
+	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
+	common \
+	$(if $(call ge,$(SERIES_RELEASE),20.10),serial-console,) \
+	$(if $(call ge,$(SERIES_RELEASE),22.04),libcamera,) \
+	$(ARCH) \
+	$(if $(call eq,$(SERIES_RELEASE),20.04),legacy-includes,)
+SERVER_CMD := \
+	$(if $(call lt,$(SERIES_RELEASE),22.04),elevator,) \
+	serial \
+	classic
+SERVER_FILES := \
+	README \
+	user-data \
+	meta-data \
+	network-config \
+	$(if $(call eq,$(SERIES_RELEASE),20.04), syscfg.txt usercfg.txt,)
+config-server: $(DESTDIR)/boot-assets
+	$(call make_boot_config,$(SERVER_CFG))
+	$(call make_boot_cmdline,$(SERVER_CMD))
+	cp -a $(foreach file,$(SERVER_FILES),configs/$(file)) $(DESTDIR)/boot-assets/
+
+DESKTOP_CFG := \
+	piboot \
+	cm4-support \
+	common \
+	kms \
+	$(if $(call ge,$(SERIES_RELEASE),22.04),libcamera,) \
+	$(ARCH)
+DESKTOP_CMD := \
+	$(if $(call lt,$(SERIES_RELEASE),22.04),elevator,) \
+	classic
+config-desktop: $(DESTDIR)/boot-assets
+	$(call make_boot_config,$(DESKTOP_CFG))
+	$(call make_boot_cmdline,$(DESKTOP_CMD))
+	cp -a configs/README $(DESTDIR)/boot-assets/
 
 device-trees: $(DESTDIR)/boot-assets
 	$(call stage_package,linux-modules-[0-9]*-$(KERNEL_FLAVOR))

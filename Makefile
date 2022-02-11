@@ -2,6 +2,8 @@ STAGEDIR ?= "$(CURDIR)/stage"
 DESTDIR ?= "$(CURDIR)/install"
 ARCH ?= $(shell dpkg --print-architecture)
 SERIES ?= jammy
+
+SOURCES_RESTRICTED := "$(STAGEDIR)/apt/restricted.sources.list"
 SERIES_RELEASE := $(firstword $(shell ubuntu-distro-info --release --series=$(SERIES)))
 
 ifeq ($(ARCH),arm64)
@@ -32,9 +34,6 @@ gt = $(and $(call ge,$(1),$(2)),$(call ne,$(1),$(2)))
 
 KERNEL_FLAVOR := $(if $(call gt,$(SERIES_RELEASE),18.04),raspi,raspi2)
 FIRMWARE_FLAVOR := $(if $(call ge,$(SERIES_RELEASE),22.04),raspi,raspi2)
-
-SERIES_HOST ?= $(shell lsb_release --codename --short)
-SOURCES_RESTRICTED := "$(STAGEDIR)/apt/restricted.sources.list"
 
 # Download the latest version of package $1 for architecture $(ARCH), unpacking
 # it into $(STAGEDIR). For example, the following invocation will download the
@@ -101,10 +100,13 @@ firmware: restricted $(DESTDIR)/boot-assets
 # XXX: This is a hack that we can hopefully get rid of eventually. At this
 # moment livecd-rootfs doesn't enable restricted at this stage, so we need to
 # hack around it to pull in linux-firmware-raspi properly.
+RESTRICTED_COMPONENT := $(if $(call le,$(SERIES_RELEASE),20.04),multiverse,restricted)
 restricted:
 	mkdir -p $(STAGEDIR)/apt
 	sed -e "/^deb/ s/\bSERIES/$(SERIES)/" \
-		-e "/^deb/ s/\bARCH\b/$(ARCH)/" sources.list > $(SOURCES_RESTRICTED)
+		-e "/^deb/ s/\bARCH\b/$(ARCH)/" sources.list \
+		-e "/^deb/ s/\brestricted\b/$(RESTRICTED_COMPONENT)/" \
+		> $(SOURCES_RESTRICTED)
 	apt-get update \
 		-o Dir::Etc::sourcelist=$(SOURCES_RESTRICTED) \
 		-o APT::Architecture=$(ARCH) 2>/dev/null

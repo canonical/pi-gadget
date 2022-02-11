@@ -142,6 +142,7 @@ boot-script: device-trees $(DESTDIR)/boot-assets
 
 CORE_CFG := \
 	uboot-$(ARCH) \
+	$(if $(call ge,$(SERIES_RELEASE),20.04),uboot-pi0-$(ARCH),) \
 	uboot \
 	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
 	common \
@@ -168,6 +169,7 @@ config-core: $(DESTDIR)/boot-assets
 SERVER_CFG := \
 	$(if $(call eq,$(SERIES_RELEASE),20.04),legacy-header,) \
 	$(if $(call le,$(SERIES_RELEASE),20.04),uboot-$(ARCH) uboot,piboot) \
+	$(if $(call eq,$(SERIES_RELEASE),20.04),uboot-pi0-$(ARCH),) \
 	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
 	common \
 	$(if $(call ge,$(SERIES_RELEASE),20.10),serial-console,) \

@@ -13,6 +13,3 @@ kernel=uboot_rpi_2.bin
 
 [pi3]
 kernel=uboot_rpi_3.bin
-
-[pi0]
-kernel=uboot_rpi_3.bin

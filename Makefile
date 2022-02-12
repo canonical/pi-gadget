@@ -166,13 +166,14 @@ config-core: $(DESTDIR)/boot-assets
 
 SERVER_CFG := \
 	$(if $(call eq,$(SERIES_RELEASE),20.04),legacy-header,) \
-	$(if $(call le,$(SERIES_RELEASE),20.04),uboot-$(ARCH) uboot-classic,piboot) \
+	$(if $(call le,$(SERIES_RELEASE),20.04),uboot-$(ARCH),) \
 	$(if $(call eq,$(SERIES_RELEASE),20.04),uboot-pi0-$(ARCH),) \
-	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
+	$(if $(call le,$(SERIES_RELEASE),20.04),uboot-classic,piboot) \
 	common \
 	$(if $(call ge,$(SERIES_RELEASE),20.10),serial-console,) \
 	$(if $(call ge,$(SERIES_RELEASE),22.04),libcamera,) \
 	$(ARCH) \
+	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
 	$(if $(call eq,$(SERIES_RELEASE),20.04),legacy-includes,)
 SERVER_CMD := \
 	$(if $(call lt,$(SERIES_RELEASE),22.04),elevator,) \

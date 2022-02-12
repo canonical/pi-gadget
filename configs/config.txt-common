@@ -3,7 +3,9 @@ max_framebuffers=2
 arm_boost=1
 
 [all]
-# Enable the audio output, I2C and SPI interfaces on the GPIO header
+# Enable the audio output, I2C and SPI interfaces on the GPIO header. As these
+# parameters related to the base device-tree they must appear *before* any
+# other dtoverlay= specification
 dtparam=audio=on
 dtparam=i2c_arm=on
 dtparam=spi=on

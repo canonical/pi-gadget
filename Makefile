@@ -177,6 +177,7 @@ SERVER_CFG := \
 	$(if $(call eq,$(SERIES_RELEASE),20.04),legacy-includes,)
 SERVER_CMD := \
 	$(if $(call lt,$(SERIES_RELEASE),22.04),elevator,) \
+	$(if $(call le,$(SERIES_RELEASE),20.04),ifnames,) \
 	serial \
 	classic
 SERVER_FILES := \

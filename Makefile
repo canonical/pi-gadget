@@ -200,6 +200,7 @@ DESKTOP_CFG := \
 	$(ARCH)
 DESKTOP_CMD := \
 	$(if $(call lt,$(SERIES_RELEASE),22.04),elevator,) \
+	$(if $(call ge,$(SERIES_RELEASE),22.04),zswap,) \
 	classic
 config-desktop: $(DESTDIR)/boot-assets
 	$(call make_boot_config,$(DESKTOP_CFG))

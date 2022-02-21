@@ -142,8 +142,8 @@ CORE_CFG := \
 	uboot-$(ARCH) \
 	$(if $(call ge,$(SERIES_RELEASE),20.04),uboot-pi0-$(ARCH),) \
 	uboot-core \
-	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
 	common \
+	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
 	fkms \
 	$(if $(call lt,$(SERIES_RELEASE),20.04),heartbeat-active,heartbeat-inactive) \
 	$(ARCH)
@@ -193,8 +193,8 @@ config-server: $(DESTDIR)/boot-assets
 
 DESKTOP_CFG := \
 	piboot \
-	cm4-support \
 	common \
+	cm4-support \
 	kms \
 	$(if $(call ge,$(SERIES_RELEASE),22.04),libcamera,) \
 	$(ARCH)

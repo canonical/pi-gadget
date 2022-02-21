@@ -83,6 +83,8 @@ define make_boot_cmdline
 		$(DESTDIR)/boot-assets/cmdline.txt
 endef
 
+default: server
+
 server: firmware uboot boot-script config-server device-trees gadget
 
 desktop: firmware uboot boot-script config-desktop device-trees gadget

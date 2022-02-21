@@ -1,0 +1,2 @@
+# Enable the serial pins
+enable_uart=1

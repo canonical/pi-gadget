@@ -1,0 +1,1 @@
+zswap.enabled=1 zswap.zpool=z3fold zswap.compressor=zstd

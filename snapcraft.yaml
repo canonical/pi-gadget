@@ -20,7 +20,7 @@ parts:
         echo "Cross compilation detected; using pre-defined sources list"
         OPTIONAL_ARGS="SOURCES_HOST=\"./helpers/sources.list.cross\""
       fi
-      make -C ${SNAPCRAFT_PROJECT_DIR:-.} classic \
+      make -C ${SNAPCRAFT_PROJECT_DIR:-.} default \
         DESTDIR=${SNAPCRAFT_PART_INSTALL} \
         ARCH=$(dpkg-architecture -t "${SNAPCRAFT_ARCH_TRIPLET}" -q DEB_HOST_ARCH) \
         ${OPTIONAL_ARGS:-}

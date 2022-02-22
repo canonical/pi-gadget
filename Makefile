@@ -56,16 +56,16 @@ core: firmware uboot boot-script config-core gadget
 firmware: multiverse $(DESTDIR)/boot-assets
 	# XXX: This deliberately does NOT use $(KERNEL_FLAVOR); not until we've
 	# renamed linux-firmware-raspi2 anyway!
-	$(call stage_package,linux-firmware-raspi2)
+	$(call stage_package,linux-firmware-raspi)
 	for file in fixup start bootcode; do \
-		cp -a $(STAGEDIR)/usr/lib/linux-firmware-raspi2/$${file}* \
+		cp -a $(STAGEDIR)/usr/lib/linux-firmware-raspi/$${file}* \
 			$(DESTDIR)/boot-assets/; \
 	done
 
 # XXX: This is a hack that we can hopefully get rid of eventually. Currently,
 # the livefs Launchpad builders don't have multiverse enabled. We want to
 # work-around that by actually enabling multiverse just for this one build here
-# as we need it for linux-firmware-raspi2.
+# as we need it for linux-firmware-raspi.
 multiverse:
 	mkdir -p $(STAGEDIR)/apt
 	cp $(SOURCES_HOST) $(SOURCES_MULTIVERSE)

@@ -1,5 +1,5 @@
 name: pi
-version: 22-1
+version: 22-2
 summary: Raspberry Pi gadget
 description: |
   Support files for booting Raspberry Pi.
@@ -53,6 +53,7 @@ parts:
     stage: [psplash]
   psplash:
     after: [psplash-local]
+    source-type: git
     source: https://git.yoctoproject.org/psplash
     source-commit: 2015f7073e98dd9562db0936a254af5ef56356cf
     plugin: nil

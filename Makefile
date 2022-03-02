@@ -49,9 +49,9 @@ define stage_package
 endef
 
 # XXX: move classic to use new "$kernel:ref" syntax too and remove the "device-trees" rule
-classic: firmware uboot device-trees boot-script config-classic no-kernel-refs-gadget
+classic: firmware device-trees config-classic no-kernel-refs-gadget
 
-core: firmware uboot boot-script config-core gadget
+core: firmware config-core gadget
 
 firmware: multiverse $(DESTDIR)/boot-assets
 	# XXX: This deliberately does NOT use $(KERNEL_FLAVOR); not until we've
@@ -81,43 +81,13 @@ multiverse:
 		-o Dir::Etc::sourceparts=$(SOURCES_D_MULTIVERSE) \
 		-o APT::Architecture=$(ARCH) 2>/dev/null
 
-uboot: $(DESTDIR)/boot-assets
-	$(call stage_package,u-boot-rpi)
-	for platform_path in $(STAGEDIR)/usr/lib/u-boot/*; do \
-		cp -a $$platform_path/u-boot.bin \
-			$(DESTDIR)/boot-assets/uboot_$${platform_path##*/}.bin; \
-	done
-
-boot-script: $(DESTDIR)/boot-assets
-	$(call stage_package,flash-kernel)
-	# NOTE: the bootscr.rpi* below is deliberate; older flash-kernels have
-	# separate bootscr.rpi? files for different pis, while newer have a
-	# single generic bootscr.rpi file
-	for kvers in $(STAGEDIR)/lib/modules/*; do \
-		sed \
-			-e "s/@@KERNEL_VERSION@@/$${kvers##*/}/g" \
-			-e "s/@@LINUX_KERNEL_CMDLINE@@/quiet splash/g" \
-			-e "s/@@LINUX_KERNEL_CMDLINE_DEFAULTS@@//g" \
-			-e "s/@@UBOOT_ENV_EXTRA@@//g" \
-			-e "s/@@UBOOT_PREBOOT_EXTRA@@//g" \
-			$(STAGEDIR)/etc/flash-kernel/bootscript/bootscr.rpi* \
-			> $(STAGEDIR)/bootscr.rpi; \
-	done
-	mkimage -A $(MKIMAGE_ARCH) -O linux -T script -C none -n "boot script" \
-		-d $(STAGEDIR)/bootscr.rpi $(DESTDIR)/boot-assets/boot.scr
-
 config-core: $(DESTDIR)/boot-assets
-	# TODO:UC20: currently we use an empty uboot.conf as a landmark for the new
-	#            uboot style where there is no uboot.env installed onto the root
-	#            of the partition and instead the boot.scr is used. this may 
-	#            change for the final release
-	touch $(DESTDIR)/uboot.conf
-	# the boot.sel file is currently installed onto ubuntu-boot from the gadget
-	# but that will probably change soon so that snapd installs it instead
-	# it is empty now, but snapd will write vars to it
-	mkenvimage -r -s 4096 -o $(DESTDIR)/boot.sel - < /dev/null
-	cp -a configs/core/config.txt.$(ARCH) $(DESTDIR)/boot-assets/config.txt
-	cp -a configs/core/cmdline.txt $(DESTDIR)/boot-assets/cmdline.txt
+	# The empty piboot.conf tells snapd this to use the piboot bootloader
+	touch $(DESTDIR)/piboot.conf
+	cp -a configs/core/config.txt.$(ARCH) $(DESTDIR)/config.txt
+	sed -i 's/^kernel=.*/kernel=kernel.img/' $(DESTDIR)/config.txt
+	printf '\ninitramfs initrd.img followkernel\nos_prefix=\n' >> $(DESTDIR)/config.txt
+	cp -a configs/core/cmdline.txt $(DESTDIR)/cmdline.txt
 
 config-classic: $(DESTDIR)/boot-assets
 	cp -a configs/classic/*.txt $(DESTDIR)/boot-assets/

@@ -1,0 +1,5 @@
+[all]
+kernel=kernel.img
+cmdline=cmdline.txt
+initramfs initrd.img followkernel
+os_prefix=

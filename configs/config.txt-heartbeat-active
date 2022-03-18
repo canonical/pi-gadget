@@ -1,0 +1,2 @@
+dtparam=act_led_trigger=heartbeat
+dtparam=pwr_led_trigger=mmc0

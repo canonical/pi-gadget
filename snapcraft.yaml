@@ -102,7 +102,7 @@ parts:
       - gcc
       - otf2bdf
       - libbogl-dev
-      - ttf-ubuntu-font-family
+      - fonts-ubuntu
       - cpio
       - findutils
       - liblz4-tool

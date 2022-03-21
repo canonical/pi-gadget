@@ -15,10 +15,6 @@ volumes:
             target: /overlays
           - source: boot-assets/
             target: /
-          - source: cmdline.txt
-            target: /
-          - source: config.txt
-            target: /
       - name: ubuntu-boot
         role: system-boot
         filesystem: vfat

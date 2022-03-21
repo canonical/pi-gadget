@@ -40,8 +40,6 @@ parts:
     prime:
       - boot-assets/*
       - piboot.conf
-      - cmdline.txt
-      - config.txt
     build-packages:
       - lsb-release
       - dpkg-dev

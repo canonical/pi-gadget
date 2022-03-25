@@ -1,0 +1,3 @@
+# Config settings specific to arm64
+arm_64bit=1
+dtoverlay=dwc2

@@ -137,8 +137,10 @@ boot-script: $(SOURCES_RESTRICTED) device-trees $(DESTDIR)/boot-assets
 			$(STAGEDIR)/etc/flash-kernel/bootscript/bootscr.rpi* \
 			> $(STAGEDIR)/bootscr.rpi; \
 	done
+ifneq "22.04" "$(word 1, $(sort 22.04 $(SERIES_RELEASE)))"
 	mkimage -A $(MKIMAGE_ARCH) -O linux -T script -C none -n "boot script" \
 		-d $(STAGEDIR)/bootscr.rpi $(DESTDIR)/boot-assets/boot.scr
+endif
 
 CORE_CFG := \
 	$(if $(call lt,$(SERIES_RELEASE),22.04),uboot-$(ARCH),piboot-core) \

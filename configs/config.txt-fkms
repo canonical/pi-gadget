@@ -1,0 +1,7 @@
+# Enable the FKMS ("Fake" KMS) graphics overlay, and allocate 128Mb to the
+# GPU memory
+dtoverlay=vc4-fkms-v3d,cma-128
+
+# Uncomment the following to enable the Raspberry Pi camera module firmware
+#start_x=1
+#gpu_mem=128

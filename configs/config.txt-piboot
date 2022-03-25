@@ -1,0 +1,4 @@
+[all]
+kernel=vmlinuz
+cmdline=cmdline.txt
+initramfs initrd.img followkernel

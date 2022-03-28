@@ -147,6 +147,7 @@ CORE_CFG := \
 	$(if $(call eq,$(SERIES_RELEASE),20.04),uboot-pi0-$(ARCH),) \
 	$(if $(call lt,$(SERIES_RELEASE),22.04),uboot-core,) \
 	common \
+	$(if $(call ge,$(SERIES_RELEASE),22.04),serial-console,) \
 	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
 	fkms \
 	$(if $(call lt,$(SERIES_RELEASE),20.04),heartbeat-active,heartbeat-inactive) \

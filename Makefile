@@ -89,7 +89,11 @@ server: firmware uboot boot-script config-server device-trees gadget
 
 desktop: firmware uboot boot-script config-desktop device-trees gadget
 
+ifeq "22.04" "$(word 1, $(sort 22.04 $(SERIES_RELEASE)))"
+core: firmware config-core device-trees gadget
+else
 core: firmware uboot boot-script config-core device-trees gadget
+endif
 
 firmware: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 	$(call stage_package,linux-firmware-$(FIRMWARE_FLAVOR))

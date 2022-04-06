@@ -79,22 +79,26 @@ ssh_pwauth: true
 
 ## Write arbitrary files to the file-system (including binaries!)
 #write_files:
-#- path: /etc/default/keyboard
+#- path: /etc/default/console-setup
 #  content: |
-#    # KEYBOARD configuration file
-#    # Consult the keyboard(5) manual page.
-#    XKBMODEL="pc105"
-#    XKBLAYOUT="gb"
-#    XKBVARIANT=""
-#    XKBOPTIONS="ctrl: nocaps"
+#    # Consult the console-setup(5) manual page.
+#    ACTIVE_CONSOLES="/dev/tty[1-6]"
+#    CHARMAP="UTF-8"
+#    VIDEOMODE=
+#    FONT="Lat15-Terminus18x10.psf.gz"
+#    FONTFACE=
+#    FONTSIZE=
+#    CODESET="Lat15"
 #  permissions: '0644'
 #  owner: root:root
 #- encoding: gzip
-#  path: /usr/bin/hello
+#  path: /root/Makefile
 #  content: !!binary |
-#    H4sIAIDb/U8C/1NW1E/KzNMvzuBKTc7IV8hIzcnJVyjPL8pJ4QIA6N+MVxsAAAA=
+#    H4sICF2DTWIAA01ha2VmaWxlAFNWCM8syVBILMjPyU/PTC1WKMlXiPB2dlFQNjSx5MpNteLi
+#    dLDiSoRQxYl5KeWZyRkgXrSCkoqKRmaKgm6pppKCbmqhgoFCrIKamkK1QmpyRr6Ckn92YqWS
+#    NdC80uQMBZhOa4VahZoaqIrwjMQSewXfxOxUhcwShcr80qLi1Jw0RSUuAIYfEJmVAAAA
 #  owner: root:root
-#  permissions: '0755'
+#  permissions: '0644'
 
 ## Run arbitrary commands at rc.local like time
 #runcmd:

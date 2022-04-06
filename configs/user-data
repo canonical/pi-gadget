@@ -24,6 +24,13 @@ chpasswd:
   list:
   - ubuntu:ubuntu
 
+## Set the system's hostname. Please note that, unless you have a local DNS
+## setup where the hostname is derived from DHCP requests (as with dnsmasq),
+## setting the hostname here will not make the machine reachable by this name.
+## You may also wish to install avahi-daemon (see the "packages:" key below)
+## to make your machine reachable by the .local domain
+#hostname: ubuntu
+
 # Enable password authentication with the SSH daemon
 ssh_pwauth: true
 
@@ -56,6 +63,7 @@ ssh_pwauth: true
 
 ## Install additional packages on first boot
 #packages:
+#- avahi-daemon
 #- pwgen
 #- pastebinit
 #- [libpython2.7, 2.7.3-0ubuntu3.1]

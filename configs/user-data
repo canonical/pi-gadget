@@ -73,9 +73,9 @@ ssh_pwauth: true
 ## Install additional packages on first boot
 #packages:
 #- avahi-daemon
-#- pwgen
-#- pastebinit
-#- [libpython2.7, 2.7.3-0ubuntu3.1]
+#- rng-tools
+#- python3-gpiozero
+#- [python3-serial, 3.5-1]
 
 ## Write arbitrary files to the file-system (including binaries!)
 #write_files:

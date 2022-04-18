@@ -106,6 +106,7 @@ firmware: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 # to this (focal and before) certain bits were (are) in universe or multiverse
 RESTRICTED_COMPONENT := $(if $(call le,$(SERIES_RELEASE),20.04),universe multiverse,restricted)
 $(SOURCES_RESTRICTED):
+	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv C176CB99A28EA6D8 # TODO: remove this
 	mkdir -p $(STAGEDIR)/apt
 	mkdir -p $(STAGEDIR)/tmp
 	touch $(STAGEDIR)/tmp/status

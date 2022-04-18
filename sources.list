@@ -1,4 +1,6 @@
 deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES main restricted
 deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES-updates main restricted
 deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES-security main restricted
+deb [arch=ARCH] http://ppa.launchpad.net/jawn-smith/linux-firmware-raspi/ubuntu SERIES main
+# TODO: remove the PPA
 #deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES-proposed main restricted

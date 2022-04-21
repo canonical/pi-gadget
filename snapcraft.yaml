@@ -26,11 +26,11 @@ parts:
         ${OPTIONAL_ARGS:-}
     prime:
       - boot-assets/*
-      - uboot.conf
-      - boot.sel
     build-packages:
       - u-boot-tools
       - lsb-release
+      - dpkg-dev
+      - make
 
 
 slots:

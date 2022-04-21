@@ -3,8 +3,8 @@ version: 20-1
 summary: Raspberry Pi gadget
 description: |
  Support files for booting Raspberry Pi.
- This gadget snap supports the Raspberry Pi 2B, 3B, 3A+, 3B+, 4B, Compute
- Module 3, and the Compute Module 3+ universally.
+ This gadget snap supports the Raspberry Pi Zero 2W, 2B, 3B, 3A+, 3B+, 4B, 400,
+ Compute Module 3, 3+, and 4 universally.
 type: gadget
 base: core20
 architectures:

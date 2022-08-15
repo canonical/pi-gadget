@@ -9,5 +9,5 @@ volumes:
         filesystem-label: system-boot
         size: 512M
         content:
-          - source: boot-assets/
+          - source: install/boot-assets/
             target: /

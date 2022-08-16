@@ -100,7 +100,7 @@ firmware: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 
 kernel: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 	$(call stage_package,linux-image-[0-9]*-$(KERNEL_FLAVOR))
-	cp -a $(STAGEDIR)/boot/vmlinuz* $(DESTDIR)/boot-assets
+	cp -a $(STAGEDIR)/boot/vmlinuz* $(DESTDIR)/boot-assets/vmlinuz
 
 initrd:
 	mkinitramfs -o $(DESTDIR)/boot-assets/initrd.img

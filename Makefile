@@ -14,8 +14,6 @@ ifeq ($(ARCH),arm64)
 MKIMAGE_ARCH := arm64
 else ifeq ($(ARCH),armhf)
 MKIMAGE_ARCH := arm
-else
-$(error Build architecture is not supported)
 endif
 
 # Some trivial comparator macros; please note that these are very simplistic
@@ -85,9 +83,9 @@ endef
 
 default: server
 
-server: firmware uboot boot-script config-server device-trees gadget kernel initrd
+server: firmware uboot boot-script config-server device-trees gadget
 
-desktop: firmware uboot boot-script config-desktop device-trees gadget kernel initrd
+desktop: firmware uboot boot-script config-desktop device-trees gadget
 
 core: firmware uboot boot-script config-core device-trees gadget
 
@@ -97,13 +95,6 @@ firmware: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 		cp -a $(STAGEDIR)/usr/lib/linux-firmware-$(FIRMWARE_FLAVOR)/$${file}* \
 			$(DESTDIR)/boot-assets/; \
 	done
-
-kernel: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
-	$(call stage_package,linux-image-[0-9]*-$(KERNEL_FLAVOR))
-	cp -a $(STAGEDIR)/boot/vmlinuz* $(DESTDIR)/boot-assets/vmlinuz
-
-initrd:
-	mkinitramfs -o $(DESTDIR)/boot-assets/initrd.img
 
 # All the default components got moved to main or restricted in groovy. Prior
 # to this (focal and before) certain bits were (are) in universe or multiverse

@@ -37,7 +37,7 @@ gt = $(and $(call ge,$(1),$(2)),$(call ne,$(1),$(2)))
 KERNEL_FLAVOR := $(if $(call gt,$(SERIES_RELEASE),18.04),raspi,raspi2)
 FIRMWARE_FLAVOR := $(if $(call ge,$(SERIES_RELEASE),22.04),raspi,raspi2)
 
-KERNEL_VERSION := $(shell apt-cache policy $(APT_OPTIONS) linux-image-raspi | grep Candidate | cut -d " " -f 4 | cut -d "." -f 1-4 )
+KERNEL_VERSION := $(shell linux-version list | grep $(KERNEL_FLAVOR) | linux-version sort | tail -1)
 
 # Download the latest version of package $1 for architecture $(ARCH), unpacking
 #
@@ -86,9 +86,9 @@ endef
 
 default: server
 
-server: firmware uboot boot-script config-server device-trees gadget kernel-initrd
+server: firmware uboot boot-script config-server device-trees kernel-initrd gadget
 
-desktop: firmware uboot boot-script config-desktop device-trees gadget kernel-initrd
+desktop: firmware uboot boot-script config-desktop device-trees kernel-initrd gadget
 
 core: firmware uboot boot-script config-core device-trees gadget
 
@@ -220,24 +220,21 @@ device-trees: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 		-name "*.dtbo" -o -name "overlay_map.dtb") \
 		$(DESTDIR)/boot-assets/overlays/
 
-gadget:
-	mkdir -p $(DESTDIR)/meta
-	cp gadget.yaml $(DESTDIR)/meta/
-
 kernel-initrd:
-	# determine the kernel and initrd version
-	#@echo KERNEL_VERSION is $(KERNEL_VERSION)
-
 	# Add lines to gadget.yaml to handle copying the kernel and initrd
 	echo  "\
           - source: rootfs:/boot/vmlinuz\n\
             target: /\n\
-          - source: rootfs:/boot/vmlinuz-$(KERNEL_VERSION)-raspi\n\
+          - source: rootfs:/boot/vmlinuz-$(KERNEL_VERSION)\n\
             target: /\n\
           - source: rootfs:/boot/initrd.img\n\
             target: /\n\
-          - source: rootfs:/boot/initrd.img-$(KERNEL_VERSION)-raspi\n\
-            target: /" >> $(DESTDIR)/meta/gadget.yaml
+          - source: rootfs:/boot/initrd.img-$(KERNEL_VERSION)\n\
+            target: /" >> gadget.yaml
+
+gadget:
+	mkdir -p $(DESTDIR)/meta
+	cp gadget.yaml $(DESTDIR)/meta/
 
 clean:
 	-rm -rf $(DESTDIR)

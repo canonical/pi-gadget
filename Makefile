@@ -37,7 +37,10 @@ gt = $(and $(call ge,$(1),$(2)),$(call ne,$(1),$(2)))
 KERNEL_FLAVOR := $(if $(call gt,$(SERIES_RELEASE),18.04),raspi,raspi2)
 FIRMWARE_FLAVOR := $(if $(call ge,$(SERIES_RELEASE),22.04),raspi,raspi2)
 
+KERNEL_VERSION := $(shell apt-cache policy $(APT_OPTIONS) linux-image-raspi | grep Candidate | cut -d " " -f 4 | cut -d "." -f 1-4 )
+
 # Download the latest version of package $1 for architecture $(ARCH), unpacking
+#
 # it into $(STAGEDIR). If you rely on this macro, your recipe must also rely on
 # the $(SOURCES_RESTRICTED) target. For example, the following invocation will
 # download the latest version of u-boot-rpi for armhf, and unpack it under
@@ -83,9 +86,9 @@ endef
 
 default: server
 
-server: firmware uboot boot-script config-server device-trees gadget
+server: firmware uboot boot-script config-server device-trees gadget kernel-initrd
 
-desktop: firmware uboot boot-script config-desktop device-trees gadget
+desktop: firmware uboot boot-script config-desktop device-trees gadget kernel-initrd
 
 core: firmware uboot boot-script config-core device-trees gadget
 
@@ -220,6 +223,21 @@ device-trees: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 gadget:
 	mkdir -p $(DESTDIR)/meta
 	cp gadget.yaml $(DESTDIR)/meta/
+
+kernel-initrd:
+	# determine the kernel and initrd version
+	#@echo KERNEL_VERSION is $(KERNEL_VERSION)
+
+	# Add lines to gadget.yaml to handle copying the kernel and initrd
+	echo  "\
+          - source: rootfs:/boot/vmlinuz\n\
+            target: /\n\
+          - source: rootfs:/boot/vmlinuz-$(KERNEL_VERSION)-raspi\n\
+            target: /\n\
+          - source: rootfs:/boot/initrd.img\n\
+            target: /\n\
+          - source: rootfs:/boot/initrd.img-$(KERNEL_VERSION)-raspi\n\
+            target: /" >> $(DESTDIR)/meta/gadget.yaml
 
 clean:
 	-rm -rf $(DESTDIR)

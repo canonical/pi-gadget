@@ -11,7 +11,3 @@ volumes:
         content:
           - source: install/boot-assets/
             target: /
-          - source: rootfs:/boot/vmlinuz*
-            target: vmlinuz
-          - source: rootfs:/boot/initrd*
-            target: initrd.img

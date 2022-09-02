@@ -221,16 +221,10 @@ device-trees: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 		$(DESTDIR)/boot-assets/overlays/
 
 kernel-initrd:
-	# Add lines to gadget.yaml to handle copying the kernel and initrd
-	echo  "\
-          - source: rootfs:/boot/vmlinuz\n\
-            target: /\n\
-          - source: rootfs:/boot/vmlinuz-$(KERNEL_VERSION)\n\
-            target: /\n\
-          - source: rootfs:/boot/initrd.img\n\
-            target: /\n\
-          - source: rootfs:/boot/initrd.img-$(KERNEL_VERSION)\n\
-            target: /" >> gadget.yaml
+	# Update the kernel version in extra_content.yaml
+	sed \
+		-e "s/@@KERNEL_VERSION@@/$(KERNEL_VERSION)/g" \
+		extra_content.yaml >> gadget.yaml
 
 gadget:
 	mkdir -p $(DESTDIR)/meta

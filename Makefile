@@ -14,6 +14,8 @@ ifeq ($(ARCH),arm64)
 MKIMAGE_ARCH := arm64
 else ifeq ($(ARCH),armhf)
 MKIMAGE_ARCH := arm
+else
+$(error Build architecture is not supported)
 endif
 
 # Some trivial comparator macros; please note that these are very simplistic

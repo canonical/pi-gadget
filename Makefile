@@ -42,7 +42,6 @@ FIRMWARE_FLAVOR := $(if $(call ge,$(SERIES_RELEASE),22.04),raspi,raspi2)
 KERNEL_VERSION := $(shell linux-version list | grep $(KERNEL_FLAVOR) | linux-version sort | tail -1)
 
 # Download the latest version of package $1 for architecture $(ARCH), unpacking
-#
 # it into $(STAGEDIR). If you rely on this macro, your recipe must also rely on
 # the $(SOURCES_RESTRICTED) target. For example, the following invocation will
 # download the latest version of u-boot-rpi for armhf, and unpack it under

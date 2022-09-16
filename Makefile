@@ -237,7 +237,7 @@ device-trees: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 
 kernel-initrd: $(SOURCES_MAIN)
 	# Update the kernel version in extra_content.yaml
-	$(eval KERNEL_VERSION := $(shell apt-cache $(APT_OPTIONS_KERNEL) policy linux-raspi | grep Candidate | cut -d " " -f 4 | cut -d "." -f 1-4))
+	$(eval KERNEL_VERSION := $(shell apt-cache $(APT_OPTIONS_KERNEL) policy linux-raspi | grep Candidate | cut -d " " -f 4 | cut -d "." -f 1-4 | sed 's/\(.*\)\./\1-/'))
 	sed \
 		-e "s/@@KERNEL_VERSION@@/$(KERNEL_VERSION)/g" \
 		extra_content.yaml >> gadget.yaml

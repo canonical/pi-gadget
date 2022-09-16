@@ -1,8 +1,8 @@
           - source: rootfs:/boot/vmlinuz
             target: /
-          - source: rootfs:/boot/vmlinuz-@@KERNEL_VERSION@@
+          - source: rootfs:/boot/vmlinuz-@@KERNEL_VERSION@@-raspi
             target: /
           - source: rootfs:/boot/initrd.img
             target: /
-          - source: rootfs:/boot/initrd.img-@@KERNEL_VERSION@@
+          - source: rootfs:/boot/initrd.img-@@KERNEL_VERSION@@-raspi
             target: /

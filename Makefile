@@ -182,15 +182,17 @@ SERVER_CMD := \
 	$(if $(call le,$(SERIES_RELEASE),20.04),ifnames,) \
 	serial \
 	classic
+SERVER_NET := \
+	$(if $(call le,$(SERIES_RELEASE),22.04),network-config-noregdom,network-config-regdom)
 SERVER_FILES := \
 	README \
 	user-data \
 	meta-data \
-	network-config \
-	$(if $(call eq,$(SERIES_RELEASE),20.04), syscfg.txt usercfg.txt,)
+	$(if $(call eq,$(SERIES_RELEASE),20.04),syscfg.txt usercfg.txt,)
 config-server: $(DESTDIR)/boot-assets
 	$(call make_boot_config,$(SERVER_CFG))
 	$(call make_boot_cmdline,$(SERVER_CMD))
+	cp -a configs/$(SERVER_NET) $(DESTDIR)/boot-assets/network-config
 	cp -a $(foreach file,$(SERVER_FILES),configs/$(file)) $(DESTDIR)/boot-assets/
 
 DESKTOP_CFG := \

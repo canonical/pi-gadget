@@ -24,24 +24,25 @@
 #
 # Some additional examples are commented out below
 
-version: 2
-ethernets:
-  eth0:
-    dhcp4: true
-    optional: true
-#wifis:
-#  wlan0:
-#    dhcp4: true
-#    optional: true
-#    access-points:
-#      myhomewifi:
-#        password: "S3kr1t"
-#      myworkwifi:
-#        password: "correct battery horse staple"
-#      workssid:
-#        auth:
-#          key-management: eap
-#          method: peap
-#          identity: "me@example.com"
-#          password: "passw0rd"
-#          ca-certificate: /etc/my_ca.pem
+network:
+  version: 2
+  ethernets:
+    eth0:
+      dhcp4: true
+      optional: true
+#  wifis:
+#    wlan0:
+#      dhcp4: true
+#      optional: true
+#      access-points:
+#        myhomewifi:
+#          password: "S3kr1t"
+#        myworkwifi:
+#          password: "correct battery horse staple"
+#        workssid:
+#          auth:
+#            key-management: eap
+#            method: peap
+#            identity: "me@example.com"
+#            password: "passw0rd"
+#            ca-certificate: /etc/my_ca.pem

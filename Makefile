@@ -60,27 +60,28 @@ define stage_package
 	dpkg-deb --extract $$(ls $(STAGEDIR)/tmp/$(1)*.deb | tail -1) $(STAGEDIR)
 endef
 
-# Given a space-separated list of parts in $(1), concatenate them together to
-# form the boot config.txt, making sure there's a blank line between each
+# Given a space-separated list of parts in $(2), concatenate them together to
+# form the file $(1), making sure there's a blank line between each
 # concatenated part:
 #
-#  $(call make_boot_config,piboot common $(ARCH))
+#  $(call make_config,config.txt,piboot common $(ARCH))
 #
-define make_boot_config
+define make_config
 	mkdir -p $(STAGEDIR)/tmp
 	echo > $(STAGEDIR)/tmp/newline
-	cat $(foreach part,$(1),$(STAGEDIR)/tmp/newline configs/config.txt-$(part)) | \
-		tail +2 > $(DESTDIR)/boot-assets/config.txt
+	cat $(foreach part,$(2),$(STAGEDIR)/tmp/newline configs/$(1)-$(part)) | \
+		tail +2 > $(DESTDIR)/boot-assets/$(1)
 endef
 
-# Given a space-separated list of parts in $(1), concatenate them together on
-# a single line to form the kernel cmdline.txt:
+# Given a space-separated list of parts in $(2), concatenate them together on
+# a single line to form the file $(1), which is usually the kernel command
+# line:
 #
-#  $(call make_boot_cmdline,elevator classic)
+#  $(call make_cmdline,cmdline.txt,elevator classic)
 #
-define make_boot_cmdline
-	echo $(foreach part,$(1),$$(cat configs/cmdline.txt-$(part))) > \
-		$(DESTDIR)/boot-assets/cmdline.txt
+define make_cmdline
+	echo $(foreach part,$(2),$$(cat configs/$(1)-$(part))) > \
+		$(DESTDIR)/boot-assets/$(1)
 endef
 
 default: server
@@ -154,8 +155,8 @@ CORE_CMD := \
 	serial \
 	core
 config-core: $(DESTDIR)/boot-assets
-	$(call make_boot_config,$(CORE_CFG))
-	$(call make_boot_cmdline,$(CORE_CMD))
+	$(call make_config,config.txt,$(CORE_CFG))
+	$(call make_cmdline,cmdline.txt,$(CORE_CMD))
 	# TODO:UC20: currently we use an empty uboot.conf as a landmark for the new
 	#            uboot style where there is no uboot.env installed onto the root
 	#            of the partition and instead the boot.scr is used. this may
@@ -183,16 +184,21 @@ SERVER_CMD := \
 	serial \
 	classic
 SERVER_NET := \
-	$(if $(call le,$(SERIES_RELEASE),22.04),network-config-noregdom,network-config-regdom)
+	header \
+	$(if $(call le,$(SERIES_RELEASE),22.04),noregdom,) \
+	common \
+	ethernets \
+	wifis \
+	$(if $(call gt,$(SERIES_RELEASE),22.04),regdom,)
 SERVER_FILES := \
 	README \
 	user-data \
 	meta-data \
 	$(if $(call eq,$(SERIES_RELEASE),20.04),syscfg.txt usercfg.txt,)
 config-server: $(DESTDIR)/boot-assets
-	$(call make_boot_config,$(SERVER_CFG))
-	$(call make_boot_cmdline,$(SERVER_CMD))
-	cp -a configs/$(SERVER_NET) $(DESTDIR)/boot-assets/network-config
+	$(call make_config,config.txt,$(SERVER_CFG))
+	$(call make_config,network-config,$(SERVER_NET))
+	$(call make_cmdline,cmdline.txt,$(SERVER_CMD))
 	cp -a $(foreach file,$(SERVER_FILES),configs/$(file)) $(DESTDIR)/boot-assets/
 
 DESKTOP_CFG := \
@@ -207,8 +213,8 @@ DESKTOP_CMD := \
 	$(if $(call ge,$(SERIES_RELEASE),22.04),zswap,) \
 	classic
 config-desktop: $(DESTDIR)/boot-assets
-	$(call make_boot_config,$(DESKTOP_CFG))
-	$(call make_boot_cmdline,$(DESKTOP_CMD))
+	$(call make_config,config.txt,$(DESKTOP_CFG))
+	$(call make_cmdline,cmdline.txt,$(DESKTOP_CMD))
 	cp -a configs/README $(DESTDIR)/boot-assets/
 
 device-trees: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets

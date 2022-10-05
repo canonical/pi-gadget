@@ -1,0 +1,4 @@
+  ethernets:
+    eth0:
+      dhcp4: true
+      optional: true

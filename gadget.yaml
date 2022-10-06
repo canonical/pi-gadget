@@ -7,7 +7,8 @@ volumes:
       - type: 0C
         filesystem: vfat
         filesystem-label: system-boot
-        size: 256M
+        role: system-boot
+        size: 512M
         content:
-          - source: boot-assets/
+          - source: install/boot-assets/
             target: /

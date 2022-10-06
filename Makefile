@@ -4,16 +4,10 @@ ARCH ?= $(shell dpkg --print-architecture)
 SERIES ?= jammy
 
 SOURCES_RESTRICTED := "$(STAGEDIR)/apt/restricted.sources.list"
-SOURCES_MAIN := "$(STAGEDIR)/apt/main.sources.list"
 SERIES_RELEASE := $(firstword $(shell ubuntu-distro-info --release --series=$(SERIES)))
 APT_OPTIONS := \
 	-o APT::Architecture=$(ARCH) \
 	-o Dir::Etc::sourcelist=$(SOURCES_RESTRICTED) \
-	-o Dir::State::status=$(STAGEDIR)/tmp/status
-
-APT_OPTIONS_KERNEL := \
-	-o APT::Architecture=$(ARCH) \
-	-o Dir::Etc::sourcelist=$(SOURCES_MAIN) \
 	-o Dir::State::status=$(STAGEDIR)/tmp/status
 
 ifeq ($(ARCH),arm64)
@@ -116,16 +110,6 @@ $(SOURCES_RESTRICTED):
 		-e "/^deb/ s/\brestricted\b/$(RESTRICTED_COMPONENT)/" \
 		sources.list > $(SOURCES_RESTRICTED)
 	apt-get update $(APT_OPTIONS)
-
-$(SOURCES_MAIN):
-	mkdir -p $(STAGEDIR)/apt
-	mkdir -p $(STAGEDIR)/tmp
-	touch $(STAGEDIR)/tmp/status
-	sed -e "/^deb/ s/\bSERIES/$(SERIES)/" \
-		-e "/^deb/ s/\bARCH\b/$(ARCH)/" \
-		-e "/^deb/ s/\bmain\b/main/" \
-		sources.list > $(SOURCES_MAIN)
-	apt-get update $(APT_OPTIONS_KERNEL)
 
 # XXX: This should be removed (along with the dependencies in classic/core)
 # when uboot is removed entirely from the boot partition. At present, it is
@@ -235,9 +219,9 @@ device-trees: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 		-name "*.dtbo" -o -name "overlay_map.dtb") \
 		$(DESTDIR)/boot-assets/overlays/
 
-kernel-initrd: $(SOURCES_MAIN)
+kernel-initrd: $(SOURCES_RESTRICTED)
 	# Update the kernel version in extra_content.yaml
-	$(eval KERNEL_VERSION := $(shell apt-cache $(APT_OPTIONS_KERNEL) policy linux-raspi | grep Candidate | cut -d " " -f 4 | cut -d "." -f 1-4 | sed 's/\(.*\)\./\1-/'))
+	$(eval KERNEL_VERSION := $(shell apt-cache $(APT_OPTIONS) policy linux-raspi | grep Candidate | cut -d " " -f 4 | cut -d "." -f 1-4 | sed 's/\(.*\)\./\1-/'))
 	sed \
 		-e "s/@@KERNEL_VERSION@@/$(KERNEL_VERSION)/g" \
 		extra_content.yaml >> gadget.yaml

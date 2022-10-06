@@ -1,0 +1,8 @@
+# On first boot, set the (default) ubuntu user's password to "ubuntu" and
+# expire user passwords
+chpasswd:
+  expire: true
+  users:
+  - name: ubuntu
+    password: ubuntu
+    type: text

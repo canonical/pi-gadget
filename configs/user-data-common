@@ -1,0 +1,18 @@
+## Set the system's hostname. Please note that, unless you have a local DNS
+## setup where the hostname is derived from DHCP requests (as with dnsmasq),
+## setting the hostname here will not make the machine reachable by this name.
+## You may also wish to install avahi-daemon (see the "packages:" key below)
+## to make your machine reachable by the .local domain
+#hostname: ubuntu
+
+## Set up the keyboard layout. See localectl(1), in particular the various
+## list-x11-* sub-commands, to determine the available models, layouts,
+## variants, and options
+#keyboard:
+#  model: pc105
+#  layout: gb
+#  variant:
+#  options: ctrl:nocaps
+
+# Enable password authentication with the SSH daemon
+ssh_pwauth: true

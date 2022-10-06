@@ -141,7 +141,7 @@ boot-script: $(SOURCES_RESTRICTED) device-trees $(DESTDIR)/boot-assets
 	mkimage -A $(MKIMAGE_ARCH) -O linux -T script -C none -n "boot script" \
 		-d $(STAGEDIR)/bootscr.rpi $(DESTDIR)/boot-assets/boot.scr
 
-CORE_CFG := \
+CORE_BOOT_CFG := \
 	uboot-$(ARCH) \
 	$(if $(call ge,$(SERIES_RELEASE),20.04),uboot-pi0-$(ARCH),) \
 	uboot-core \
@@ -150,13 +150,13 @@ CORE_CFG := \
 	fkms \
 	$(if $(call lt,$(SERIES_RELEASE),20.04),heartbeat-active,heartbeat-inactive) \
 	$(ARCH)
-CORE_CMD := \
+CORE_KNL_CMD := \
 	$(if $(call lt,$(SERIES_RELEASE),22.04),elevator,) \
 	serial \
 	core
 config-core: $(DESTDIR)/boot-assets
-	$(call make_config,config.txt,$(CORE_CFG))
-	$(call make_cmdline,cmdline.txt,$(CORE_CMD))
+	$(call make_config,config.txt,$(CORE_BOOT_CFG))
+	$(call make_cmdline,cmdline.txt,$(CORE_KNL_CMD))
 	# TODO:UC20: currently we use an empty uboot.conf as a landmark for the new
 	#            uboot style where there is no uboot.env installed onto the root
 	#            of the partition and instead the boot.scr is used. this may
@@ -167,7 +167,7 @@ config-core: $(DESTDIR)/boot-assets
 	# it is empty now, but snapd will write vars to it
 	mkenvimage -r -s 4096 -o $(DESTDIR)/boot.sel - < /dev/null
 
-SERVER_CFG := \
+SERVER_BOOT_CFG := \
 	$(if $(call eq,$(SERIES_RELEASE),20.04),legacy-header,) \
 	$(if $(call le,$(SERIES_RELEASE),20.04),uboot-$(ARCH),) \
 	$(if $(call eq,$(SERIES_RELEASE),20.04),uboot-pi0-$(ARCH),) \
@@ -178,43 +178,48 @@ SERVER_CFG := \
 	$(ARCH) \
 	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
 	$(if $(call eq,$(SERIES_RELEASE),20.04),legacy-includes,)
-SERVER_CMD := \
+SERVER_KNL_CMD := \
 	$(if $(call lt,$(SERIES_RELEASE),22.04),elevator,) \
 	$(if $(call le,$(SERIES_RELEASE),20.04),ifnames,) \
 	serial \
 	classic
-SERVER_NET := \
+SERVER_NET_CONF := \
 	header \
 	$(if $(call le,$(SERIES_RELEASE),22.04),noregdom,) \
 	common \
 	ethernets \
 	wifis \
 	$(if $(call gt,$(SERIES_RELEASE),22.04),regdom,)
+SERVER_USER_DATA := \
+	header \
+	$(if $(call le,$(SERIES_RELEASE),22.04),passwd-old,passwd) \
+	common \
+	examples
 SERVER_FILES := \
 	README \
-	user-data \
 	meta-data \
 	$(if $(call eq,$(SERIES_RELEASE),20.04),syscfg.txt usercfg.txt,)
 config-server: $(DESTDIR)/boot-assets
-	$(call make_config,config.txt,$(SERVER_CFG))
-	$(call make_config,network-config,$(SERVER_NET))
-	$(call make_cmdline,cmdline.txt,$(SERVER_CMD))
+	$(call make_config,config.txt,$(SERVER_BOOT_CFG))
+	$(call make_config,network-config,$(SERVER_NET_CONF))
+	$(call make_config,user-data,$(SERVER_USER_DATA))
+	$(call make_cmdline,cmdline.txt,$(SERVER_KNL_CMD))
 	cp -a $(foreach file,$(SERVER_FILES),configs/$(file)) $(DESTDIR)/boot-assets/
 
-DESKTOP_CFG := \
+DESKTOP_BOOT_CFG := \
 	piboot \
 	common \
 	cm4-support \
 	kms \
 	$(if $(call ge,$(SERIES_RELEASE),22.04),libcamera,) \
 	$(ARCH)
-DESKTOP_CMD := \
+DESKTOP_KNL_CMD := \
 	$(if $(call lt,$(SERIES_RELEASE),22.04),elevator,) \
 	$(if $(call ge,$(SERIES_RELEASE),22.04),zswap,) \
 	classic
 config-desktop: $(DESTDIR)/boot-assets
-	$(call make_config,config.txt,$(DESKTOP_CFG))
-	$(call make_cmdline,cmdline.txt,$(DESKTOP_CMD))
+	$(call make_config,config.txt,$(DESKTOP_BOOT_CFG))
+	$(call make_cmdline,cmdline.txt,$(DESKTOP_KNL_CMD))
 	cp -a configs/README $(DESTDIR)/boot-assets/
 
 device-trees: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets

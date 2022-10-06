@@ -219,12 +219,12 @@ device-trees: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 		-name "*.dtbo" -o -name "overlay_map.dtb") \
 		$(DESTDIR)/boot-assets/overlays/
 
-kernel-initrd: $(SOURCES_RESTRICTED)
-	# Update the kernel version in extra_content.yaml
-	$(eval KERNEL_VERSION := $(shell apt-cache $(APT_OPTIONS) policy linux-raspi | grep Candidate | cut -d " " -f 4 | cut -d "." -f 1-4 | sed 's/\(.*\)\./\1-/'))
-	sed \
-		-e "s/@@KERNEL_VERSION@@/$(KERNEL_VERSION)/g" \
-		extra_content.yaml >> gadget.yaml
+kernel-initrd: device-trees
+	for kvers in $(STAGEDIR)/lib/modules/*; do \
+		sed \
+			-e "s/@@KERNEL_VERSION@@/$${kvers##*/}/g" \
+			extra_content.yaml >> gadget.yaml; \
+	done
 
 gadget:
 	mkdir -p $(DESTDIR)/meta

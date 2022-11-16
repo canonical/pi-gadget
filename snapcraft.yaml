@@ -10,7 +10,7 @@ base: core22
 assumes: [kernel-assets]
 architectures:
   - build-on: [amd64, arm64]
-    run-on: arm64
+    build-for: [arm64]
 
 package-repositories:
   - type: apt
@@ -107,7 +107,7 @@ parts:
       - findutils
       - liblz4-tool
       - libc-dev
-      - try:
+      - on amd64:
           - gcc-aarch64-linux-gnu:amd64
           - libc6-dev-arm64-cross:amd64
 

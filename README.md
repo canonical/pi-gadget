@@ -15,11 +15,6 @@ including:
 * u-boot binaries (for various models) from the u-boot-rpi package
 * u-boot boot script from the flash-kernel package (classic gadgets only)
 
-On core builds, a silent boot with a splash screen is included. The splash
-screen binary comes from
-[git://git.yoctoproject.org/psplash](http://git.yoctoproject.org/cgit/cgit.cgi/psplash/).
-Please see the `psplash/` sub directory for patches and adjustments in use.
-
 ## Gadget Snaps
 
 Gadget snaps are a special type of snaps that contain device specific support
@@ -34,13 +29,13 @@ https://github.com/snapcore/pi-gadget/issues
 
 ## Branding
 
-This gadget snap comes with a boot splash. To change the logo you can add a new
-png file to the psplash subdirectory of this tree, adjust the "SPLASH=" option
-in `psplash/config` to point to this file and rebuild the gadget.
+This gadget snap enables by default the boot splash. To customize it
+on Ubuntu Core, you can follow the instructions provided in the UC
+[documentation](https://ubuntu.com/core/docs/splash-screen).
 
-To turn off the splash screen completely please edit `configs/core/cmdline.txt`
-and remove the `splash` and the `vt.handoff=2` keywords from the default kernel
-command line.
+To turn off the splash screen please edit `configs/cmdline.txt-core`
+and remove the `splash` and the `vt.handoff=2` keywords from the
+default kernel command line.
 
 ## Branches
 

@@ -1,2 +1,0 @@
-SPLASH="core_orange_140.png"
-FONT="$(ls /usr/share/fonts/truetype/*/Ubuntu-R.ttf)"

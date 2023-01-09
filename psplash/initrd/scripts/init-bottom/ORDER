@@ -1,4 +1,0 @@
-/scripts/init-bottom/udev "$@"
-[ -e /conf/param.conf ] && . /conf/param.conf
-/scripts/init-bottom/disable-getty "$@"
-[ -e /conf/param.conf ] && . /conf/param.conf

@@ -86,9 +86,9 @@ endef
 
 default: server
 
-server: firmware uboot boot-script config-server device-trees gadget
+server: firmware uboot boot-script config-server device-trees kernel-initrd gadget
 
-desktop: firmware uboot boot-script config-desktop device-trees gadget
+desktop: firmware uboot boot-script config-desktop device-trees kernel-initrd gadget
 
 core: firmware uboot boot-script config-core device-trees gadget
 
@@ -231,6 +231,13 @@ device-trees: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
 		-name "*.dtbo" -o -name "overlay_map.dtb") \
 		$(DESTDIR)/boot-assets/overlays/
+
+kernel-initrd: device-trees
+	for kvers in $(STAGEDIR)/lib/modules/*; do \
+		sed \
+			-e "s/@@KERNEL_VERSION@@/$${kvers##*/}/g" \
+			extra_content.yaml >> gadget.yaml; \
+	done
 
 gadget:
 	mkdir -p $(DESTDIR)/meta

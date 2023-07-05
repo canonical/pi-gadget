@@ -1,3 +1,17 @@
+# The following environment variables may be customized to modify the build.
+#
+# STAGEDIR is the path under which packages will be unpacked in order to
+# extract their content
+#
+# DESTDIR is the path under which the content of the gadget snap will be
+# installed; the gadget snap is ultimately constructed from the contents of
+# this path
+#
+# ARCH is the Debian-style architecture we are building for. This defaults to
+# the host architecture but can be overridden for cross-building
+#
+# SERIES is the release we are building for. This defaults to "jammy" (22.04).
+
 STAGEDIR ?= "$(CURDIR)/stage"
 DESTDIR ?= "$(CURDIR)/install"
 ARCH ?= $(shell dpkg --print-architecture)
@@ -40,14 +54,19 @@ KERNEL_FLAVOR := $(if $(call gt,$(SERIES_RELEASE),18.04),raspi,raspi2)
 FIRMWARE_FLAVOR := $(if $(call ge,$(SERIES_RELEASE),22.04),raspi,raspi2)
 
 # Download the latest version of package $1 for architecture $(ARCH), unpacking
-# it into $(STAGEDIR). If you rely on this macro, your recipe must also rely on
-# the $(SOURCES_RESTRICTED) target. For example, the following invocation will
-# download the latest version of u-boot-rpi for armhf, and unpack it under
-# STAGEDIR:
+# it into $(STAGEDIR)/tmp. If you rely on this macro, your recipe must also
+# rely on the local-apt target. For example, if $(ARCH) is armhf, the following
+# invocation will download the latest version of u-boot-rpi for armhf, and
+# unpack it under $(STAGEDIR)/tmp:
 #
 #  $(call stage_package,u-boot-rpi)
 #
+# Note that $1 may be an apt-pattern, e.g. linux-modules-[0-9]*-raspi. In this
+# case the "latest" (according to a version-number sort) package name will be
+# used.
+#
 define stage_package
+	mkdir -p $(STAGEDIR)/tmp
 	( \
 		cd $(STAGEDIR)/tmp && \
 		apt-get download $(APT_OPTIONS) $$( \

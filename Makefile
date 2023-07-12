@@ -145,9 +145,9 @@ endef
 
 default: server
 
-server: firmware uboot boot-script config-server device-trees kernel-initrd gadget
+server: firmware uboot boot-script config-server device-trees gadget
 
-desktop: firmware uboot boot-script config-desktop device-trees kernel-initrd gadget
+desktop: firmware uboot boot-script config-desktop device-trees gadget
 
 core: firmware uboot boot-script config-core device-trees gadget
 
@@ -266,20 +266,11 @@ device-trees: local-apt $(DESTDIR)/boot-assets
 		-name "*.dtbo" -o -name "overlay_map.dtb") \
 		$(DESTDIR)/boot-assets/overlays/
 
-kernel-initrd: device-trees
-	for kvers in $(STAGEDIR)/lib/modules/*; do \
-		sed \
-			-e "s/@@KERNEL_VERSION@@/$${kvers##*/}/g" \
-			extra_content.yaml >> gadget.yaml; \
-	done
-
 gadget:
-	mkdir -p $(DESTDIR)/meta
-	cp gadget.yaml $(DESTDIR)/meta/
+	$(call fill_template,gadget.yaml.in,gadget.yaml)
 
 clean:
-	-rm -rf $(DESTDIR)
-	-rm -rf $(STAGEDIR)
+	-rm -rf $(DESTDIR) $(STAGEDIR) gadget.yaml
 
 
 # This sets up an apt configuration that's more or less separate from the host

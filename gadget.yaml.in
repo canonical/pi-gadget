@@ -10,5 +10,9 @@ volumes:
         role: system-boot
         size: 512M
         content:
-          - source: install/boot-assets/
+          - source: @@DESTDIR@@/boot-assets/
             target: /
+          - source: rootfs:/boot/vmlinuz-@@KERNEL_VERSION@@
+            target: vmlinuz
+          - source: rootfs:/boot/initrd.img-@@KERNEL_VERSION@@
+            target: initrd.img

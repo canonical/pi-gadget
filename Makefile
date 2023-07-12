@@ -52,6 +52,10 @@ gt = $(and $(call ge,$(1),$(2)),$(call ne,$(1),$(2)))
 
 KERNEL_FLAVOR := $(if $(call gt,$(SERIES_RELEASE),18.04),raspi,raspi2)
 FIRMWARE_FLAVOR := $(if $(call ge,$(SERIES_RELEASE),22.04),raspi,raspi2)
+# All the default components got moved to main or restricted in groovy. Prior
+# to this (focal and before) certain bits were (are) in universe or multiverse
+RESTRICTED_COMPONENT := $(if $(call le,$(SERIES_RELEASE),20.04),universe multiverse,restricted)
+
 
 # Download the latest version of package $1 for architecture $(ARCH), unpacking
 # it into $(STAGEDIR)/tmp. If you rely on this macro, your recipe must also
@@ -118,9 +122,6 @@ firmware: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 			$(DESTDIR)/boot-assets/; \
 	done
 
-# All the default components got moved to main or restricted in groovy. Prior
-# to this (focal and before) certain bits were (are) in universe or multiverse
-RESTRICTED_COMPONENT := $(if $(call le,$(SERIES_RELEASE),20.04),universe multiverse,restricted)
 $(SOURCES_RESTRICTED):
 	mkdir -p $(STAGEDIR)/apt
 	mkdir -p $(STAGEDIR)/tmp

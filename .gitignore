@@ -1,5 +1,6 @@
 parts/
 prime/
 stage/
+install/
 *.snap
 *.swp

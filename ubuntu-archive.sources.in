@@ -1,0 +1,7 @@
+Enabled: yes
+Types: deb
+URIs: http://ports.ubuntu.com/ubuntu-ports/
+Suites: @@SERIES@@ @@SERIES@@-updates @@SERIES@@-security
+#Suites: @@SERIES@@ @@SERIES@@-updates @@SERIES@@-security @@SERIES@@-proposed
+Components: main @@RESTRICTED@@
+Architectures: @@ARCH@@

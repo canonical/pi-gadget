@@ -12,17 +12,11 @@
 #
 # SERIES is the release we are building for. This defaults to "jammy" (22.04).
 
-STAGEDIR ?= "$(CURDIR)/stage"
-DESTDIR ?= "$(CURDIR)/install"
+STAGEDIR ?= stage
+DESTDIR ?= install
 ARCH ?= $(shell dpkg --print-architecture)
 SERIES ?= jammy
 
-SOURCES_RESTRICTED := "$(STAGEDIR)/apt/restricted.sources.list"
-SERIES_RELEASE := $(firstword $(shell ubuntu-distro-info --release --series=$(SERIES)))
-APT_OPTIONS := \
-	-o APT::Architecture=$(ARCH) \
-	-o Dir::Etc::sourcelist=$(SOURCES_RESTRICTED) \
-	-o Dir::State::status=$(STAGEDIR)/tmp/status
 
 ifeq ($(ARCH),arm64)
 MKIMAGE_ARCH := arm64
@@ -31,6 +25,15 @@ MKIMAGE_ARCH := arm
 else
 $(error Build architecture is not supported)
 endif
+# This is the host architecture we're building from. There should never be a
+# need to override this (hence the := assignment), unlike ARCH above.
+HOST_ARCH := $(shell dpkg --print-architecture)
+SERIES_RELEASE := $(firstword $(shell ubuntu-distro-info --release --series=$(SERIES)))
+STAGEDIR_ABS := $(shell realpath $(STAGEDIR))
+DESTDIR_ABS := $(shell realpath $(DESTDIR))
+
+APT_CONF := $(STAGEDIR_ABS)/apt/conf/apt.conf
+APT := apt -c $(APT_CONF)
 
 # Some trivial comparator macros; please note that these are very simplistic
 # and have some limitations. Specifically, the two parameters are compared as
@@ -52,6 +55,10 @@ gt = $(and $(call ge,$(1),$(2)),$(call ne,$(1),$(2)))
 
 KERNEL_FLAVOR := $(if $(call gt,$(SERIES_RELEASE),18.04),raspi,raspi2)
 FIRMWARE_FLAVOR := $(if $(call ge,$(SERIES_RELEASE),22.04),raspi,raspi2)
+# This is deliberately lazily evaluated (= not :=); it depends on the
+# "device-trees" target to have been executed in order to populate the
+# $(STAGEDIR)/lib/modules path
+KERNEL_VERSION = $(shell ls $(STAGEDIR)/lib/modules 2>/dev/null)
 # All the default components got moved to main or restricted in groovy. Prior
 # to this (focal and before) certain bits were (are) in universe or multiverse
 RESTRICTED_COMPONENT := $(if $(call le,$(SERIES_RELEASE),20.04),universe multiverse,restricted)
@@ -73,14 +80,14 @@ define stage_package
 	mkdir -p $(STAGEDIR)/tmp
 	( \
 		cd $(STAGEDIR)/tmp && \
-		apt-get download $(APT_OPTIONS) $$( \
-				apt-cache $(APT_OPTIONS) \
+		$(APT) download $$( \
+				apt-cache -c $(APT_CONF) \
 					showpkg $(1) | \
 					sed -n -e 's/^Package: *//p' | \
 					sort -V | tail -1 \
 			); \
 	)
-	dpkg-deb --extract $$(ls $(STAGEDIR)/tmp/$(1)*.deb | tail -1) $(STAGEDIR)
+	dpkg-deb --extract $$(ls $(STAGEDIR)/tmp/$(1)_*_*.deb | tail -1) $(STAGEDIR)
 endef
 
 # Given a space-separated list of parts in $(2), concatenate them together to
@@ -107,6 +114,35 @@ define make_cmdline
 		$(DESTDIR)/boot-assets/$(1)
 endef
 
+# Given an input text file in $(1), containing @@-delimited variables,
+# substitute suitable values and write the result to $(2):
+#
+#  $(call fill_template,gadget.yaml.in,gadget.yaml)
+#
+# If your source file uses the @@KERNEL_VERSION@@ substitution, your recipe
+# must depend on the device-trees target to determine the kernel version that
+# will be installed
+#
+define fill_template
+	sed \
+		-e "s/@@KERNEL_VERSION@@/$(KERNEL_VERSION)/g" \
+		-e "s/@@LINUX_KERNEL_CMDLINE@@/quiet splash/g" \
+		-e "s/@@LINUX_KERNEL_CMDLINE_DEFAULTS@@//g" \
+		-e "s/@@UBOOT_ENV_EXTRA@@//g" \
+		-e "s/@@UBOOT_PREBOOT_EXTRA@@//g" \
+		-e "s/@@SERIES@@/$(SERIES)/g" \
+		-e "s/@@ARCH@@/$(ARCH)/g" \
+		-e "s/@@HOST_ARCH@@/$(HOST_ARCH)/g" \
+		-e "s/@@RESTRICTED@@/$(RESTRICTED_COMPONENT)/g" \
+		-e "s,@@CURDIR@@,$(CURDIR),g" \
+		-e "s,@@STAGEDIR@@,$(STAGEDIR),g" \
+		-e "s,@@DESTDIR@@,$(DESTDIR),g" \
+		-e "s,@@STAGEDIR_ABS@@,$(STAGEDIR_ABS),g" \
+		-e "s,@@DESTDIR_ABS@@,$(DESTDIR_ABS),g" \
+		$(1) > $(2)
+endef
+
+
 default: server
 
 server: firmware uboot boot-script config-server device-trees kernel-initrd gadget
@@ -115,49 +151,27 @@ desktop: firmware uboot boot-script config-desktop device-trees kernel-initrd ga
 
 core: firmware uboot boot-script config-core device-trees gadget
 
-firmware: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
+
+firmware: local-apt $(DESTDIR)/boot-assets
 	$(call stage_package,linux-firmware-$(FIRMWARE_FLAVOR))
 	for file in fixup start bootcode; do \
 		cp -a $(STAGEDIR)/usr/lib/linux-firmware-$(FIRMWARE_FLAVOR)/$${file}* \
 			$(DESTDIR)/boot-assets/; \
 	done
 
-$(SOURCES_RESTRICTED):
-	mkdir -p $(STAGEDIR)/apt
-	mkdir -p $(STAGEDIR)/tmp
-	touch $(STAGEDIR)/tmp/status
-	sed -e "/^deb/ s/\bSERIES/$(SERIES)/" \
-		-e "/^deb/ s/\bARCH\b/$(ARCH)/" \
-		-e "/^deb/ s/\brestricted\b/$(RESTRICTED_COMPONENT)/" \
-		sources.list > $(SOURCES_RESTRICTED)
-	apt-get update $(APT_OPTIONS)
-
-# XXX: This should be removed (along with the dependencies in classic/core)
-# when uboot is removed entirely from the boot partition. At present, it is
-# included on the boot partition but not in the configuration just in case
-# anyone requires an easy path to switch back to it
-uboot: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
+uboot: local-apt $(DESTDIR)/boot-assets
 	$(call stage_package,u-boot-rpi)
 	for platform_path in $(STAGEDIR)/usr/lib/u-boot/*; do \
 		cp -a $$platform_path/u-boot.bin \
 			$(DESTDIR)/boot-assets/uboot_$${platform_path##*/}.bin; \
 	done
 
-boot-script: $(SOURCES_RESTRICTED) device-trees $(DESTDIR)/boot-assets
+boot-script: local-apt device-trees
 	$(call stage_package,flash-kernel)
 	# NOTE: the bootscr.rpi* below is deliberate; older flash-kernels have
 	# separate bootscr.rpi? files for different pis, while newer have a
 	# single generic bootscr.rpi file
-	for kvers in $(STAGEDIR)/lib/modules/*; do \
-		sed \
-			-e "s/@@KERNEL_VERSION@@/$${kvers##*/}/g" \
-			-e "s/@@LINUX_KERNEL_CMDLINE@@/quiet splash/g" \
-			-e "s/@@LINUX_KERNEL_CMDLINE_DEFAULTS@@//g" \
-			-e "s/@@UBOOT_ENV_EXTRA@@//g" \
-			-e "s/@@UBOOT_PREBOOT_EXTRA@@//g" \
-			$(STAGEDIR)/etc/flash-kernel/bootscript/bootscr.rpi* \
-			> $(STAGEDIR)/bootscr.rpi; \
-	done
+	$(call fill_template,$(STAGEDIR)/etc/flash-kernel/bootscript/bootscr.rpi*,$(STAGEDIR)/bootscr.rpi)
 	mkimage -A $(MKIMAGE_ARCH) -O linux -T script -C none -n "boot script" \
 		-d $(STAGEDIR)/bootscr.rpi $(DESTDIR)/boot-assets/boot.scr
 
@@ -242,7 +256,7 @@ config-desktop: $(DESTDIR)/boot-assets
 	$(call make_cmdline,cmdline.txt,$(DESKTOP_KNL_CMD))
 	cp -a configs/README $(DESTDIR)/boot-assets/
 
-device-trees: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
+device-trees: local-apt $(DESTDIR)/boot-assets
 	$(call stage_package,linux-modules-[0-9]*-$(KERNEL_FLAVOR))
 	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
 		-name "*.dtb" -a \! -name "overlay_map.dtb") \
@@ -267,6 +281,22 @@ clean:
 	-rm -rf $(DESTDIR)
 	-rm -rf $(STAGEDIR)
 
+
+# This sets up an apt configuration that's more or less separate from the host
+# system's, including its own configuration, state, cache, and log directories.
+# This way, we can run apt without requiring root privileges, and without
+# messing up the host system's apt cache
+local-apt:
+	for dir in conf/trusted.gpg.d state cache log; do \
+		mkdir -p $(STAGEDIR)/apt/$${dir}; \
+	done
+	touch $(STAGEDIR)/apt/state/status
+	cp $$(dpkg -L ubuntu-keyring | grep "^/etc/apt/trusted\.gpg\.d/") \
+		$(STAGEDIR)/apt/conf/trusted.gpg.d/
+	$(call fill_template,ubuntu-archive.sources.in,$(STAGEDIR)/apt/conf/ubuntu-archive.sources)
+	$(call fill_template,apt.conf.in,$(STAGEDIR)/apt/conf/apt.conf)
+	$(APT) update
+
 $(DESTDIR)/boot-assets:
 	mkdir -p $(DESTDIR)/boot-assets
 
@@ -289,3 +319,5 @@ test:
 	[ $(if $(call eq,1,2),fail,pass) = "pass" ] # 1 == 2
 	[ $(if $(call eq,1,1),pass,fail) = "pass" ] # 1 == 1
 	[ $(if $(call gt,10,02),pass,fail) = "pass" ] # 10 > 02
+
+.PHONY: local-apt

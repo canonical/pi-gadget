@@ -19,7 +19,6 @@ Gadget snaps are a special type of snaps that contain device specific support
 code and data. You can read more about them in the snapcraft forum:
 https://forum.snapcraft.io/t/the-gadget-snap/
 
-
 ## Reporting Issues
 
 Please report all issues here on the github page via:
@@ -33,7 +32,7 @@ dependencies and running "make":
 
 ```console
 $ sudo apt install make u-boot-tools
-$ sudo SERIES=jammy make
+$ ARCH=arm64 SERIES=jammy make
 ```
 
 You can set `SERIES` to the required distro-series (e.g. focal, jammy), and

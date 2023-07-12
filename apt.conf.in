@@ -1,0 +1,13 @@
+APT::Architecture "@@ARCH@@";
+Dir::Etc "@@STAGEDIR_ABS@@/apt/conf";
+Dir::Etc::sourcelist "ubuntu-archive.sources";
+Dir::Etc::sourceparts "";
+Dir::Etc::preferencesparts "";
+Dir::Etc::trustedparts "trusted.gpg.d";
+Dir::State "@@STAGEDIR_ABS@@/apt/state";
+Dir::State::status "status";
+Dir::Cache "@@STAGEDIR_ABS@@/apt/cache";
+Dir::Log "@@STAGEDIR_ABS@@/apt/log";
+
+#clear APT::Update::Post-Invoke-Success;
+#clear APT::Update::Pre-Invoke;

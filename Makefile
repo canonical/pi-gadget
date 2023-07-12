@@ -169,7 +169,7 @@ uboot: local-apt $(DESTDIR)/boot-assets
 boot-script: local-apt device-trees
 	$(call stage_package,flash-kernel)
 	# NOTE: the bootscr.rpi* below is deliberate; older flash-kernels have
-	# separate bootscr.rpi? files for different pis, while newer have a
+	# separate bootscr.rpi[23] files for different pis, while newer have a
 	# single generic bootscr.rpi file
 	$(call fill_template,$(STAGEDIR)/etc/flash-kernel/bootscript/bootscr.rpi*,$(STAGEDIR)/bootscr.rpi)
 	mkimage -A $(MKIMAGE_ARCH) -O linux -T script -C none -n "boot script" \
@@ -258,6 +258,7 @@ config-desktop: $(DESTDIR)/boot-assets
 
 device-trees: local-apt $(DESTDIR)/boot-assets
 	$(call stage_package,linux-modules-[0-9]*-$(KERNEL_FLAVOR))
+	mkdir -p $(DESTDIR)/boot-assets
 	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
 		-name "*.dtb" -a \! -name "overlay_map.dtb") \
 		$(DESTDIR)/boot-assets/
@@ -289,7 +290,7 @@ local-apt:
 	$(APT) update
 
 $(DESTDIR)/boot-assets:
-	mkdir -p $(DESTDIR)/boot-assets
+	mkdir -p $@
 
 # Some rudimentary tests for the various comparator macros above
 test:

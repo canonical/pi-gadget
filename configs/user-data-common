@@ -14,5 +14,8 @@
 #  variant:
 #  options: ctrl:nocaps
 
-# Enable password authentication with the SSH daemon
-ssh_pwauth: true
+# Controls password authentication with the SSH daemon; the default here
+# prevents logging into SSH with a password. Changing this is a security risk
+# and you should at the very least ensure a different default password is
+# specified above
+ssh_pwauth: false

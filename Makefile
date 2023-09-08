@@ -251,6 +251,7 @@ DESKTOP_KNL_CMD := \
 	$(if $(call lt,$(SERIES_RELEASE),22.04),elevator,) \
 	$(if $(call ge,$(SERIES_RELEASE),22.04),zswap,) \
 	classic
+	splash
 config-desktop: $(DESTDIR)/boot-assets
 	$(call make_config,config.txt,$(DESKTOP_BOOT_CFG))
 	$(call make_cmdline,cmdline.txt,$(DESKTOP_KNL_CMD))

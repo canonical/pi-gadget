@@ -7,13 +7,11 @@ Raspberry Pi boards currently supported by Ubuntu Core (Raspberry Pi 2B, 3B,
 Module 4).
 
 Building with [snapcraft](https://snapcraft.io/docs/snapcraft-overview)(see
-below) will obtain various components from the bionic-updates archive,
+below) will obtain various components from the jammy-updates archive,
 including:
 
-* the bootloader firmware from the linux-firmware-raspi2 package
-* the device-tree(s) from the linux-modules-\<ver\>-raspi2 package
-* u-boot binaries (for various models) from the u-boot-rpi package
-* u-boot boot script from the flash-kernel package (classic gadgets only)
+* the bootloader firmware from the linux-firmware-raspi package
+* the device-tree(s) from the linux-modules-\<ver\>-raspi package
 
 ## Gadget Snaps
 
@@ -44,12 +42,11 @@ the two Raspberry Pi architectures(_armhf_ and _arm64_):
 
 * 18-arm64 - the branch for Core 18 on arm64
 * 18-armhf - the branch for Core 18 on armhf
-* 20-arm64 - the branch for Core 20 on arm64 (**default**)
+* 20-arm64 - the branch for Core 20 on arm64
 * 20-armhf - the branch for Core 20 on armhf
-* 22-arm64 - the branch for Core 22 on arm64
+* 22-arm64 - the branch for Core 22 on arm64 (**default**)
 * 22-armhf - the branch for Core 22 on armhf
-* classic - the branch for Ubuntu Server images (universal gadget)
-* desktop - the branch for Ubuntu Desktop images (universal gadget)
+* classic - the branch for Ubuntu Server and Desktop images (universal gadget)
 
 ## Building
 
@@ -88,7 +85,7 @@ built within a container on the host machine.
 
 #### Prerequisites
 
-- An Ubuntu host (20.04 or newer is recommended)
+- An Ubuntu host (22.04 or newer is recommended)
 - [Snapcraft](https://snapcraft.io/docs/snapcraft-overview)
 
 #### Method

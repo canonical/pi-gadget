@@ -24,26 +24,13 @@ parts:
     source: .
     override-build: |
       set -x
-      # unconditionally set the arch-triplet since this snapcraft.yaml will 
-      # always be used to produce an armhf snap
-      BUILD_ARCH_TRIPLET=aarch64-linux-gnu
-      # but only use the cross-compiling sources when actually cross compiling
-      # as otherwise its just safer to use the build environment - it offers
-      # much more flexibility.
-      if [ "$SNAPCRAFT_ARCH_TRIPLET" = "x86_64-linux-gnu" ] || [ -z "$SNAPCRAFT_ARCH_TRIPLET" ]; then
-        OPTIONAL_ARGS="SERIES_HOST=\"focal\" SOURCES_HOST=\"./helpers/cross-sources.list\" SOURCES_D_HOST=\"./helpers\""
-      fi
-      make -C $SNAPCRAFT_PART_SRC core \
-        DESTDIR=${SNAPCRAFT_PART_INSTALL} \
-        ARCH="$(dpkg-architecture -t $BUILD_ARCH_TRIPLET -q DEB_HOST_ARCH)" \
-        ${OPTIONAL_ARGS:-}
+      ./build.sh
     prime:
       - boot-assets/*
       - piboot.conf
     build-packages:
       - lsb-release
       - dpkg-dev
-      - make
 
 slots:
   bcm-gpio-0:

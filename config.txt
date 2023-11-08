@@ -22,12 +22,8 @@ dtparam=spi=on
 # the edges of your display
 disable_overscan=1
 
-# Enable the serial pins
-enable_uart=1
-
-# Enable the FKMS ("Fake" KMS) graphics overlay, and allocate 128Mb to the
-# GPU memory
-dtoverlay=vc4-fkms-v3d,cma-128
+# Enable the KMS graphics overlay
+dtoverlay=vc4-kms-v3d
 
 # Use dwc2 to drive the USB ports, instead of the legacy dwc_otg
 dtoverlay=dwc2

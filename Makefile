@@ -270,6 +270,8 @@ device-trees: local-apt $(DESTDIR)/boot-assets
 
 gadget:
 	$(call fill_template,gadget.yaml.in,gadget.yaml)
+	mkdir -p $(DESTDIR)/meta
+	cp gadget.yaml $(DESTDIR)/meta/
 
 clean:
 	-rm -rf $(DESTDIR) $(STAGEDIR) gadget.yaml

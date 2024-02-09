@@ -28,18 +28,23 @@ parts:
       
       # we only support arm64 for 24 for pi
       BUILD_ARCH_TRIPLET=aarch64-linux-gnu
+      BUILD_SERIES=noble
+      BUILD_ARCH="$(dpkg-architecture -t $BUILD_ARCH_TRIPLET -q DEB_HOST_ARCH)"
       
       # but only use the cross-compiling sources when actually cross compiling
       # as otherwise its just safer to use the build environment - it offers
       # much more flexibility.
       if [ "$SNAPCRAFT_ARCH_TRIPLET" = "x86_64-linux-gnu" ] || [ -z "$SNAPCRAFT_ARCH_TRIPLET" ]; then
-        OPTIONAL_ARGS="SERIES_HOST=\"focal\" SOURCES_HOST=\"./helpers/cross-sources.list\" SOURCES_D_HOST=\"./helpers\""
+        sed -i "/^deb/ s/\bSERIES/$(BUILD_SERIES)/" \
+            -i "/^deb/ s/\bARCH\b/$(BUILD_ARCH)/" \
+            ./helpers/cross-sources.list
+        OPTIONAL_ARGS="SERIES_HOST=\"$BUILD_SERIES\" SOURCES_HOST=\"./helpers/cross-sources.list\" SOURCES_D_HOST=\"./helpers\""
       fi
       
       make -C $SNAPCRAFT_PART_SRC core \
         DESTDIR=${SNAPCRAFT_PART_INSTALL} \
-        SERIES=noble \
-        ARCH="$(dpkg-architecture -t $BUILD_ARCH_TRIPLET -q DEB_HOST_ARCH)" \
+        SERIES="$BUILD_SERIES" \
+        ARCH="$BUILD_ARCH" \
         ${OPTIONAL_ARGS:-}
     prime:
       - boot-assets/*

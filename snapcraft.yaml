@@ -12,8 +12,6 @@ assumes: [kernel-assets]
 architectures:
   - build-on: [amd64, arm64]
     build-for: [arm64]
-  - build-on: [amd64, armhf]
-    build-for: [armhf]
 
 package-repositories:
   - type: apt
@@ -28,11 +26,8 @@ parts:
     override-build: |
       set -x
       
-      if [ "$CRAFT_ARCH_BUILD_FOR" = "arm64" ]; then
-        BUILD_ARCH_TRIPLET=aarch64-linux-gnu
-      else
-        BUILD_ARCH_TRIPLET=arm-linux-gnueabihf
-      fi
+      # we only support arm64 for 24 for pi
+      BUILD_ARCH_TRIPLET=aarch64-linux-gnu
       
       # but only use the cross-compiling sources when actually cross compiling
       # as otherwise its just safer to use the build environment - it offers
@@ -43,6 +38,7 @@ parts:
       
       make -C $SNAPCRAFT_PART_SRC core \
         DESTDIR=${SNAPCRAFT_PART_INSTALL} \
+        SERIES=noble \
         ARCH="$(dpkg-architecture -t $BUILD_ARCH_TRIPLET -q DEB_HOST_ARCH)" \
         ${OPTIONAL_ARGS:-}
     prime:

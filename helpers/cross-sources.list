@@ -1,12 +1,12 @@
-deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal main universe multiverse restricted
-deb-src [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal main universe multiverse restricted
-deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal-updates main universe multiverse restricted
-deb-src [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal-updates main universe multiverse restricted
-deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal-security main universe multiverse restricted
-deb-src [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal-security main universe multiverse restricted
-#deb [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal-proposed main universe multiverse restricted
-#deb-src [arch=armhf,arm64] http://ports.ubuntu.com/ubuntu-ports/ focal-proposed main universe multiverse restricted
+deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES main universe multiverse restricted
+deb-src [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES main universe multiverse restricted
+deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES-updates main universe multiverse restricted
+deb-src [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES-updates main universe multiverse restricted
+deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES-security main universe multiverse restricted
+deb-src [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES-security main universe multiverse restricted
+#deb [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES-proposed main universe multiverse restricted
+#deb-src [arch=ARCH] http://ports.ubuntu.com/ubuntu-ports/ SERIES-proposed main universe multiverse restricted
 
 # snappy-dev image PPA
-deb [arch=armhf,arm64] http://ppa.launchpad.net/snappy-dev/image/ubuntu focal main
-deb-src [arch=armhf,arm64] http://ppa.launchpad.net/snappy-dev/image/ubuntu focal main
+deb [arch=ARCH] http://ppa.launchpad.net/snappy-dev/image/ubuntu SERIES main
+deb-src [arch=ARCH] http://ppa.launchpad.net/snappy-dev/image/ubuntu SERIES main

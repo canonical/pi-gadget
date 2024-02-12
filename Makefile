@@ -89,11 +89,7 @@ server: firmware uboot boot-script config-server device-trees gadget
 
 desktop: firmware uboot boot-script config-desktop device-trees gadget
 
-ifeq "22.04" "$(word 1, $(sort 22.04 $(SERIES_RELEASE)))"
-core: firmware config-core device-trees gadget
-else
 core: firmware uboot boot-script config-core device-trees gadget
-endif
 
 firmware: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 	$(call stage_package,linux-firmware-$(FIRMWARE_FLAVOR))
@@ -142,10 +138,6 @@ boot-script: $(SOURCES_RESTRICTED) device-trees $(DESTDIR)/boot-assets
 			$(STAGEDIR)/etc/flash-kernel/bootscript/bootscr.rpi* \
 			> $(STAGEDIR)/bootscr.rpi; \
 	done
-ifneq "22.04" "$(word 1, $(sort 22.04 $(SERIES_RELEASE)))"
-	mkimage -A $(MKIMAGE_ARCH) -O linux -T script -C none -n "boot script" \
-		-d $(STAGEDIR)/bootscr.rpi $(DESTDIR)/boot-assets/boot.scr
-endif
 
 CORE_CFG := \
 	$(if $(call lt,$(SERIES_RELEASE),22.04),uboot-$(ARCH),piboot-core) \
@@ -164,19 +156,7 @@ CORE_CMD := \
 config-core: $(DESTDIR)/boot-assets
 	$(call make_boot_config,$(CORE_CFG))
 	$(call make_boot_cmdline,$(CORE_CMD))
-ifeq "22.04" "$(word 1, $(sort 22.04 $(SERIES_RELEASE)))"
 	touch $(DESTDIR)/piboot.conf
-else
-	# TODO:UC20: currently we use an empty uboot.conf as a landmark for the new
-	#            uboot style where there is no uboot.env installed onto the root
-	#            of the partition and instead the boot.scr is used. this may
-	#            change for the final release
-	touch $(DESTDIR)/uboot.conf
-	# the boot.sel file is currently installed onto ubuntu-boot from the gadget
-	# but that will probably change soon so that snapd installs it instead
-	# it is empty now, but snapd will write vars to it
-	mkenvimage -r -s 4096 -o $(DESTDIR)/boot.sel - < /dev/null
-endif
 
 SERVER_CFG := \
 	$(if $(call eq,$(SERIES_RELEASE),20.04),legacy-header,) \

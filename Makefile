@@ -110,7 +110,7 @@ $(SOURCES_RESTRICTED):
 		-e "/^deb/ s/\bARCH\b/$(ARCH)/" \
 		-e "/^deb/ s/\brestricted\b/$(RESTRICTED_COMPONENT)/" \
 		sources.list > $(SOURCES_RESTRICTED)
-	apt-get update $(APT_OPTIONS)
+	apt-get update $(APT_OPTIONS) || true
 
 # XXX: This should be removed (along with the dependencies in classic/core)
 # when uboot is removed entirely from the boot partition. At present, it is

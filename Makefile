@@ -100,6 +100,7 @@ firmware: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 
 # All the default components got moved to main or restricted in groovy. Prior
 # to this (focal and before) certain bits were (are) in universe or multiverse
+# TODO: remove the '|| true' once noble 24.04 is stable
 RESTRICTED_COMPONENT := $(if $(call le,$(SERIES_RELEASE),20.04),universe multiverse,restricted)
 $(SOURCES_RESTRICTED):
 	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv C176CB99A28EA6D8 # TODO: remove this

@@ -9,9 +9,13 @@ type: gadget
 base: core24
 build-base: devel
 assumes: [kernel-assets]
-architectures:
-  - build-on: [amd64, arm64]
-    build-for: [arm64]
+platforms:
+  rpi:
+    build-on: arm64
+    build-for: arm64
+  rpi-amd64:
+    build-on: amd64
+    build-for: arm64
 
 package-repositories:
   - type: apt
@@ -34,9 +38,9 @@ parts:
       # but only use the cross-compiling sources when actually cross compiling
       # as otherwise its just safer to use the build environment - it offers
       # much more flexibility.
-      if [ "$SNAPCRAFT_ARCH_TRIPLET" = "x86_64-linux-gnu" ] || [ -z "$SNAPCRAFT_ARCH_TRIPLET" ]; then
-        sed -i "/^deb/ s/\bSERIES/$(BUILD_SERIES)/" \
-            -i "/^deb/ s/\bARCH\b/$(BUILD_ARCH)/" \
+      if [ "$CRAFT_ARCH_TRIPLET_BUILD_ON" = "x86_64-linux-gnu" ] || [ -z "$CRAFT_ARCH_TRIPLET_BUILD_ON" ]; then
+        sed -i "/^deb/ s/\bSERIES/$BUILD_SERIES/" \
+            -i "/^deb/ s/\bARCH\b/$BUILD_ARCH/" \
             ./helpers/cross-sources.list
         OPTIONAL_ARGS="SERIES_HOST=\"$BUILD_SERIES\" SOURCES_HOST=\"./helpers/cross-sources.list\" SOURCES_D_HOST=\"./helpers\""
       fi

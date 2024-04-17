@@ -57,6 +57,7 @@ parts:
       - dpkg-dev
       - make
       - gnupg
+      - dirmngr
 
 slots:
   bcm-gpio-0:

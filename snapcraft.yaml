@@ -7,7 +7,6 @@ description: |
   Module 3, and the Compute Module 3+ universally.
 type: gadget
 base: core24
-build-base: devel
 assumes: [kernel-assets]
 platforms:
   rpi:
@@ -22,7 +21,7 @@ package-repositories:
     ppa: snappy-dev/image
 
 confinement: strict
-grade: devel
+grade: stable
 parts:
   gadget:
     plugin: nil

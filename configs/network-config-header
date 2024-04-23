@@ -13,3 +13,9 @@
 # indentation. See the following link for more details:
 #
 # https://en.wikipedia.org/wiki/YAML
+#
+# Additionally, please be aware that if your boot sequence depends on active
+# networking (e.g. if your cloud-init configuration pulls packages or SSH
+# keys from the network), you *must* mark at least one interface as required
+# ("optional: false") below. Otherwise, particularly on faster boards,
+# cloud-init will start attempting to use the network before it is ready

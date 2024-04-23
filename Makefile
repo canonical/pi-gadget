@@ -210,6 +210,7 @@ SERVER_BOOT_CFG := \
 	$(if $(call ge,$(SERIES_RELEASE),20.10),serial-console,) \
 	$(if $(call ge,$(SERIES_RELEASE),22.04),libcamera,) \
 	$(ARCH) \
+	$(if $(call ge,$(SERIES_RELEASE),24.04),kms,) \
 	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
 	$(if $(call eq,$(SERIES_RELEASE),20.04),legacy-includes,)
 SERVER_KNL_CMD := \
@@ -243,8 +244,8 @@ config-server: $(DESTDIR)/boot-assets
 DESKTOP_BOOT_CFG := \
 	piboot \
 	common \
-	cm4-support \
 	kms \
+	cm4-support \
 	$(if $(call ge,$(SERIES_RELEASE),22.04),libcamera,) \
 	$(ARCH)
 DESKTOP_KNL_CMD := \
@@ -270,6 +271,8 @@ device-trees: local-apt $(DESTDIR)/boot-assets
 
 gadget:
 	$(call fill_template,gadget.yaml.in,gadget.yaml)
+	mkdir -p $(DESTDIR)/meta
+	cp gadget.yaml $(DESTDIR)/meta/
 
 clean:
 	-rm -rf $(DESTDIR) $(STAGEDIR) gadget.yaml

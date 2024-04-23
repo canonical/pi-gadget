@@ -9,4 +9,9 @@ disable_fw_kms_setup=1
 # cause any issues on that board
 dtoverlay=vc4-kms-v3d,cma-128
 
+[pi02]
+# The Zero 2W is another 512MB board which is occasionally affected by the same
+# OOM oops on boot.
+dtoverlay=vc4-kms-v3d,cma-128
+
 [all]

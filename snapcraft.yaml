@@ -10,11 +10,14 @@ base: core24
 assumes: [kernel-assets]
 platforms:
   rpi:
-    build-on: arm64
-    build-for: arm64
+    build-on: armhf
+    build-for: armhf
   rpi-amd64:
     build-on: amd64
-    build-for: arm64
+    build-for: armhf
+  rpi-arm64:
+    build-on: arm64
+    build-for: armhf
 
 package-repositories:
   - type: apt
@@ -29,8 +32,7 @@ parts:
     override-build: |
       set -x
       
-      # we only support arm64 for 24 for pi
-      BUILD_ARCH_TRIPLET=aarch64-linux-gnu
+      BUILD_ARCH_TRIPLET=arm-linux-gnueabihf
       BUILD_SERIES=noble
       BUILD_ARCH="$(dpkg-architecture -t $BUILD_ARCH_TRIPLET -q DEB_HOST_ARCH)"
       

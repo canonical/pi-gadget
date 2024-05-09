@@ -22,6 +22,8 @@ platforms:
 package-repositories:
   - type: apt
     ppa: snappy-dev/image
+  - type: apt
+    ppa: juergh/pi-kernel-armhf
 
 confinement: strict
 grade: stable

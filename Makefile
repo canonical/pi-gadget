@@ -53,7 +53,7 @@ ne = $(if $(call eq,$(1),$(2)),,foo)
 lt = $(and $(call le,$(1),$(2)),$(call ne,$(1),$(2)))
 gt = $(and $(call ge,$(1),$(2)),$(call ne,$(1),$(2)))
 
-KERNEL_FLAVOR := $(if $(call gt,$(SERIES_RELEASE),18.04),raspi,raspi2)
+KERNEL_FLAVOR := raspi
 FIRMWARE_FLAVOR := $(if $(call ge,$(SERIES_RELEASE),22.04),raspi,raspi2)
 # This is deliberately lazily evaluated (= not :=); it depends on the
 # "device-trees" target to have been executed in order to populate the

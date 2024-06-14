@@ -122,8 +122,6 @@ server: firmware uboot boot-script config-server device-trees gadget
 
 desktop: firmware uboot boot-script config-desktop device-trees gadget
 
-core: firmware uboot boot-script config-core device-trees gadget
-
 
 firmware: local-apt $(DESTDIR)/boot-assets
 	$(call stage_package,linux-firmware-$(FIRMWARE_FLAVOR))
@@ -147,32 +145,6 @@ boot-script: local-apt device-trees
 	$(call fill_template,$(STAGEDIR)/etc/flash-kernel/bootscript/bootscr.rpi*,$(STAGEDIR)/bootscr.rpi)
 	mkimage -A $(MKIMAGE_ARCH) -O linux -T script -C none -n "boot script" \
 		-d $(STAGEDIR)/bootscr.rpi $(DESTDIR)/boot-assets/boot.scr
-
-CORE_BOOT_CFG := \
-	uboot-$(ARCH) \
-	$(if $(call ge,$(SERIES_RELEASE),20.04),uboot-pi0-$(ARCH),) \
-	uboot-core \
-	common \
-	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
-	fkms \
-	$(if $(call lt,$(SERIES_RELEASE),20.04),heartbeat-active,heartbeat-inactive) \
-	$(ARCH)
-CORE_KNL_CMD := \
-	$(if $(call lt,$(SERIES_RELEASE),22.04),elevator,) \
-	serial \
-	core
-config-core: $(DESTDIR)/boot-assets
-	$(call make_config,config.txt,$(CORE_BOOT_CFG))
-	$(call make_cmdline,cmdline.txt,$(CORE_KNL_CMD))
-	# TODO:UC20: currently we use an empty uboot.conf as a landmark for the new
-	#            uboot style where there is no uboot.env installed onto the root
-	#            of the partition and instead the boot.scr is used. this may
-	#            change for the final release
-	touch $(DESTDIR)/uboot.conf
-	# the boot.sel file is currently installed onto ubuntu-boot from the gadget
-	# but that will probably change soon so that snapd installs it instead
-	# it is empty now, but snapd will write vars to it
-	mkenvimage -r -s 4096 -o $(DESTDIR)/boot.sel - < /dev/null
 
 config-server: $(DESTDIR)/boot-assets
 	cp configs/$(SERIES)-$(ARCH)-server/* $(DESTDIR)/boot-assets/

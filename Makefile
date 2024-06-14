@@ -32,9 +32,6 @@ SERIES_RELEASE := $(firstword $(shell ubuntu-distro-info --release --series=$(SE
 STAGEDIR_ABS := $(shell realpath $(STAGEDIR))
 DESTDIR_ABS := $(shell realpath $(DESTDIR))
 
-APT_CONF := $(STAGEDIR_ABS)/apt/conf/apt.conf
-APT := apt -c $(APT_CONF)
-
 # Some trivial comparator macros; please note that these are very simplistic
 # and have some limitations. Specifically, the two parameters are compared as
 # *strings*, not numerals. For example, 10 will compare less than 2, but
@@ -80,12 +77,12 @@ define stage_package
 	mkdir -p $(STAGEDIR)/tmp
 	( \
 		cd $(STAGEDIR)/tmp && \
-		$(APT) download $$( \
-				apt-cache -c $(APT_CONF) \
-					showpkg $(1) | \
-					sed -n -e 's/^Package: *//p' | \
-					sort -V | tail -1 \
-			); \
+		chdist -d $(STAGEDIR_ABS) apt gadget download $$( \
+			chdist -d $(STAGEDIR_ABS) apt-cache gadget \
+				showpkg $(1) | \
+				sed -n -e 's/^Package: *//p' | \
+				sort -V | tail -1 \
+		); \
 	)
 	dpkg-deb --extract $$(ls $(STAGEDIR)/tmp/$(1)_*_*.deb | tail -1) $(STAGEDIR)
 endef
@@ -283,15 +280,13 @@ clean:
 # This way, we can run apt without requiring root privileges, and without
 # messing up the host system's apt cache
 local-apt:
-	for dir in conf/trusted.gpg.d state cache log; do \
-		mkdir -p $(STAGEDIR)/apt/$${dir}; \
-	done
-	touch $(STAGEDIR)/apt/state/status
-	cp $$(dpkg -L ubuntu-keyring | grep "^/etc/apt/trusted\.gpg\.d/") \
-		$(STAGEDIR)/apt/conf/trusted.gpg.d/
-	$(call fill_template,ubuntu-archive.sources.in,$(STAGEDIR)/apt/conf/ubuntu-archive.sources)
-	$(call fill_template,apt.conf.in,$(STAGEDIR)/apt/conf/apt.conf)
-	$(APT) update
+	chdist -d $(STAGEDIR) -a $(ARCH) \
+		create gadget \
+		http://ports.ubuntu.com/ubuntu-ports/ \
+		$(SERIES) \
+		main $(RESTRICTED_COMPONENT)
+	chdist -d $(STAGEDIR) \
+		apt gadget update
 
 $(DESTDIR)/boot-assets:
 	mkdir -p $@

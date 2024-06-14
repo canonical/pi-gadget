@@ -87,30 +87,6 @@ define stage_package
 	dpkg-deb --extract $$(ls $(STAGEDIR)/tmp/$(1)_*_*.deb | tail -1) $(STAGEDIR)
 endef
 
-# Given a space-separated list of parts in $(2), concatenate them together to
-# form the file $(1), making sure there's a blank line between each
-# concatenated part:
-#
-#  $(call make_config,config.txt,piboot common $(ARCH))
-#
-define make_config
-	mkdir -p $(STAGEDIR)/tmp
-	echo > $(STAGEDIR)/tmp/newline
-	cat $(foreach part,$(2),$(STAGEDIR)/tmp/newline configs/$(1)-$(part)) | \
-		tail +2 > $(DESTDIR)/boot-assets/$(1)
-endef
-
-# Given a space-separated list of parts in $(2), concatenate them together on
-# a single line to form the file $(1), which is usually the kernel command
-# line:
-#
-#  $(call make_cmdline,cmdline.txt,elevator classic)
-#
-define make_cmdline
-	echo $(foreach part,$(2),$$(cat configs/$(1)-$(part))) > \
-		$(DESTDIR)/boot-assets/$(1)
-endef
-
 # Given an input text file in $(1), containing @@-delimited variables,
 # substitute suitable values and write the result to $(2):
 #
@@ -198,62 +174,11 @@ config-core: $(DESTDIR)/boot-assets
 	# it is empty now, but snapd will write vars to it
 	mkenvimage -r -s 4096 -o $(DESTDIR)/boot.sel - < /dev/null
 
-SERVER_BOOT_CFG := \
-	$(if $(call eq,$(SERIES_RELEASE),20.04),legacy-header,) \
-	$(if $(call le,$(SERIES_RELEASE),20.04),uboot-$(ARCH),) \
-	$(if $(call eq,$(SERIES_RELEASE),20.04),uboot-pi0-$(ARCH),) \
-	$(if $(call le,$(SERIES_RELEASE),20.04),uboot-classic,piboot) \
-	common \
-	$(if $(call ge,$(SERIES_RELEASE),20.10),serial-console,) \
-	$(if $(call ge,$(SERIES_RELEASE),22.04),libcamera,) \
-	$(ARCH) \
-	$(if $(call ge,$(SERIES_RELEASE),24.04),kms,) \
-	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
-	$(if $(call eq,$(SERIES_RELEASE),20.04),legacy-includes,)
-SERVER_KNL_CMD := \
-	$(if $(call lt,$(SERIES_RELEASE),22.04),elevator,) \
-	$(if $(call le,$(SERIES_RELEASE),20.04),ifnames,) \
-	serial \
-	classic
-SERVER_NET_CONF := \
-	header \
-	$(if $(call le,$(SERIES_RELEASE),22.04),noregdom,) \
-	common \
-	ethernets \
-	wifis \
-	$(if $(call gt,$(SERIES_RELEASE),22.04),regdom,)
-SERVER_USER_DATA := \
-	header \
-	$(if $(call le,$(SERIES_RELEASE),22.04),passwd-old,passwd) \
-	common \
-	examples
-SERVER_FILES := \
-	README \
-	meta-data \
-	$(if $(call eq,$(SERIES_RELEASE),20.04),syscfg.txt usercfg.txt,)
 config-server: $(DESTDIR)/boot-assets
-	$(call make_config,config.txt,$(SERVER_BOOT_CFG))
-	$(call make_config,network-config,$(SERVER_NET_CONF))
-	$(call make_config,user-data,$(SERVER_USER_DATA))
-	$(call make_cmdline,cmdline.txt,$(SERVER_KNL_CMD))
-	cp -a $(foreach file,$(SERVER_FILES),configs/$(file)) $(DESTDIR)/boot-assets/
+	cp configs/$(SERIES)-$(ARCH)-server/* $(DESTDIR)/boot-assets/
 
-DESKTOP_BOOT_CFG := \
-	piboot \
-	common \
-	kms \
-	cm4-support \
-	$(if $(call ge,$(SERIES_RELEASE),22.04),libcamera,) \
-	$(ARCH)
-DESKTOP_KNL_CMD := \
-	$(if $(call lt,$(SERIES_RELEASE),22.04),elevator,) \
-	$(if $(call ge,$(SERIES_RELEASE),22.04),zswap,) \
-	classic \
-	splash
 config-desktop: $(DESTDIR)/boot-assets
-	$(call make_config,config.txt,$(DESKTOP_BOOT_CFG))
-	$(call make_cmdline,cmdline.txt,$(DESKTOP_KNL_CMD))
-	cp -a configs/README $(DESTDIR)/boot-assets/
+	cp configs/$(SERIES)-$(ARCH)-desktop/* $(DESTDIR)/boot-assets/
 
 device-trees: local-apt $(DESTDIR)/boot-assets
 	$(call stage_package,linux-modules-[0-9]*-$(KERNEL_FLAVOR))

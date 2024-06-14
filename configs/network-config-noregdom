@@ -1,7 +1,0 @@
-# Please note that, at this time, there is no way to specify the wifi
-# regulatory region in the netplan or cloud-init configuration (LP: #1951586),
-# and the /etc/default/crda configuration file has been removed. If you need to
-# specify a regulatory region, append the following to the line in
-# "cmdline.txt" (adjusting "GB" to your own region):
-#
-# cfg80211.ieee80211_regdom=GB

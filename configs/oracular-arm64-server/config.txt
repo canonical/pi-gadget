@@ -1,13 +1,9 @@
 [all]
+arm_64bit=1
 kernel=vmlinuz
 cmdline=cmdline.txt
 initramfs initrd.img followkernel
 
-[pi4]
-max_framebuffers=2
-arm_boost=1
-
-[all]
 # Enable the audio output, I2C and SPI interfaces on the GPIO header. As these
 # parameters related to the base device-tree they must appear *before* any
 # other dtoverlay= specification
@@ -24,6 +20,11 @@ disable_overscan=1
 # support audio output)
 #hdmi_drive=2
 
+# Enable the KMS ("full" KMS) graphics overlay, leaving GPU memory as the
+# default (the kernel is in control of graphics memory with full KMS)
+dtoverlay=vc4-kms-v3d
+disable_fw_kms_setup=1
+
 # Enable the serial pins
 enable_uart=1
 
@@ -34,13 +35,11 @@ camera_auto_detect=1
 display_auto_detect=1
 
 # Config settings specific to arm64
-arm_64bit=1
 dtoverlay=dwc2
 
-# Enable the KMS ("full" KMS) graphics overlay, leaving GPU memory as the
-# default (the kernel is in control of graphics memory with full KMS)
-dtoverlay=vc4-kms-v3d
-disable_fw_kms_setup=1
+[pi4]
+max_framebuffers=2
+arm_boost=1
 
 [pi3+]
 # Use a smaller contiguous memory area, specifically on the 3A+ to avoid an
@@ -52,8 +51,6 @@ dtoverlay=vc4-kms-v3d,cma-128
 # The Zero 2W is another 512MB board which is occasionally affected by the same
 # OOM oops on boot.
 dtoverlay=vc4-kms-v3d,cma-128
-
-[all]
 
 [cm4]
 # Enable the USB2 outputs on the IO board (assuming your CM4 is plugged into

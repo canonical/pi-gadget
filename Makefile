@@ -285,6 +285,18 @@ local-apt:
 		http://ports.ubuntu.com/ubuntu-ports/ \
 		$(SERIES) \
 		main $(RESTRICTED_COMPONENT)
+	awk '{ \
+		series=$$3; \
+		print $$0; \
+		$$3=series "-updates"; \
+		print $$0; \
+		$$3=series "-security"; \
+		print $$0; \
+		}' $(STAGEDIR)/gadget/etc/apt/sources.list \
+		> $(STAGEDIR)/gadget/etc/apt/sources.list.new
+	mv \
+		$(STAGEDIR)/gadget/etc/apt/sources.list.new \
+		$(STAGEDIR)/gadget/etc/apt/sources.list
 	chdist -d $(STAGEDIR) \
 		apt gadget update
 

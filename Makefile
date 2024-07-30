@@ -120,14 +120,14 @@ default: server
 
 server: \
 	firmware \
-	$(if $(call le,$(SERIES_RELEASE),24.04,uboot boot-script,)) \
+	$(if $(call le,$(SERIES_RELEASE),24.04),uboot boot-script,) \
 	config-server \
 	device-trees \
 	gadget
 
 desktop: \
 	firmware \
-	$(if $(call le,$(SERIES_RELEASE),24.04,uboot boot-script,)) \
+	$(if $(call le,$(SERIES_RELEASE),24.04),uboot boot-script,) \
 	config-desktop \
 	device-trees \
 	gadget

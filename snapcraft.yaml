@@ -167,6 +167,18 @@ slots:
   bt-serial:
     interface: serial-port
     path: /dev/ttyAMA0
+  ama1-serial:
+    interface: serial-port
+    path: /dev/ttyAMA1
+  ama2-serial:
+    interface: serial-port
+    path: /dev/ttyAMA2
+  ama3-serial:
+    interface: serial-port
+    path: /dev/ttyAMA3
+  ama4-serial:
+    interface: serial-port
+    path: /dev/ttyAMA4
   serial0:
     interface: serial-port
     path: /dev/ttyS0

@@ -227,7 +227,7 @@ SERVER_NET_CONF := \
 	$(if $(call gt,$(SERIES_RELEASE),20.04),regdom,)
 SERVER_USER_DATA := \
 	header \
-	$(if $(call le,$(SERIES_RELEASE),22.04),passwd-old,passwd) \
+	$(if $(call le,$(SERIES_RELEASE),20.04),passwd-old,passwd) \
 	common \
 	examples
 SERVER_FILES := \

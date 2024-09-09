@@ -220,11 +220,11 @@ SERVER_KNL_CMD := \
 	classic
 SERVER_NET_CONF := \
 	header \
-	$(if $(call le,$(SERIES_RELEASE),22.04),noregdom,) \
+	$(if $(call le,$(SERIES_RELEASE),20.04),noregdom,) \
 	common \
 	ethernets \
 	wifis \
-	$(if $(call gt,$(SERIES_RELEASE),22.04),regdom,)
+	$(if $(call gt,$(SERIES_RELEASE),20.04),regdom,)
 SERVER_USER_DATA := \
 	header \
 	$(if $(call le,$(SERIES_RELEASE),22.04),passwd-old,passwd) \

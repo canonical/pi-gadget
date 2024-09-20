@@ -233,6 +233,9 @@ slots:
   ama4-serial:
     interface: serial-port
     path: /dev/ttyAMA4
+  ama5-serial:
+    interface: serial-port
+    path: /dev/ttyAMA5
   serial0:
     interface: serial-port
     path: /dev/ttyS0

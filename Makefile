@@ -147,7 +147,7 @@ CORE_CFG := \
 	common \
 	$(if $(call ge,$(SERIES_RELEASE),22.04),serial-console,) \
 	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
-	fkms \
+	kms \
 	$(if $(call lt,$(SERIES_RELEASE),20.04),heartbeat-active,heartbeat-inactive) \
 	$(ARCH)
 CORE_CMD := \

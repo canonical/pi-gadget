@@ -80,12 +80,15 @@ slots:
   bcm-gpio-6:
     interface: gpio
     number: 6
-  bcm-gpio-7:
-    interface: gpio
-    number: 7
-  bcm-gpio-8:
-    interface: gpio
-    number: 8
+# GPIO 7 and 8 are by default in use for the SPI0 device
+# and dtparam=spi=on in config.txt-common must be changed
+# for those to be available.
+#  bcm-gpio-7:
+#    interface: gpio
+#    number: 7
+#  bcm-gpio-8:
+#    interface: gpio
+#    number: 8
   bcm-gpio-9:
     interface: gpio
     number: 9

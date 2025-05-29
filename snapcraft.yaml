@@ -59,93 +59,93 @@ parts:
       - dirmngr
 
 slots:
-  bcm-gpio-0:
+  bcm-gpio-512:
     interface: gpio
-    number: 0
-  bcm-gpio-1:
+    number: 512
+  bcm-gpio-513:
     interface: gpio
-    number: 1
-  bcm-gpio-2:
+    number: 513
+  bcm-gpio-514:
     interface: gpio
-    number: 2
-  bcm-gpio-3:
+    number: 514
+  bcm-gpio-515:
     interface: gpio
-    number: 3
-  bcm-gpio-4:
+    number: 515
+  bcm-gpio-516:
     interface: gpio
-    number: 4
-  bcm-gpio-5:
+    number: 516
+  bcm-gpio-517:
     interface: gpio
-    number: 5
-  bcm-gpio-6:
+    number: 517
+  bcm-gpio-518:
     interface: gpio
-    number: 6
-# GPIO 7 and 8 are by default in use for the SPI0 device
-# and dtparam=spi=on in config.txt-common must be changed
-# for those to be available.
-#  bcm-gpio-7:
-#    interface: gpio
-#    number: 7
-#  bcm-gpio-8:
-#    interface: gpio
-#    number: 8
-  bcm-gpio-9:
+    number: 518
+  # GPIO 519 and 520 are by default in use for the SPI0 device
+  # and dtparam=spi=on in config.txt-common must be changed
+  # for these to be available.
+  #  bcm-gpio-519:
+  #    interface: gpio
+  #    number: 519
+  #  bcm-gpio-520:
+  #    interface: gpio
+  #    number: 520
+  bcm-gpio-521:
     interface: gpio
-    number: 9
-  bcm-gpio-10:
+    number: 521
+  bcm-gpio-522:
     interface: gpio
-    number: 10
-  bcm-gpio-11:
+    number: 522
+  bcm-gpio-523:
     interface: gpio
-    number: 11
-  bcm-gpio-12:
+    number: 523
+  bcm-gpio-524:
     interface: gpio
-    number: 12
-  bcm-gpio-13:
+    number: 524
+  bcm-gpio-525:
     interface: gpio
-    number: 13
-  bcm-gpio-14:
+    number: 525
+  bcm-gpio-526:
     interface: gpio
-    number: 14
-  bcm-gpio-15:
+    number: 526
+  bcm-gpio-527:
     interface: gpio
-    number: 15
-  bcm-gpio-16:
+    number: 527
+  bcm-gpio-528:
     interface: gpio
-    number: 16
-  bcm-gpio-17:
+    number: 528
+  bcm-gpio-529:
     interface: gpio
-    number: 17
-  bcm-gpio-18:
+    number: 529
+  bcm-gpio-530:
     interface: gpio
-    number: 18
-  bcm-gpio-19:
+    number: 530
+  bcm-gpio-531:
     interface: gpio
-    number: 19
-  bcm-gpio-20:
+    number: 531
+  bcm-gpio-532:
     interface: gpio
-    number: 20
-  bcm-gpio-21:
+    number: 532
+  bcm-gpio-533:
     interface: gpio
-    number: 21
-  bcm-gpio-22:
+    number: 533
+  bcm-gpio-534:
     interface: gpio
-    number: 22
-  bcm-gpio-23:
+    number: 534
+  bcm-gpio-535:
     interface: gpio
-    number: 23
-  bcm-gpio-24:
+    number: 535
+  bcm-gpio-536:
     interface: gpio
-    number: 24
-  bcm-gpio-25:
+    number: 536
+  bcm-gpio-537:
     interface: gpio
-    number: 25
-  bcm-gpio-26:
+    number: 537
+  bcm-gpio-538:
     interface: gpio
-    number: 26
-  bcm-gpio-27:
+    number: 538
+  bcm-gpio-539:
     interface: gpio
-    number: 27
+    number: 539
   i2c-0:
     interface: i2c
     path: /dev/i2c-0

@@ -83,11 +83,7 @@ define make_boot_cmdline
 		$(DESTDIR)/boot-assets/cmdline.txt
 endef
 
-default: server
-
-server: firmware uboot boot-script config-server device-trees gadget
-
-desktop: firmware uboot boot-script config-desktop device-trees gadget
+default: core
 
 core: firmware uboot boot-script config-core device-trees gadget
 
@@ -158,49 +154,6 @@ config-core: $(DESTDIR)/boot-assets
 	$(call make_boot_config,$(CORE_CFG))
 	$(call make_boot_cmdline,$(CORE_CMD))
 	touch $(DESTDIR)/piboot.conf
-
-SERVER_CFG := \
-	$(if $(call eq,$(SERIES_RELEASE),20.04),legacy-header,) \
-	$(if $(call le,$(SERIES_RELEASE),20.04),uboot-$(ARCH),) \
-	$(if $(call eq,$(SERIES_RELEASE),20.04),uboot-pi0-$(ARCH),) \
-	$(if $(call le,$(SERIES_RELEASE),20.04),uboot-classic,piboot) \
-	common \
-	$(if $(call ge,$(SERIES_RELEASE),20.10),serial-console,) \
-	$(if $(call ge,$(SERIES_RELEASE),22.04),libcamera,) \
-	$(ARCH) \
-	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
-	$(if $(call eq,$(SERIES_RELEASE),20.04),legacy-includes,)
-SERVER_CMD := \
-	$(if $(call lt,$(SERIES_RELEASE),22.04),elevator,) \
-	$(if $(call le,$(SERIES_RELEASE),20.04),ifnames,) \
-	serial \
-	classic
-SERVER_FILES := \
-	README \
-	user-data \
-	meta-data \
-	network-config \
-	$(if $(call eq,$(SERIES_RELEASE),20.04), syscfg.txt usercfg.txt,)
-config-server: $(DESTDIR)/boot-assets
-	$(call make_boot_config,$(SERVER_CFG))
-	$(call make_boot_cmdline,$(SERVER_CMD))
-	cp -a $(foreach file,$(SERVER_FILES),configs/$(file)) $(DESTDIR)/boot-assets/
-
-DESKTOP_CFG := \
-	piboot \
-	common \
-	cm4-support \
-	kms \
-	$(if $(call ge,$(SERIES_RELEASE),22.04),libcamera,) \
-	$(ARCH)
-DESKTOP_CMD := \
-	$(if $(call lt,$(SERIES_RELEASE),22.04),elevator,) \
-	$(if $(call ge,$(SERIES_RELEASE),22.04),zswap,) \
-	classic
-config-desktop: $(DESTDIR)/boot-assets
-	$(call make_boot_config,$(DESKTOP_CFG))
-	$(call make_boot_cmdline,$(DESKTOP_CMD))
-	cp -a configs/README $(DESTDIR)/boot-assets/
 
 device-trees: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 	$(call stage_package,linux-modules-[0-9]*-$(KERNEL_FLAVOR))

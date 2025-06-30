@@ -9,8 +9,11 @@ volumes:
         type: 0C
         size: 1200M
         content:
-          - source: $kernel:dtbs/dtbs/broadcom/
-            target: /
+          # Exposed kernel-assets are not needed since the migration to piboot.
+          # However, they can't be fully removed for now as snapd requires to
+          # reference at least one of the assets exposed by the kernel.
+          # TODO: remove this dtb overlay unnecessary copy when snapd has an
+          # option to ignore unused kernel-assets
           - source: $kernel:dtbs/dtbs/overlays/
             target: /overlays
           - source: boot-assets/

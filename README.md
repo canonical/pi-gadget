@@ -29,7 +29,7 @@ This gadget snap enables by default the boot splash. To customize it
 on Ubuntu Core, you can follow the instructions provided in the UC
 [documentation](https://ubuntu.com/core/docs/splash-screen).
 
-To turn off the splash screen please edit `configs/cmdline.txt-core`
+To turn off the splash screen please edit `configs/cmdline.txt`
 and remove the `splash` and the `vt.handoff=2` keywords from the
 default kernel command line.
 
@@ -40,11 +40,11 @@ the two Raspberry Pi architectures(_armhf_ and _arm64_):
 
 * 18-arm64 - the branch for Core 18 on arm64
 * 18-armhf - the branch for Core 18 on armhf
-* 20-arm64 - the branch for Core 20 on arm64 (**default**)
+* 20-arm64 - the branch for Core 20 on arm64
 * 20-armhf - the branch for Core 20 on armhf
 * 22-arm64 - the branch for Core 22 on arm64
 * 22-armhf - the branch for Core 22 on armhf
-* 24 - the branch for Core 24 on arm64
+* 24 - the branch for Core 24 on arm64 (**default**)
 * classic - the branch for Ubuntu Server images (universal gadget)
 * desktop - the branch for Ubuntu Desktop images (universal gadget)
 

@@ -7,13 +7,9 @@ Raspberry Pi boards currently supported by Ubuntu Core (Raspberry Pi 2B, 3B,
 Module 4).
 
 Building with [snapcraft](https://snapcraft.io/docs/snapcraft-overview)(see
-below) will obtain various components from the bionic-updates archive,
-including:
+below) will obtain the following component from the noble-updates archive:
 
-* the bootloader firmware from the linux-firmware-raspi2 package
-* the device-tree(s) from the linux-modules-\<ver\>-raspi2 package
-* u-boot binaries (for various models) from the u-boot-rpi package
-* u-boot boot script from the flash-kernel package (classic gadgets only)
+* the bootloader firmware from the linux-firmware-raspi package
 
 ## Gadget Snaps
 
@@ -48,6 +44,7 @@ the two Raspberry Pi architectures(_armhf_ and _arm64_):
 * 20-armhf - the branch for Core 20 on armhf
 * 22-arm64 - the branch for Core 22 on arm64
 * 22-armhf - the branch for Core 22 on armhf
+* 24 - the branch for Core 24 on arm64
 * classic - the branch for Ubuntu Server images (universal gadget)
 * desktop - the branch for Ubuntu Desktop images (universal gadget)
 

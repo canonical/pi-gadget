@@ -36,7 +36,6 @@ ne = $(if $(call eq,$(1),$(2)),,foo)
 lt = $(and $(call le,$(1),$(2)),$(call ne,$(1),$(2)))
 gt = $(and $(call ge,$(1),$(2)),$(call ne,$(1),$(2)))
 
-KERNEL_FLAVOR := $(if $(call gt,$(SERIES_RELEASE),18.04),raspi,raspi2)
 FIRMWARE_FLAVOR := $(if $(call ge,$(SERIES_RELEASE),22.04),raspi,raspi2)
 
 # Download the latest version of package $1 for architecture $(ARCH), unpacking
@@ -85,7 +84,7 @@ endef
 
 default: core
 
-core: firmware uboot boot-script config-core device-trees gadget
+core: firmware config-core gadget
 
 firmware: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
 	$(call stage_package,linux-firmware-$(FIRMWARE_FLAVOR))
@@ -109,37 +108,8 @@ $(SOURCES_RESTRICTED):
 		sources.list > $(SOURCES_RESTRICTED)
 	apt-get update $(APT_OPTIONS) || true
 
-# XXX: This should be removed (along with the dependencies in classic/core)
-# when uboot is removed entirely from the boot partition. At present, it is
-# included on the boot partition but not in the configuration just in case
-# anyone requires an easy path to switch back to it
-uboot: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
-	$(call stage_package,u-boot-rpi)
-	for platform_path in $(STAGEDIR)/usr/lib/u-boot/*; do \
-		cp -a $$platform_path/u-boot.bin \
-			$(DESTDIR)/boot-assets/uboot_$${platform_path##*/}.bin; \
-	done
-
-boot-script: $(SOURCES_RESTRICTED) device-trees $(DESTDIR)/boot-assets
-	$(call stage_package,flash-kernel)
-	# NOTE: the bootscr.rpi* below is deliberate; older flash-kernels have
-	# separate bootscr.rpi? files for different pis, while newer have a
-	# single generic bootscr.rpi file
-	for kvers in $(STAGEDIR)/lib/modules/*; do \
-		sed \
-			-e "s/@@KERNEL_VERSION@@/$${kvers##*/}/g" \
-			-e "s/@@LINUX_KERNEL_CMDLINE@@/quiet splash/g" \
-			-e "s/@@LINUX_KERNEL_CMDLINE_DEFAULTS@@//g" \
-			-e "s/@@UBOOT_ENV_EXTRA@@//g" \
-			-e "s/@@UBOOT_PREBOOT_EXTRA@@//g" \
-			$(STAGEDIR)/etc/flash-kernel/bootscript/bootscr.rpi* \
-			> $(STAGEDIR)/bootscr.rpi; \
-	done
-
 CORE_CFG := \
-	$(if $(call lt,$(SERIES_RELEASE),22.04),uboot-$(ARCH),piboot-core) \
-	$(if $(call eq,$(SERIES_RELEASE),20.04),uboot-pi0-$(ARCH),) \
-	$(if $(call lt,$(SERIES_RELEASE),22.04),uboot-core,) \
+	piboot-core \
 	common \
 	$(if $(call ge,$(SERIES_RELEASE),22.04),serial-console,) \
 	$(if $(call ge,$(SERIES_RELEASE),20.04),cm4-support,) \
@@ -154,16 +124,6 @@ config-core: $(DESTDIR)/boot-assets
 	$(call make_boot_config,$(CORE_CFG))
 	$(call make_boot_cmdline,$(CORE_CMD))
 	touch $(DESTDIR)/piboot.conf
-
-device-trees: $(SOURCES_RESTRICTED) $(DESTDIR)/boot-assets
-	$(call stage_package,linux-modules-[0-9]*-$(KERNEL_FLAVOR))
-	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
-		-name "*.dtb" -a \! -name "overlay_map.dtb") \
-		$(DESTDIR)/boot-assets/
-	mkdir -p $(DESTDIR)/boot-assets/overlays
-	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
-		-name "*.dtbo" -o -name "overlay_map.dtb") \
-		$(DESTDIR)/boot-assets/overlays/
 
 gadget:
 	mkdir -p $(DESTDIR)/meta

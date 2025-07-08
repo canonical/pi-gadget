@@ -16,47 +16,49 @@ platforms:
     build-on: amd64
     build-for: arm64
 
-package-repositories:
-  - type: apt
-    ppa: snappy-dev/image
-
 confinement: strict
 grade: stable
 parts:
-  gadget:
+  boot-assets:
     plugin: nil
-    source: .
+    source: configs
     override-build: |
       set -x
       
-      # we only support arm64 for 24 for pi
-      BUILD_ARCH_TRIPLET=aarch64-linux-gnu
+      # This branch is dedicated to arm64 support
       BUILD_SERIES=noble
-      BUILD_ARCH="$(dpkg-architecture -t $BUILD_ARCH_TRIPLET -q DEB_HOST_ARCH)"
+      BUILD_ARCH=${CRAFT_ARCH_BUILD_FOR}
       
-      # but only use the cross-compiling sources when actually cross compiling
-      # as otherwise its just safer to use the build environment - it offers
-      # much more flexibility.
-      if [ "$CRAFT_ARCH_TRIPLET_BUILD_ON" = "x86_64-linux-gnu" ] || [ -z "$CRAFT_ARCH_TRIPLET_BUILD_ON" ]; then
-        sed -i "/^deb/s/\bSERIES/$BUILD_SERIES/" ./helpers/cross-sources.list
-        sed -i "/^deb/s/\bARCH\b/$BUILD_ARCH/" ./helpers/cross-sources.list
-        OPTIONAL_ARGS="SERIES_HOST=\"$BUILD_SERIES\" SOURCES_HOST=\"./helpers/cross-sources.list\" SOURCES_D_HOST=\"./helpers\""
-      fi
-      
-      make -C $CRAFT_PART_SRC core \
-        DESTDIR=${CRAFT_PART_INSTALL} \
-        SERIES="$BUILD_SERIES" \
-        ARCH="$BUILD_ARCH" \
-        ${OPTIONAL_ARGS:-}
-    prime:
-      - boot-assets/*
-      - piboot.conf
-    build-packages:
-      - lsb-release
-      - dpkg-dev
-      - make
-      - gnupg
-      - dirmngr
+      # restricted source import to retrieve the Pi firmware
+      SOURCES_RESTRICTED="${CRAFT_PART_BUILD}/restricted.sources.list"
+      APT_OPTIONS="-o Dir::Etc::sourcelist=${SOURCES_RESTRICTED}"
+      sed -e "/^deb/ s/\bSERIES/${BUILD_SERIES}/" \
+          -e "/^deb/ s/\bARCH\b/${BUILD_ARCH}/" \
+          apt/sources.list > ${SOURCES_RESTRICTED}
+      apt-get update ${APT_OPTIONS}
+
+      # download and extract the firmaware
+      RPI_FW=linux-firmware-raspi
+      apt-get download ${APT_OPTIONS} \
+                       $(apt-cache ${APT_OPTIONS} \
+                                   showpkg ${RPI_FW} | \
+                                   sed -n -e 's/^Package: *//p' | \
+                                   sort -V | tail -1 \
+                        )
+      dpkg-deb --extract $(ls ${CRAFT_PART_BUILD}/${RPI_FW}*.deb | tail -1) ${CRAFT_PART_BUILD}
+
+      # copy relevant firware files in boot-assets
+      install -d ${CRAFT_PART_INSTALL}/boot-assets
+      for file in fixup start bootcode; do \
+              install -m 644 ${CRAFT_PART_BUILD}/usr/lib/${RPI_FW}/${file}* ${CRAFT_PART_INSTALL}/boot-assets/; \
+      done
+
+      # install config.txt and cmdline.txt
+      install -m 644 config.txt ${CRAFT_PART_INSTALL}/boot-assets/
+      install -m 644 cmdline.txt ${CRAFT_PART_INSTALL}/boot-assets/
+
+      # piboot.conf lets snapd identify piboot as the bootloader on boot
+      install -m 644 /dev/null ${CRAFT_PART_INSTALL}/piboot.conf
 
 slots:
   bcm-gpio-512:

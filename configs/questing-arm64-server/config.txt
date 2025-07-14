@@ -1,4 +1,10 @@
 [all]
+os_prefix=current/
+
+[tryboot]
+os_prefix=new/
+
+[all]
 arm_64bit=1
 kernel=vmlinuz
 cmdline=cmdline.txt

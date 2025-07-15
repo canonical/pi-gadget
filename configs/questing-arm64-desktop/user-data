@@ -10,6 +10,14 @@
 # to customize the rest of the configuration as desired.
 users: []
 
+# Create a 1GB swap file. Customize this if you wish to create a larger (or
+# smaller) swap file, or comment it out to disable its creation
+swap:
+  filename: /swapfile
+  size: 1G
+  #size: auto
+  #maxsize: 4G
+
 # Some examples of customization are provided in comments below; please refer
 # to the cloud-init documentation for full details of the configuration format:
 #

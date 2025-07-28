@@ -13,6 +13,6 @@ volumes:
           - source: boot-assets/
             target: /
           - source: rootfs:/boot/vmlinuz-@@KERNEL_VERSION@@
-            target: vmlinuz
+            target: @@OS_PREFIX@@vmlinuz
           - source: rootfs:/boot/initrd.img-@@KERNEL_VERSION@@
-            target: initrd.img
+            target: @@OS_PREFIX@@initrd.img

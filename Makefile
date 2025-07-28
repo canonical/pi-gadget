@@ -59,6 +59,9 @@ KERNEL_VERSION = $(shell ls $(STAGEDIR)/lib/modules 2>/dev/null)
 # All the default components got moved to main or restricted in groovy. Prior
 # to this (focal and before) certain bits were (are) in universe or multiverse
 RESTRICTED_COMPONENT := $(if $(call le,$(SERIES_RELEASE),20.04),universe multiverse,restricted)
+# From questing onwards, the kernel, initrd, device-trees, and overlays all
+# live under a "current/" prefix by default
+OS_PREFIX := $(if $(call ge,$(SERIES_RELEASE),25.10),current/,)
 
 
 # Download the latest version of package $1 for architecture $(ARCH), unpacking
@@ -112,6 +115,7 @@ define fill_template
 		-e "s,@@DESTDIR@@,$(DESTDIR),g" \
 		-e "s,@@STAGEDIR_ABS@@,$(STAGEDIR_ABS),g" \
 		-e "s,@@DESTDIR_ABS@@,$(DESTDIR_ABS),g" \
+		-e "s,@@OS_PREFIX@@,$(OS_PREFIX),g" \
 		$(1) > $(2)
 endef
 
@@ -157,21 +161,21 @@ boot-script: local-apt device-trees
 		-d $(STAGEDIR)/bootscr.rpi $(DESTDIR)/boot-assets/boot.scr
 
 config-server: $(DESTDIR)/boot-assets
-	cp configs/$(SERIES)-$(ARCH)-server/* $(DESTDIR)/boot-assets/
+	cp -r configs/$(SERIES)-$(ARCH)-server/* $(DESTDIR)/boot-assets/
 
 config-desktop: $(DESTDIR)/boot-assets
-	cp configs/$(SERIES)-$(ARCH)-desktop/* $(DESTDIR)/boot-assets/
+	cp -r configs/$(SERIES)-$(ARCH)-desktop/* $(DESTDIR)/boot-assets/
 
 device-trees: local-apt $(DESTDIR)/boot-assets
 	$(call stage_package,linux-modules-[0-9]*-$(KERNEL_FLAVOR))
-	mkdir -p $(DESTDIR)/boot-assets
+	mkdir -p $(DESTDIR)/boot-assets/$(OS_PREFIX)
 	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
 		-name "*.dtb" -a \! -name "overlay_map.dtb") \
-		$(DESTDIR)/boot-assets/
-	mkdir -p $(DESTDIR)/boot-assets/overlays
+		$(DESTDIR)/boot-assets/$(OS_PREFIX)
+	mkdir -p $(DESTDIR)/boot-assets/$(OS_PREFIX)overlays
 	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
 		-name "*.dtbo" -o -name "overlay_map.dtb") \
-		$(DESTDIR)/boot-assets/overlays/
+		$(DESTDIR)/boot-assets/$(OS_PREFIX)overlays/
 
 gadget:
 	$(call fill_template,gadget.yaml.in,gadget.yaml)

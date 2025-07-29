@@ -140,14 +140,14 @@ desktop: \
 firmware: local-apt $(DESTDIR)/boot-assets
 	$(call stage_package,linux-firmware-$(FIRMWARE_FLAVOR))
 	for file in fixup start bootcode; do \
-		cp -a $(STAGEDIR)/usr/lib/linux-firmware-$(FIRMWARE_FLAVOR)/$${file}* \
+		cp -av $(STAGEDIR)/usr/lib/linux-firmware-$(FIRMWARE_FLAVOR)/$${file}* \
 			$(DESTDIR)/boot-assets/; \
 	done
 
 uboot: local-apt $(DESTDIR)/boot-assets
 	$(call stage_package,u-boot-rpi)
 	for platform_path in $(STAGEDIR)/usr/lib/u-boot/*; do \
-		cp -a $$platform_path/u-boot.bin \
+		cp -av $$platform_path/u-boot.bin \
 			$(DESTDIR)/boot-assets/uboot_$${platform_path##*/}.bin; \
 	done
 
@@ -161,26 +161,26 @@ boot-script: local-apt device-trees
 		-d $(STAGEDIR)/bootscr.rpi $(DESTDIR)/boot-assets/boot.scr
 
 config-server: $(DESTDIR)/boot-assets
-	cp -r configs/$(SERIES)-$(ARCH)-server/* $(DESTDIR)/boot-assets/
+	cp -rv configs/$(SERIES)-$(ARCH)-server/* $(DESTDIR)/boot-assets/
 
 config-desktop: $(DESTDIR)/boot-assets
-	cp -r configs/$(SERIES)-$(ARCH)-desktop/* $(DESTDIR)/boot-assets/
+	cp -rv configs/$(SERIES)-$(ARCH)-desktop/* $(DESTDIR)/boot-assets/
 
 device-trees: local-apt $(DESTDIR)/boot-assets
 	$(call stage_package,linux-modules-[0-9]*-$(KERNEL_FLAVOR))
 	mkdir -p $(DESTDIR)/boot-assets/$(OS_PREFIX)
-	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
+	cp -av $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
 		-name "*.dtb" -a \! -name "overlay_map.dtb") \
 		$(DESTDIR)/boot-assets/$(OS_PREFIX)
 	mkdir -p $(DESTDIR)/boot-assets/$(OS_PREFIX)overlays
-	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
+	cp -av $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
 		-name "*.dtbo" -o -name "overlay_map.dtb") \
 		$(DESTDIR)/boot-assets/$(OS_PREFIX)overlays/
 
 gadget:
 	$(call fill_template,gadget.yaml.in,gadget.yaml)
 	mkdir -p $(DESTDIR)/meta
-	cp gadget.yaml $(DESTDIR)/meta/
+	cp -v gadget.yaml $(DESTDIR)/meta/
 
 clean:
 	-rm -rf $(DESTDIR) $(STAGEDIR) gadget.yaml

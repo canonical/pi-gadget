@@ -59,6 +59,9 @@ KERNEL_VERSION = $(shell ls $(STAGEDIR)/lib/modules 2>/dev/null)
 # All the default components got moved to main or restricted in groovy. Prior
 # to this (focal and before) certain bits were (are) in universe or multiverse
 RESTRICTED_COMPONENT := $(if $(call le,$(SERIES_RELEASE),20.04),universe multiverse,restricted)
+# From questing onwards, the kernel, initrd, device-trees, and overlays all
+# live under a "current/" prefix by default
+OS_PREFIX := $(if $(call ge,$(SERIES_RELEASE),25.10),current/,)
 
 
 # Download the latest version of package $1 for architecture $(ARCH), unpacking
@@ -112,6 +115,7 @@ define fill_template
 		-e "s,@@DESTDIR@@,$(DESTDIR),g" \
 		-e "s,@@STAGEDIR_ABS@@,$(STAGEDIR_ABS),g" \
 		-e "s,@@DESTDIR_ABS@@,$(DESTDIR_ABS),g" \
+		-e "s,@@OS_PREFIX@@,$(OS_PREFIX),g" \
 		$(1) > $(2)
 endef
 
@@ -136,14 +140,14 @@ desktop: \
 firmware: local-apt $(DESTDIR)/boot-assets
 	$(call stage_package,linux-firmware-$(FIRMWARE_FLAVOR))
 	for file in fixup start bootcode; do \
-		cp -a $(STAGEDIR)/usr/lib/linux-firmware-$(FIRMWARE_FLAVOR)/$${file}* \
+		cp -av $(STAGEDIR)/usr/lib/linux-firmware-$(FIRMWARE_FLAVOR)/$${file}* \
 			$(DESTDIR)/boot-assets/; \
 	done
 
 uboot: local-apt $(DESTDIR)/boot-assets
 	$(call stage_package,u-boot-rpi)
 	for platform_path in $(STAGEDIR)/usr/lib/u-boot/*; do \
-		cp -a $$platform_path/u-boot.bin \
+		cp -av $$platform_path/u-boot.bin \
 			$(DESTDIR)/boot-assets/uboot_$${platform_path##*/}.bin; \
 	done
 
@@ -157,26 +161,38 @@ boot-script: local-apt device-trees
 		-d $(STAGEDIR)/bootscr.rpi $(DESTDIR)/boot-assets/boot.scr
 
 config-server: $(DESTDIR)/boot-assets
-	cp configs/$(SERIES)-$(ARCH)-server/* $(DESTDIR)/boot-assets/
+	cp -rv configs/$(SERIES)-$(ARCH)-server/* $(DESTDIR)/boot-assets/
 
 config-desktop: $(DESTDIR)/boot-assets
-	cp configs/$(SERIES)-$(ARCH)-desktop/* $(DESTDIR)/boot-assets/
+	cp -rv configs/$(SERIES)-$(ARCH)-desktop/* $(DESTDIR)/boot-assets/
 
 device-trees: local-apt $(DESTDIR)/boot-assets
 	$(call stage_package,linux-modules-[0-9]*-$(KERNEL_FLAVOR))
-	mkdir -p $(DESTDIR)/boot-assets
-	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
-		-name "*.dtb" -a \! -name "overlay_map.dtb") \
-		$(DESTDIR)/boot-assets/
-	mkdir -p $(DESTDIR)/boot-assets/overlays
-	cp -a $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
-		-name "*.dtbo" -o -name "overlay_map.dtb") \
-		$(DESTDIR)/boot-assets/overlays/
+	mkdir -p $(DESTDIR)/boot-assets/$(OS_PREFIX)
+	# NOTE: the find constructions below deal with two specific cases. The
+	# linux-raspi armhf kernels (jammy and prior) kept their device-trees
+	# directly under .../device-tree/. All linux-raspi arm64 kernels keep
+	# their device-tree under the .../device-tree/broadcom/ directory.
+	# However, there are also device-trees (overlay_map and hat_map) under
+	# the .../device-tree/overlays/ directory which are *not* base
+	# device-trees and must appear under overlays
+	if [ -d $(STAGEDIR)/lib/firmware/*/device-tree/broadcom ]; then \
+		cp -av $$(find $(STAGEDIR)/lib/firmware/*/device-tree/broadcom \
+		-name "*.dtb") \
+		$(DESTDIR)/boot-assets/$(OS_PREFIX); \
+	else \
+		cp -av $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
+		-maxdepth 1 -name "*.dtb") \
+		$(DESTDIR)/boot-assets/$(OS_PREFIX); \
+	fi
+	mkdir -p $(DESTDIR)/boot-assets/$(OS_PREFIX)overlays
+	cp -av $$(find $(STAGEDIR)/lib/firmware/*/device-tree/overlays -type f) \
+		$(DESTDIR)/boot-assets/$(OS_PREFIX)overlays/
 
 gadget:
 	$(call fill_template,gadget.yaml.in,gadget.yaml)
 	mkdir -p $(DESTDIR)/meta
-	cp gadget.yaml $(DESTDIR)/meta/
+	cp -v gadget.yaml $(DESTDIR)/meta/
 
 clean:
 	-rm -rf $(DESTDIR) $(STAGEDIR) gadget.yaml

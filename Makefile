@@ -169,12 +169,24 @@ config-desktop: $(DESTDIR)/boot-assets
 device-trees: local-apt $(DESTDIR)/boot-assets
 	$(call stage_package,linux-modules-[0-9]*-$(KERNEL_FLAVOR))
 	mkdir -p $(DESTDIR)/boot-assets/$(OS_PREFIX)
-	cp -av $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
-		-name "*.dtb" -a \! -name "overlay_map.dtb") \
-		$(DESTDIR)/boot-assets/$(OS_PREFIX)
+	# NOTE: the find constructions below deal with two specific cases. The
+	# linux-raspi armhf kernels (jammy and prior) kept their device-trees
+	# directly under .../device-tree/. All linux-raspi arm64 kernels keep
+	# their device-tree under the .../device-tree/broadcom/ directory.
+	# However, there are also device-trees (overlay_map and hat_map) under
+	# the .../device-tree/overlays/ directory which are *not* base
+	# device-trees and must appear under overlays
+	if [ -d $(STAGEDIR)/lib/firmware/*/device-tree/broadcom ]; then \
+		cp -av $$(find $(STAGEDIR)/lib/firmware/*/device-tree/broadcom \
+		-name "*.dtb") \
+		$(DESTDIR)/boot-assets/$(OS_PREFIX); \
+	else \
+		cp -av $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
+		-maxdepth 1 -name "*.dtb") \
+		$(DESTDIR)/boot-assets/$(OS_PREFIX); \
+	fi
 	mkdir -p $(DESTDIR)/boot-assets/$(OS_PREFIX)overlays
-	cp -av $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
-		-name "*.dtbo" -o -name "overlay_map.dtb") \
+	cp -av $$(find $(STAGEDIR)/lib/firmware/*/device-tree/overlays -type f) \
 		$(DESTDIR)/boot-assets/$(OS_PREFIX)overlays/
 
 gadget:

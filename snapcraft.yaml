@@ -49,8 +49,8 @@ parts:
 
       # copy relevant firware files in boot-assets
       install -d ${CRAFT_PART_INSTALL}/boot-assets
-      for file in fixup start bootcode; do \
-              install -m 644 ${CRAFT_PART_BUILD}/usr/lib/${RPI_FW}/${file}* ${CRAFT_PART_INSTALL}/boot-assets/; \
+      for file in fixup start bootcode; do
+              install -m 644 ${CRAFT_PART_BUILD}/usr/lib/${RPI_FW}/${file}* ${CRAFT_PART_INSTALL}/boot-assets/
       done
 
       # install config.txt and cmdline.txt

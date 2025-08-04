@@ -16,6 +16,7 @@ initramfs initrd.img followkernel
 dtparam=audio=on
 dtparam=i2c_arm=on
 dtparam=spi=on
+dtparam=watchdog=on
 
 # Comment out the following line if the edges of the desktop appear outside
 # the edges of your display

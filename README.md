@@ -3,8 +3,7 @@
 This repository contains the source for an [Ubuntu
 Core](https://ubuntu.com/core) gadget snap that runs universally on all the
 Raspberry Pi boards currently supported by Ubuntu Core (Raspberry Pi 2B, 3B,
-3A+, 3B+, 4B, Pi Zero 2 W, Compute Module 3, Compute Module 3+ and Compute
-Module 4).
+3A+, 3B+, 4B, 5, Pi Zero 2 W, Compute Module 3, 3+, 4 and 5)
 
 Building with [snapcraft](https://snapcraft.io/docs/snapcraft-overview)(see
 below) will obtain the following component from the noble-updates archive:

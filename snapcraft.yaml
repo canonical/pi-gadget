@@ -1,12 +1,13 @@
 name: pi
-version: 24-3
+version: 26-1
 summary: Raspberry Pi gadget
 description: |
   Support files for booting Raspberry Pi.
-  This gadget snap supports the Raspberry Pi 2B, 3B, 3A+, 3B+, 4B, Compute
-  Module 3, and the Compute Module 3+ universally.
+  This gadget snap supports the Raspberry Pi 2B, 3B, 3A+, 3B+, 4B, 5,
+  Pi Zero 2 W, Compute Module 3, 3+, 4 and 5.
 type: gadget
-base: core24
+base: core26
+build-base: devel
 assumes: [kernel-assets]
 platforms:
   rpi:
@@ -17,7 +18,7 @@ platforms:
     build-for: arm64
 
 confinement: strict
-grade: stable
+grade: devel
 parts:
   boot-assets:
     plugin: nil
@@ -26,7 +27,7 @@ parts:
       set -x
       
       # This branch is dedicated to arm64 support
-      BUILD_SERIES=noble
+      BUILD_SERIES=resolute
       BUILD_ARCH=${CRAFT_ARCH_BUILD_FOR}
       
       # restricted source import to retrieve the Pi firmware

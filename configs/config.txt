@@ -4,17 +4,17 @@ cmdline=cmdline.txt
 initramfs initrd.img followkernel
 os_prefix=
 
-[pi4]
-max_framebuffers=2
-arm_boost=1
 
 [all]
+arm_64bit=1
+
 # Enable the audio output, I2C and SPI interfaces on the GPIO header. As these
 # parameters related to the base device-tree they must appear *before* any
 # other dtoverlay= specification
 dtparam=audio=on
 dtparam=i2c_arm=on
 dtparam=spi=on
+dtparam=watchdog=on
 
 # Comment out the following line if the edges of the desktop appear outside
 # the edges of your display
@@ -25,19 +25,22 @@ disable_overscan=1
 # support audio output)
 #hdmi_drive=2
 
+# Enable the KMS ("Full" KMS) graphics overlay, and allocate 128Mb to the
+# GPU memory
+dtoverlay=vc4-kms-v3d,cma-128
+disable_fw_kms_setup=1
+
 # Enable the serial pins
 enable_uart=1
 
-[cm4]
-# Enable the USB2 outputs on the IO board (assuming your CM4 is plugged into
-# such a board)
-dtoverlay=dwc2,dr_mode=host
+# Autoload overlays for any recognized cameras or displays that are attached
+# to the CSI/DSI ports. Please note this is for libcamera support, *not* for
+# the legacy camera stack
+camera_auto_detect=1
+display_auto_detect=1
 
-[all]
-
-# Enable the FKMS ("Fake" KMS) graphics overlay, and allocate 128Mb to the
-# GPU memory
-dtoverlay=vc4-fkms-v3d,cma-128
+# Config settings specific to arm64
+dtoverlay=dwc2
 
 # Uncomment the following to enable the Raspberry Pi camera module firmware
 #start_x=1
@@ -49,6 +52,13 @@ dtoverlay=vc4-fkms-v3d,cma-128
 #dtparam=act_led_trigger=heartbeat
 #dtparam=pwr_led_trigger=mmc0
 
-# Config settings specific to arm64
-arm_64bit=1
-dtoverlay=dwc2
+[pi4]
+max_framebuffers=2
+arm_boost=1
+
+[cm4]
+# Enable the USB2 outputs on the IO board (assuming your CM4 is plugged into
+# such a board)
+dtoverlay=dwc2,dr_mode=host
+
+[all]

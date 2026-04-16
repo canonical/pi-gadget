@@ -52,10 +52,11 @@ gt = $(and $(call ge,$(1),$(2)),$(call ne,$(1),$(2)))
 
 KERNEL_FLAVOR := raspi
 FIRMWARE_FLAVOR := $(if $(call ge,$(SERIES_RELEASE),22.04),raspi,raspi2)
+FIRMWARE_PREFIX := $(if $(call ge,$(SERIES_RELEASE),26.04),usr/lib,lib)
 # This is deliberately lazily evaluated (= not :=); it depends on the
 # "device-trees" target to have been executed in order to populate the
-# $(STAGEDIR)/lib/modules path
-KERNEL_VERSION = $(shell ls $(STAGEDIR)/lib/modules 2>/dev/null)
+# $(STAGEDIR)/usr/lib/modules path
+KERNEL_VERSION = $(shell ls $(STAGEDIR)/$(FIRMWARE_PREFIX)/modules 2>/dev/null)
 # All the default components got moved to main or restricted in groovy. Prior
 # to this (focal and before) certain bits were (are) in universe or multiverse
 RESTRICTED_COMPONENT := $(if $(call le,$(SERIES_RELEASE),20.04),universe multiverse,restricted)
@@ -80,7 +81,6 @@ ARCHIVE_URL := http://$(if $(call ge,$(SERIES_RELEASE),26.04),archive.ubuntu.com
 # used.
 #
 define stage_package
-	mkdir -p $(STAGEDIR)/tmp
 	( \
 		cd $(STAGEDIR)/tmp && \
 		chdist -d $(STAGEDIR_ABS) apt gadget download $$( \
@@ -179,18 +179,12 @@ device-trees: local-apt $(DESTDIR)/boot-assets
 	# However, there are also device-trees (overlay_map and hat_map) under
 	# the .../device-tree/overlays/ directory which are *not* base
 	# device-trees and must appear under overlays
-	if [ -d $(STAGEDIR)/lib/firmware/*/device-tree/broadcom ]; then \
-		cp -av $$(find $(STAGEDIR)/lib/firmware/*/device-tree/broadcom \
-		-name "*.dtb") \
-		$(DESTDIR)/boot-assets/$(OS_PREFIX); \
-	else \
-		cp -av $$(find $(STAGEDIR)/lib/firmware/*/device-tree \
-		-maxdepth 1 -name "*.dtb") \
-		$(DESTDIR)/boot-assets/$(OS_PREFIX); \
-	fi
 	mkdir -p $(DESTDIR)/boot-assets/$(OS_PREFIX)overlays
-	cp -av $$(find $(STAGEDIR)/lib/firmware/*/device-tree/overlays -type f) \
+	cp -av $$(find $(STAGEDIR)/$(FIRMWARE_PREFIX)/firmware/*/device-tree/overlays -type f) \
 		$(DESTDIR)/boot-assets/$(OS_PREFIX)overlays/
+	rm -rf $(STAGEDIR)/$(FIRMWARE_PREFIX)/firmware/*/device-tree/overlays
+	cp -av $$(find $(STAGEDIR)/$(FIRMWARE_PREFIX)/firmware/*/device-tree -name "*.dtb") \
+		$(DESTDIR)/boot-assets/$(OS_PREFIX)
 
 gadget:
 	$(call fill_template,gadget.yaml.in,gadget.yaml)
@@ -206,6 +200,7 @@ clean:
 # This way, we can run apt without requiring root privileges, and without
 # messing up the host system's apt cache
 local-apt:
+	mkdir -p $(STAGEDIR)/tmp
 	chdist -d $(STAGEDIR) -a $(ARCH) \
 		create gadget \
 		$(ARCHIVE_URL) \

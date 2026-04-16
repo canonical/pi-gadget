@@ -7,7 +7,6 @@ description: |
   Pi Zero 2 W, Compute Module 3, 3+, 4 and 5.
 type: gadget
 base: core26
-build-base: devel
 assumes: [kernel-assets]
 platforms:
   rpi:
@@ -18,7 +17,7 @@ platforms:
     build-for: arm64
 
 confinement: strict
-grade: devel
+grade: stable
 parts:
   boot-assets:
     plugin: nil

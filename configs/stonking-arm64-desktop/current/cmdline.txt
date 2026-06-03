@@ -1,0 +1,1 @@
+zswap.enabled=1 zswap.compressor=zstd multipath=off dwc_otg.lpm_enable=0 console=tty1 root=LABEL=writable rootfstype=ext4 panic=10 rootwait fixrtc quiet splash

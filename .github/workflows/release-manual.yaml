@@ -1,0 +1,42 @@
+name: Manual Ubuntu Core gadget release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build_variants:
+    strategy:
+      fail-fast: false
+      matrix:
+        base: [18, 20, 22]
+        architecture: [armhf, arm64]
+    runs-on: ubuntu-latest
+    environment: store
+    steps:
+      - name: Build and release ${{ matrix.base }}-${{ matrix.architecture }} to edge channel
+        env:
+          LP_CREDENTIALS: ${{ secrets.LP_CREDENTIALS }}
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+        uses: snapcore/system-snaps-cicd-tools/action-rebuild-gadget@main
+        with:
+          branch: ${{ matrix.base }}-${{ matrix.architecture }}
+          architectures: ${{ matrix.architecture }}
+  build_singulars:
+    strategy:
+      fail-fast: false
+      matrix:
+        base: [24, 26]
+    runs-on: ubuntu-latest
+    environment: store
+    steps:
+      - name: Build and release ${{ matrix.base }} to edge channel
+        env:
+          LP_CREDENTIALS: ${{ secrets.LP_CREDENTIALS }}
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+        uses: snapcore/system-snaps-cicd-tools/action-rebuild-gadget@main
+        with:
+          branch: ${{ matrix.base }}
+          architectures: arm64
